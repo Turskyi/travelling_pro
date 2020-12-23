@@ -1,0 +1,92 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.1.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+        /* Google Services plugin (for firebase) */
+        classpath 'com.google.gms:google-services:4.3.4'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+subprojects {
+    afterEvaluate {
+        dependencies{
+            /* Kotlin */
+            implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+            /* Add to avoid  w:Kotlin runtime JAR files in the classpath should have the same version */
+            implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+            /* koin */
+            implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+            implementation "org.koin:koin-core:$koin_version"
+            implementation "org.koin:koin-androidx-scope:$koin_version"
+
+            /* Retrofit2 */
+            implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+            implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+
+            /* coroutines  */
+            implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+            implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+            /* Paging */
+            implementation "androidx.paging:paging-runtime:$paging_version"
+
+            /*  Bill of Materials for the Firebase platform */
+            implementation platform('com.google.firebase:firebase-bom:26.2.0')
+            /* When using the BoM, no need to specify versions in Firebase library dependencies */
+
+            /* Firebase SDK for Google Analytics */
+            implementation 'com.google.firebase:firebase-analytics-ktx'
+
+            /* Declare the dependency for the Cloud Firestore library */
+            implementation 'com.google.firebase:firebase-firestore-ktx'
+
+            /* Firebase for authentication */
+            implementation 'com.google.firebase:firebase-auth'
+            implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.google.com" }
+    }
+}
+
+ext {
+    getParam = { key ->
+        def value = System.getenv(key) ?: project.findProperty("env.$key")
+        if (value) {
+            println "$key = $value"
+        }
+        return value
+    }
+    HOST_URL = getParam("HOST_URL")
+
+    SIGNING_KEY_DEBUG_PASSWORD = getParam("SIGNING_KEY_DEBUG_PASSWORD")
+    SIGNING_KEY_DEBUG_KEY_PASSWORD = getParam("SIGNING_KEY_DEBUG_KEY_PASSWORD")
+    SIGNING_KEY_DEBUG_PATH = getParam("SIGNING_KEY_DEBUG_PATH")
+    SIGNING_KEY_DEBUG_KEY = getParam("SIGNING_KEY_DEBUG_KEY")
+
+    SIGNING_KEY_RELEASE_PASSWORD = getParam("SIGNING_KEY_RELEASE_PASSWORD")
+    SIGNING_KEY_RELEASE_KEY_PASSWORD = getParam("SIGNING_KEY_RELEASE_KEY_PASSWORD")
+    SIGNING_KEY_RELEASE_PATH = getParam("SIGNING_KEY_RELEASE_PATH")
+    SIGNING_KEY_RELEASE_KEY = getParam("SIGNING_KEY_RELEASE_KEY")
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

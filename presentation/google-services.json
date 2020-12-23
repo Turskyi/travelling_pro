@@ -1,0 +1,93 @@
+{
+  "project_info": {
+    "project_number": "621347185100",
+    "firebase_url": "https://travelling-the-countries.firebaseio.com",
+    "project_id": "travelling-the-countries",
+    "storage_bucket": "travelling-the-countries.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621347185100:android:4b240284697d93094f7d69",
+        "android_client_info": {
+          "package_name": "io.github.turskyi.travellingpro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621347185100-96jan14ifodtr3nim2sn56g74sbbior7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.turskyi.travellingpro",
+            "certificate_hash": "3036d938c1dc9492cd887a781ce1b0a3bc3e7655"
+          }
+        },
+        {
+          "client_id": "621347185100-j5cugqg9nvc0s7f1dk6f1l2ksooor097.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_a0RGW0Wp8xS80WwhsxoEGsJaOaXXl_I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621347185100-j5cugqg9nvc0s7f1dk6f1l2ksooor097.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621347185100:android:da7f4db6cac454904f7d69",
+        "android_client_info": {
+          "package_name": "ua.turskyi.travelling"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621347185100-o31fb0uco8kro7rsrelgbbu7m77f9ii1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.turskyi.travelling",
+            "certificate_hash": "7f9df6cd5e4ad8e08a47cc9d458775311be89c16"
+          }
+        },
+        {
+          "client_id": "621347185100-vprimsv4hmuef0fa1pgdhqtaellh6f4p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.turskyi.travelling",
+            "certificate_hash": "3036d938c1dc9492cd887a781ce1b0a3bc3e7655"
+          }
+        },
+        {
+          "client_id": "621347185100-j5cugqg9nvc0s7f1dk6f1l2ksooor097.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_a0RGW0Wp8xS80WwhsxoEGsJaOaXXl_I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621347185100-j5cugqg9nvc0s7f1dk6f1l2ksooor097.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
