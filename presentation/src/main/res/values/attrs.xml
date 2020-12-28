@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ShadowedLinearLayout">
+        <attr name="containerBackgroundColor" format="color" />
+        <attr name="shadowRadius" format="dimension" />
+        <attr name="shadowColor" format="color" />
+        <attr name="containerElevation" format="dimension"/>
+        <attr name="shadowGravity" format="string"/>
+        <attr name="shadowMarginTop" format="dimension"/>
+        <attr name="shadowMarginStart" format="dimension"/>
+        <attr name="shadowMarginEnd" format="dimension"/>
+        <attr name="shadowMarginBottom" format="dimension"/>
+        <attr name="scaleViewOnElevationChange" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="ResizableTextView">
+        <attr name="text_type" format="enum">
+            <enum name="title" value="2"/>
+            <enum name="caption" value="1"/>
+            <enum name="body" value="0"/>
+        </attr>
+    </declare-styleable>
+</resources>

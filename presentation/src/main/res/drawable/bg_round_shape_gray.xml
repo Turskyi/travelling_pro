@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorBgVisitedCountry" />
+
+    <padding
+        android:bottom="@dimen/offset_2"
+        android:left="@dimen/offset_2"
+        android:right="@dimen/offset_2"
+        android:top="@dimen/offset_2" />
+
+    <corners
+        android:bottomLeftRadius="@dimen/radius_cardview"
+        android:bottomRightRadius="@dimen/radius_cardview"
+        android:topLeftRadius="@dimen/radius_cardview"
+        android:topRightRadius="@dimen/radius_cardview" />
+</shape>

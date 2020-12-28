@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:padding="@dimen/offset_16">
+
+    <EditText
+        android:id="@+id/etMonth"
+        android:hint="@string/home_city_date"
+        android:inputType="textShortMessage"
+        android:autofillHints="@string/home_city_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <view
+        android:id="@+id/letCity"
+        class="io.github.turskyi.travellingpro.widgets.LinedEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_10"
+        android:hint="@string/dialogue_hint_add_a_city"
+        android:inputType="textMultiLine"
+        android:fadingEdge="vertical"
+        android:gravity="top|start"
+        android:text=""
+        android:padding="@dimen/offset_4"
+        android:lines="3"
+        android:minLines="2"
+        android:maxLines="100"
+        android:scrollbars="vertical"
+        android:textAlignment="viewStart"
+        android:textSize="@dimen/headline6" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnGps"
+            style="@style/DialogueBtnStyle"
+            android:layout_width="0dp"
+            android:padding="@dimen/offset_10"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_add_location"
+            android:text="@string/dialogue_btn_gps" />
+
+        <Button
+            android:id="@+id/btnDate"
+            style="@style/DialogueBtnStyle"
+            android:layout_width="0dp"
+            android:padding="@dimen/offset_10"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_month"
+            android:text="@string/home_city_date" />
+
+        <Button
+            android:id="@+id/buttonSave"
+            style="@style/DialogueBtnStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_save" />
+
+    </LinearLayout>
+</LinearLayout>

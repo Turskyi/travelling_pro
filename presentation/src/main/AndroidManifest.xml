@@ -1,25 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.github.turskyi.travellingpro">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.vending.BILLING" />
+
     <application
+        android:name=".common.App"
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TravellingPro"
-        android:fullBackupContent="true">
+        android:theme="@style/AppTheme">
         <activity
-            android:name=".ScrollingActivity"
+            android:name="io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TravellingPro.NoActionBar">
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Launcher"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        <activity
+            android:name=".features.allcountries.view.ui.AllCountriesActivity"
+            android:parentActivityName=".features.home.view.ui.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".features.flags.view.FlagsActivity"
+            android:parentActivityName=".features.home.view.ui.HomeActivity" />
 
+        <provider
+            android:name=".utils.TravellingFileProvider"
+            android:authorities="io.github.turskyi.travellingpro.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider2312394202364807"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"
+            tools:replace="android:value" />
+    </application>
 </manifest>

@@ -1,5 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="app_bar_height">180dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+    <!-- region Paddings/Margins/Offsets -->
+    <dimen name="offset_1">1dp</dimen>
+    <dimen name="offset_2">2dp</dimen>
+    <dimen name="offset_4">4dp</dimen>
+    <dimen name="offset8">8dp</dimen>
+    <dimen name="offset_10">10dp</dimen>
+    <dimen name="offset_12">12dp</dimen>
+    <dimen name="offset_16">16dp</dimen>
+    <dimen name="offset_20">20dp</dimen>
+    <dimen name="offset_26">26dp</dimen>
+    <dimen name="offset_29">29dp</dimen>
+    <dimen name="offset_40">40dp</dimen>
+    <dimen name="offset_64">64dp</dimen>
+    <dimen name="offset_140">140dp</dimen>
+
+    <!--region Elevations-->
+    <dimen name="elevation_1">1dp</dimen>
+    <dimen name="elevation_2">2dp</dimen>
+    <dimen name="elevation_4">4dp</dimen>
+    <dimen name="elevation_8">8dp</dimen>
+    <dimen name="elevation_12">12dp</dimen>
+
+    <!--region Typography-->
+    <!--https://material.io/develop/android/theming/typography/-->
+    <dimen name="caption">12sp</dimen>
+    <dimen name="subtitle2">14sp</dimen>
+    <dimen name="headline6">20sp</dimen>
+    <dimen name="headline5">24sp</dimen>
+
+    <!-- heights -->
+    <dimen name="height_list_item_tablet">60dp</dimen>
+    <dimen name="height_toolbar_all_countries">72dp</dimen>
+    <dimen name="height_share_btn">120dp</dimen>
+    <dimen name="height_bottom_sheet">400dp</dimen>
+    <dimen name="height_app_bar">300dp</dimen>
+    <dimen name="height_splash_logo">351dp</dimen>
+
+    <!-- widths -->
+    <dimen name="width_arrow_tablet">60dp</dimen>
+    <dimen name="width_smallest_screen">360dp</dimen>
+    <dimen name="width_splash_logo">361dp</dimen>
+    <dimen name="width_facebook_icon">390dp</dimen>
+
+    <!-- radii -->
+    <dimen name="radius_cardview">4dp</dimen>
+    <dimen name="radius_dialogue_corners">12dp</dimen>
+
+    <!-- sizes -->
+    <dimen name="size_home_fab_custom">224dp</dimen>
+    <dimen name="size_all_countries_fab_custom">30dp</dimen>
+    <dimen name="size_home_fab_max_image">192dp</dimen>
+    <dimen name="size_all_countries_fab_max_image">34dp</dimen>
+    <dimen name="size_max_float_btn">60dp</dimen>
+
 </resources>

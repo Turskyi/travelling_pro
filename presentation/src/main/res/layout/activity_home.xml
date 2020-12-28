@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="@android:color/black"
+        android:fitsSystemWindows="true"
+        tools:context=".view.ui.HomeActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_app_bar"
+            android:fitsSystemWindows="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/black"
+                android:fitsSystemWindows="true"
+                android:soundEffectsEnabled="true"
+                app:collapsedTitleGravity="start"
+                app:collapsedTitleTextAppearance="@style/CasualSmallTextAppearance"
+                app:contentScrim="@android:color/black"
+                app:expandedTitleGravity="bottom|center"
+                app:expandedTitleTextAppearance="@style/CasualTextAppearance"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:scrimAnimationDuration="@android:integer/config_longAnimTime"
+                app:statusBarScrim="@android:color/black"
+                app:title="@string/home_onboarding_title"
+                app:toolbarId="@+id/toolbar">
+
+                <FrameLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/offset_10"
+                    android:paddingBottom="@dimen/offset_40"
+                    app:layout_collapseMode="pin">
+
+                    <io.github.turskyi.travellingpro.widgets.CirclePieChart
+                        android:id="@+id/circle_pie_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:elevation="@dimen/elevation_4"
+                        android:soundEffectsEnabled="true"/>
+
+                </FrameLayout>
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/offset_64"
+                    android:fontFamily="casual"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+            </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvVisitedCountries"
+            style="@style/RecyclerViewStyle"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <!-- loading progress bar -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/pb"
+            style="@style/ProgressBarStyle"
+            android:scaleType="centerInside"
+            app:lottie_loop="true"
+            android:layout_marginTop="@dimen/offset_64"
+            app:lottie_autoPlay="true"
+            app:lottie_rawRes="@raw/anim_flight" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatBtnSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="@string/content_description.image"
+            android:drawingCacheQuality="auto"
+            android:fadeScrollbars="true"
+            android:focusable="true"
+            android:onClick="@{() -> viewModel.onFloatBtnClicked()}"
+            android:visibility="gone"
+            app:elevation="@dimen/elevation_4"
+            app:fabSize="auto"
+            app:layout_anchor="@id/circle_pie_chart"
+            app:layout_anchorGravity="bottom|end"
+            app:layout_behavior=".widgets.FabScrollBehavior"
+            app:maxImageSize="@dimen/size_max_float_btn"
+            app:srcCompat="@drawable/btn_plus_ripple"
+            app:useCompatPadding="true"
+            tools:visibility="visible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatBtnLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="@dimen/offset_64"
+            android:clickable="true"
+            android:contentDescription="@string/content_description.image"
+            android:drawingCacheQuality="auto"
+            android:elevation="4dp"
+            android:fadeScrollbars="true"
+            android:focusable="true"
+            android:onClick="@{() -> viewModel.onFloatBtnClicked()}"
+            android:soundEffectsEnabled="true"
+            android:visibility="gone"
+            app:elevation="@dimen/elevation_4"
+            app:fabCustomSize="@dimen/size_home_fab_custom"
+            app:fabSize="auto"
+            app:maxImageSize="@dimen/size_home_fab_max_image"
+            app:rippleColor="@android:color/black"
+            app:srcCompat="@drawable/ic_countries_seen" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

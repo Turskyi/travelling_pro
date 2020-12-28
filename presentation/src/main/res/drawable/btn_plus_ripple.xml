@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/colorAccent">
+    <item>
+        <shape
+            android:shape="oval">
+            <solid
+                android:color="@color/colorBgVisitedCountry" />
+        </shape>
+    </item>
+    <item
+        android:width="@dimen/size_max_float_btn"
+        android:height="@dimen/size_max_float_btn"
+        android:top="@dimen/offset_2"
+        android:drawable="@drawable/ic_plus"/>
+</ripple>

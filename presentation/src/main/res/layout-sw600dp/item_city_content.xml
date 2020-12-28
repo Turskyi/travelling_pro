@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginStart="@dimen/offset8"
+    android:layout_marginEnd="@dimen/offset8"
+    android:animateLayoutChanges="true"
+    android:animationCache="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardBackgroundColor="@color/colorBgCity"
+    card_view:cardCornerRadius="@dimen/radius_cardview"
+    card_view:cardElevation="@dimen/elevation_2"
+    card_view:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/offset_40"
+        android:paddingEnd="@dimen/offset_20"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvCity"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/height_list_item_tablet"
+            android:layout_gravity="center"
+            android:padding="@dimen/dp_10"
+            android:textSize="@dimen/headline5"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            tool:text="City" />
+
+        <TextView
+            android:id="@+id/tvMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="end"
+            android:textSize="@dimen/headline5"
+            android:padding="@dimen/dp_10"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            tool:text="Month" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorAccent"/>
+
+    <padding android:left="@dimen/offset_1"
+        android:top="@dimen/offset_1"
+        android:right="@dimen/offset_1"
+        android:bottom="@dimen/offset_1"
+        />
+
+    <corners
+        android:bottomLeftRadius="@dimen/radius_dialogue_corners"
+        android:bottomRightRadius="@dimen/radius_dialogue_corners"
+        android:topLeftRadius="@dimen/radius_dialogue_corners"
+        android:topRightRadius="@dimen/radius_dialogue_corners" />
+</shape>

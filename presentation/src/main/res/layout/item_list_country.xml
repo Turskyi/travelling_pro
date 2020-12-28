@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/ll_country"
+    android:weightSum="10"
+    android:background="@drawable/bg_round_shape_gray"
+    style="@style/LinearLayoutForListItemStyle">
+
+    <ImageView
+        android:id="@+id/iv_flag"
+        style="@style/ImageViewStyle"
+        tool:visibility="gone"
+        tool:src="@android:drawable/ic_menu_gallery"
+        android:contentDescription="@string/content_description.flag" />
+
+<!--    WebView is used in case of error while downloading image source from the internet. -->
+    <io.github.turskyi.travellingpro.widgets.ClickableWebView
+        android:id="@+id/wv_flag"
+        style="@style/ImageViewStyle"
+        android:gravity="center"
+        android:visibility="gone"
+        tool:visibility="visible"
+        tool:drawableStart="@android:drawable/ic_menu_gallery"
+        android:contentDescription="@string/content_description.flag" />
+
+    <TextView
+        android:id="@+id/tv_country"
+        style="@style/TextViewStyle"
+        tool:text="visited country" />
+
+    <ImageView
+        android:id="@+id/iv_more"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="end|center"
+        android:paddingEnd="@dimen/dp_10"
+        android:paddingStart="@dimen/dp_10"
+        android:visibility="gone"
+        tool:visibility="visible"
+        android:src="@drawable/ic_arrow_expandable_down"
+        android:contentDescription="@string/content_description.item_arrow" />
+
+</LinearLayout>
