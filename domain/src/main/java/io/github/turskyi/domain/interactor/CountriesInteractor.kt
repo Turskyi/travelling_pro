@@ -22,7 +22,7 @@ class CountriesInteractor : KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = repository.updateSelfie(id, selfie, onSusses, onError)
 
-     fun getCountriesByRange(
+    fun getCountriesByRange(
         limit: Int,
         offset: Int,
         onSusses: (List<CountryModel>) -> Unit,
@@ -51,8 +51,9 @@ class CountriesInteractor : KoinComponent {
 
     suspend fun markAsVisitedCountryModel(
         country: CountryModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
-    ) = repository.markAsVisited(country, onError = onError)
+    ) = repository.markAsVisited(country, onSuccess = onSuccess, onError = onError)
 
     suspend fun removeCountryModelFromVisitedList(
         country: CountryModel,

@@ -15,6 +15,7 @@ import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
 import org.koin.core.KoinComponent
 
+
 class FirestoreSource : KoinComponent {
     /* init Authentication */
     var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -29,26 +30,6 @@ class FirestoreSource : KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) {
         countries.forEachIndexed { index, countryModel ->
-//            TODO: maybe uploading images needed
-//            val ref = storageRef.child("images/mountains.jpg")
-//            uploadTask = ref.putFile(file)
-//
-//            val urlTask = uploadTask.continueWithTask { task ->
-//                if (!task.isSuccessful) {
-//                    task.exception?.let {
-//                        throw it
-//                    }
-//                }
-//                ref.downloadUrl
-//            }.addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    val downloadUri = task.result
-//                } else {
-//                    // Handle failures
-//                    // ...
-//                }
-//            }
-
             val country =
                 CountryModel(
                     id = index,
@@ -59,7 +40,7 @@ class FirestoreSource : KoinComponent {
             usersRef.document("${mFirebaseAuth.currentUser?.uid}")
                 .collection(REF_COUNTRIES).document(countryModel.name).set(country)
                 .addOnSuccessListener {
-                    if(index == countries.size - 1){
+                    if (index == countries.size - 1) {
                         onSuccess()
                     }
                 }.addOnFailureListener {
@@ -68,12 +49,15 @@ class FirestoreSource : KoinComponent {
         }
     }
 
-    fun markAsVisited(id: String) {
+    fun markAsVisited(
+        name: String, onSuccess: () -> Unit,
+        onError: ((Exception) -> Unit?)?
+    ) {
         val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_COUNTRIES).document(id)
+            .collection(REF_COUNTRIES).document(name)
         countryRef.update(KEY_IS_VISITED, true)
-            .addOnSuccessListener { log("added to visited") }
-            .addOnFailureListener { e -> log("Error adding to visited, ${e.message}") }
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onError?.invoke(it) }
     }
 
     fun removeFromVisited(id: String) {
@@ -120,16 +104,14 @@ class FirestoreSource : KoinComponent {
         countriesRef.whereEqualTo(KEY_IS_VISITED, true).get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 val countries: MutableList<CountryModel> = mutableListOf()
-                if(queryDocumentSnapshots.size()  == 0){
+                if (queryDocumentSnapshots.size() == 0) {
                     onSuccess(countries)
                 } else {
                     for (documentSnapshot in queryDocumentSnapshots) {
                         val country: CountryModel =
                             documentSnapshot.toObject(CountryModel::class.java)
                         countries.add(country)
-                        log(" id ${documentSnapshot.id} == ?? ${queryDocumentSnapshots.last().id}")
-                        if(documentSnapshot.id == queryDocumentSnapshots.last().id){
-                            log("success visited ${countries.size}")
+                        if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                             onSuccess(countries.sortedBy { listItem -> listItem.name })
                         }
                     }
@@ -166,13 +148,16 @@ class FirestoreSource : KoinComponent {
         val countriesRef: CollectionReference =
             usersRef.document("${mFirebaseAuth.currentUser?.uid}")
                 .collection(REF_COUNTRIES)
-        countriesRef.whereEqualTo(KEY_IS_VISITED, false)
-        countriesRef.get()
+        countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    task.result?.size()?.let { onSuccess(it) }
+                    task.result?.let { countries ->
+                        onSuccess(countries.size())
+                    }
                 } else {
-                    task.exception?.let { onError?.invoke(it) }
+                    task.exception?.let {
+                        onError?.invoke(it)
+                    }
                 }
             }
             .addOnFailureListener { e ->
@@ -218,7 +203,7 @@ class FirestoreSource : KoinComponent {
                     if (nameQuery != null && country.name.startsWith(nameQuery)) {
                         countries.add(country)
                     }
-                    if(documentSnapshot == queryDocumentSnapshots.last()){
+                    if (documentSnapshot == queryDocumentSnapshots.last()) {
                         onSuccess(countries)
                     }
                 }

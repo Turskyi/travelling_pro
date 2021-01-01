@@ -10,7 +10,7 @@ import androidx.paging.PagedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapActualToModel
+import io.github.turskyi.travellingpro.extensions.mapToModel
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.CountriesPositionalDataSource
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.FilteredPositionalDataSource
 import io.github.turskyi.travellingpro.models.Country
@@ -43,9 +43,7 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
     init {
         _visibilityLoader.postValue(VISIBLE)
         pagedList = getCountryList(searchQuery)
-        viewModelScope.launch {
-            getNotVisitedCountriesNumFromDb()
-        }
+        getNotVisitedCountriesNum()
     }
 
     private fun getCountryList(searchQuery: String): PagedList<Country> {
@@ -76,12 +74,11 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
         }
     }
 
-    private fun getNotVisitedCountriesNumFromDb() {
+    private fun getNotVisitedCountriesNum() {
         viewModelScope.launch {
             interactor.getNotVisitedCountriesNum({ num ->
                 _notVisitedCountriesNumLiveData.postValue(num)
             }, { exception ->
-                exception.printStackTrace()
                 _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
                     exception.message?.let { message ->
@@ -93,10 +90,11 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
         }
     }
 
-    fun markAsVisited(country: Country) {
+    fun markAsVisited(country: Country, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.Main) {
-            interactor.markAsVisitedCountryModel(country.mapActualToModel()) { exception ->
-                exception.printStackTrace()
+            interactor.markAsVisitedCountryModel(country.mapToModel(), {
+                onSuccess()
+            }, { exception ->
                 _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
                     exception.message?.let { message ->
@@ -104,7 +102,7 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
                         postValue(Event(message))
                     }
                 }
-            }
+            })
         }
     }
 }

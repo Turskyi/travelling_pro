@@ -19,6 +19,7 @@ interface CountriesRepository {
 
     suspend fun markAsVisited(
         country: CountryModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
     )
 

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityAllCountriesBinding
+import io.github.turskyi.travellingpro.extensions.log
 import io.github.turskyi.travellingpro.extensions.openInfoDialog
 import io.github.turskyi.travellingpro.extensions.toast
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
@@ -98,9 +99,11 @@ class AllCountriesActivity : AppCompatActivity() {
     }
 
     private fun addToVisited(country: Country) {
-        viewModel.markAsVisited(country)
-        hideKeyboard()
-        onBackPressed()
+        viewModel.markAsVisited(country) {
+            log("on success")
+            hideKeyboard()
+            onBackPressed()
+        }
     }
 
     private fun updateTitle(num: Int) {

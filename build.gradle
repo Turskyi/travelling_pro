@@ -49,6 +49,8 @@ subprojects {
 
             /* Declare the dependency for the Cloud Firestore library */
             implementation 'com.google.firebase:firebase-firestore-ktx'
+            /* avoids "Service not registered" exception */
+            implementation 'com.google.android.gms:play-services-basement:17.5.0'
 
             /* Firebase for authentication */
             implementation 'com.google.firebase:firebase-auth'

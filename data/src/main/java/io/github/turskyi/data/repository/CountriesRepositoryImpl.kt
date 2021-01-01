@@ -44,8 +44,9 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
 
     override suspend fun markAsVisited(
         country: CountryModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.markAsVisited(country.id.toString())
+    ) = firebaseSource.markAsVisited(country.name, { onSuccess() }, { onError?.invoke(it) })
 
     override suspend fun removeFromVisited(
         country: CountryModel,

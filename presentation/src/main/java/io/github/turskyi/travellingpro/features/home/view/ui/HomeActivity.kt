@@ -190,8 +190,6 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
     }
 
     private fun initObservers() {
-        /* add observer for viewmodel */
-        lifecycle.addObserver(viewModel)
         /*  here could be a more efficient way to handle a click to open activity,
         * but it is made on purpose of demonstration databinding */
         viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
@@ -256,7 +254,6 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
                     else -> {
 //                        TODO: make sure it is not an infinite loop
                         toast(R.string.msg_did_not_sign_in)
-                        log(" unknown error : ${response.error?.message}")
                         viewModel.initAuthentication(authorizationResultLauncher)
                         registerAuthorization()
                     }
