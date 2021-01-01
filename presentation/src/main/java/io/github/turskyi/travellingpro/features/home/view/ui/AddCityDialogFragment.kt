@@ -116,7 +116,11 @@ class AddCityDialogFragment : DialogFragment() {
                             month = etMonth?.text.toString()
                         ).let { city ->
                             viewModel.insert(
-                                city
+                                city, {
+                                    alertDialog?.dismiss()
+                                }, { exception ->
+                                    toast(exception.message)
+                                }
                             )
                         }
                     }
@@ -124,7 +128,11 @@ class AddCityDialogFragment : DialogFragment() {
                     arguments?.getInt(ARG_ID)?.let { parentId ->
                         City(etCity?.text.toString(), parentId).let { city ->
                             viewModel.insert(
-                                city
+                                city, {
+                                    alertDialog?.dismiss()
+                                }, { exception ->
+                                    toast(exception.message)
+                                }
                             )
                         }
                     }
@@ -133,7 +141,6 @@ class AddCityDialogFragment : DialogFragment() {
                 alertDialog?.cancel()
                 toast(R.string.home_city_did_not_save)
             }
-            alertDialog?.dismiss()
         }
 
         buttonGps.setOnClickListener {
@@ -141,11 +148,11 @@ class AddCityDialogFragment : DialogFragment() {
              * There is a unique case when particular android version cannot perform location logic
              * and crashing, so here button just used as a cancel button.
              */
-            etCity?.let {
-                if (Build.VERSION.RELEASE == "5.1") {
+            etCity?.let { inputField ->
+                if (Build.VERSION.RELEASE == getString(R.string.android_5_1)) {
                     alertDialog?.cancel()
                 } else {
-                    checkIfGpsEnabled(it)
+                    checkIfGpsEnabled(inputField)
                 }
             }
         }
@@ -264,7 +271,7 @@ class AddCityDialogFragment : DialogFragment() {
                 override fun onProviderEnabled(provider: String) {}
                 override fun onProviderDisabled(provider: String) {}
             }
-            /*      Request location updates */
+            /** Request location updates */
             locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
                 0L,

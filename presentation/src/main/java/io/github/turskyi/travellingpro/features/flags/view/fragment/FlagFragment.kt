@@ -89,7 +89,7 @@ class FlagFragment : Fragment() {
                 binding.ivEnlargedFlag.visibility = VISIBLE
                 binding.wvFlag.visibility = GONE
                 val selectedImageUri = photoChooserIntent?.data
-                if (selectedImageUri.toString().contains("com.android.providers.media")) {
+                if (selectedImageUri.toString().contains(getString(R.string.media_providers))) {
                     val imageId =
                         selectedImageUri?.lastPathSegment?.takeLastWhile { character -> character.isDigit() }
                             ?.toInt()
@@ -108,7 +108,7 @@ class FlagFragment : Fragment() {
                             contentImg?.selfie?.let { uri ->
                                 position?.let {
                                     viewModel.updateSelfie(
-                                        visitedCountries[position].id,
+                                        visitedCountries[position].name,
                                         uri
                                     )
                                 }
@@ -123,7 +123,7 @@ class FlagFragment : Fragment() {
                         Observer<List<Country>> { visitedCountries ->
                             position?.let {
                                 viewModel.updateSelfie(
-                                    visitedCountries[position].id,
+                                    visitedCountries[position].name,
                                     selectedImageUri.toString()
                                 )
                             }
@@ -138,7 +138,6 @@ class FlagFragment : Fragment() {
             }
         }
     }
-
 
     private fun getContentUriFromUri(id: Int, imageId: Int, name: String, flag: String): Country {
         val columns = arrayOf(MediaStore.Images.Media._ID)

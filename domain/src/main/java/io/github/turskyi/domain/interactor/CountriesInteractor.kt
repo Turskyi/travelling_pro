@@ -16,11 +16,11 @@ class CountriesInteractor : KoinComponent {
     ) = repository.getCountriesByName(name, onSusses, onError)
 
     suspend fun updateSelfie(
-        id: Int,
+        name: String,
         selfie: String,
         onSusses: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = repository.updateSelfie(id, selfie, onSusses, onError)
+    ) = repository.updateSelfie(name, selfie, onSusses, onError)
 
     fun getCountriesByRange(
         limit: Int,
@@ -62,16 +62,19 @@ class CountriesInteractor : KoinComponent {
 
     suspend fun removeCountryModelFromVisitedList(
         country: CountryModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
-    ) = repository.removeFromVisited(country, onError = onError)
+    ) = repository.removeFromVisited(country, onSuccess = onSuccess, onError = onError)
 
     suspend fun removeCity(
         city: CityModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
-    ) = repository.removeCity(city, onError = onError)
+    ) = repository.removeCity(city, onSuccess = onSuccess, onError = onError)
 
     suspend fun insertCity(
         city: CityModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
-    ) = repository.insertCity(city, onError = onError)
+    ) = repository.insertCity(city, onSuccess = onSuccess, onError = onError)
 }

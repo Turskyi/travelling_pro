@@ -18,7 +18,7 @@ fun CountryModel.mapModelToNode() = VisitedCountry(
 
 fun CountryModel.mapModelToActual() = Country(id, name, flag, isVisited, selfie)
 fun Country.mapToModel() = CountryModel(id, name, flag, visited, selfie)
-fun VisitedCountry.mapNodeToActual() = Country(
+fun VisitedCountry.mapVisitedCountryNodeToCountry() = Country(
     id = id, visited = visited, name = title,
     flag = img, selfie = selfie
 )

@@ -10,6 +10,7 @@ import io.github.turskyi.data.constants.Constants.KEY_SELFIE
 import io.github.turskyi.data.constants.Constants.REF_CITIES
 import io.github.turskyi.data.constants.Constants.REF_COUNTRIES
 import io.github.turskyi.data.constants.Constants.REF_USERS
+import io.github.turskyi.data.entities.firestore.CountryEntity
 import io.github.turskyi.data.extensions.log
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
@@ -24,73 +25,64 @@ class FirestoreSource : KoinComponent {
     private val usersRef: CollectionReference = db.collection(REF_USERS)
 
     fun insertAllCountries(
-        countries: List<CountryModel>,
+        countries: List<CountryEntity>,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) {
-        countries.forEachIndexed { index, countryModel ->
-            val country =
-                CountryModel(
-                    id = index,
-                    name = countryModel.name,
-                    flag = countryModel.flag,
-                    isVisited = false,
-                )
-            usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-                .collection(REF_COUNTRIES).document(countryModel.name).set(country)
-                .addOnSuccessListener {
-                    if (index == countries.size - 1) {
-                        onSuccess()
-                    }
-                }.addOnFailureListener {
-                    onError?.invoke(it)
+    ) = countries.forEachIndexed { index, countryModel ->
+        val country = CountryEntity(
+            id = index,
+            name = countryModel.name,
+            flag = countryModel.flag,
+            isVisited = false,
+        )
+        usersRef.document("${mFirebaseAuth.currentUser?.uid}")
+            .collection(REF_COUNTRIES).document(countryModel.name).set(country)
+            .addOnSuccessListener {
+                if (index == countries.size - 1) {
+                    onSuccess()
                 }
-        }
+            }.addOnFailureListener { exception ->
+                onError?.invoke(exception)
+            }
     }
 
-    fun markAsVisited(
-        name: String, onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
-    ) {
+    fun markAsVisited(name: String, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
         val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
             .collection(REF_COUNTRIES).document(name)
         countryRef.update(KEY_IS_VISITED, true)
             .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { onError?.invoke(it) }
+            .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun removeFromVisited(id: String) {
+    fun removeFromVisited(name: String, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
         val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_COUNTRIES).document(id)
+            .collection(REF_COUNTRIES).document(name)
         countryRef.update(KEY_IS_VISITED, false)
-            .addOnSuccessListener { log("country removed from visited") }
-            .addOnFailureListener { e -> log("Error removing from visited ${e.message}") }
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun updateSelfie(id: String, selfie: String) {
+    fun updateSelfie(name: String, selfie: String) {
         val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_COUNTRIES).document(id)
+            .collection(REF_COUNTRIES).document(name)
         countryRef.update(KEY_SELFIE, selfie)
             .addOnSuccessListener { log("selfie successfully updated!") }
             .addOnFailureListener { e -> log("Error updating selfie : ${e.message}") }
     }
 
-    fun insertCity(city: CityModel) {
+    fun insertCity(city: CityModel, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
             .collection(REF_CITIES).document(city.id.toString()).set(city)
-            .addOnSuccessListener {
-                log("created city ${city.name}")
-            }.addOnFailureListener {
-                log("exception ${it.message}")
-            }
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun removeCity(id: String) {
+    fun removeCity(id: String, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
             .collection(REF_CITIES).document(id)
             .delete()
-            .addOnSuccessListener { log("city successfully deleted!") }
-            .addOnFailureListener { e -> log("Error deleting city : ${e.message}") }
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
     fun getVisitedCountries(
@@ -116,8 +108,8 @@ class FirestoreSource : KoinComponent {
                     }
                 }
             }
-            .addOnFailureListener { e ->
-                onError?.invoke(e)
+            .addOnFailureListener { exception ->
+                onError?.invoke(exception)
             }
     }
 

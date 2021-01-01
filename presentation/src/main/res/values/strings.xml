@@ -4,6 +4,8 @@
     <string name="day_month_year" translatable="false">dd.MM.yyyy</string>
     <string name="privacy_web_page" translatable="false">https://travelling-the-countries.web.app</string>
     <string name="geo_location" translatable="false">geo:0,0?q=%1$s</string>
+    <string name="media_providers" translatable="false">com.android.providers.media</string>
+    <string name="android_5_1" translatable="false">5.1</string>
     <!-- for face book sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>

@@ -50,7 +50,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
 
     val getCountries: () -> Unit = {
         viewModelScope.launch {
-            interactor.getNotVisitedAndVisitedCountriesCount({ notVisitedCountriesNum , visitedNum ->
+            interactor.getNotVisitedAndVisitedCountriesCount({ notVisitedCountriesNum, visitedNum ->
                 if (notVisitedCountriesNum == 0 && visitedNum == 0) {
                     viewModelScope.launch {
                         downloadCountries()
@@ -93,10 +93,10 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
             .build()
     }
 
-    fun initListOfCountries() = getCountries()
+    fun showListOfCountries() = getCountries()
 
     private suspend fun downloadCountries() = interactor.downloadCountries({
-        initListOfCountries()
+        showListOfCountries()
     }, { exception ->
         _visibilityLoader.postValue(GONE)
         _errorMessage.run {
@@ -130,7 +130,6 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
                         }
                         citiesCount = cities.size
                     }, { exception ->
-                        exception.printStackTrace()
                         _visibilityLoader.postValue(GONE)
                         _errorMessage.run {
                             exception.message?.let { message ->
@@ -157,12 +156,32 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
     }
 
     fun removeFromVisited(country: Country) = viewModelScope.launch {
-        interactor.removeCountryModelFromVisitedList(country.mapToModel())
-        initListOfCountries()
+        _visibilityLoader.postValue(VISIBLE)
+        interactor.removeCountryModelFromVisitedList(country.mapToModel(), {
+            showListOfCountries()
+        }, { exception ->
+            _visibilityLoader.postValue(GONE)
+            _errorMessage.run {
+                exception.message?.let { message ->
+                    /* Trigger the event by setting a new Event as a new value */
+                    postValue(Event(message))
+                }
+            }
+        })
     }
 
     fun removeCity(city: City) = viewModelScope.launch {
-        interactor.removeCity(city.mapNodeToModel())
-        initListOfCountries()
+        _visibilityLoader.postValue(VISIBLE)
+        interactor.removeCity(city.mapNodeToModel(), {
+            showListOfCountries()
+        }, { exception ->
+            _visibilityLoader.postValue(GONE)
+            _errorMessage.run {
+                exception.message?.let { message ->
+                    /* Trigger the event by setting a new Event as a new value */
+                    postValue(Event(message))
+                }
+            }
+        })
     }
 }

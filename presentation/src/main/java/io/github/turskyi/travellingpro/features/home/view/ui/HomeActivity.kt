@@ -73,7 +73,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     /**
      * Calling when "add city dialogue" dismissed.
      */
-    override fun onDismiss(dialogInterface: DialogInterface?) = viewModel.initListOfCountries()
+    override fun onDismiss(dialogInterface: DialogInterface?) = viewModel.showListOfCountries()
 
     override fun onBackPressed() {
         if (backPressedTiming + TIME_INTERVAL > System.currentTimeMillis()) {
@@ -148,7 +148,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
             onLongClickListener = { countryNode ->
-                val country = countryNode.mapNodeToActual()
+                val country = countryNode.mapVisitedCountryNodeToCountry()
 
                 binding.root.showSnackWithAction(getString(R.string.delete_it, country.name)) {
                     action(R.string.yes) {
@@ -221,7 +221,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 /* Successfully signed in */
-                viewModel.initListOfCountries()
+                viewModel.showListOfCountries()
             } else {
                 /* Sign in failed */
                 val response = IdpResponse.fromResultIntent(result.data)
@@ -236,7 +236,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                         return@registerForActivityResult
                     }
                     else -> {
-//                        TODO: make sure it is not an infinite loop
+     // it is possible that here is an infinite loop
                         toast(R.string.msg_did_not_sign_in)
                         viewModel.initAuthentication(authorizationResultLauncher)
                         registerAuthorization()
@@ -252,7 +252,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         ) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 /* Country is added to visited list */
-                viewModel.initListOfCountries()
+                viewModel.showListOfCountries()
             } else {
                 /* did not added country to visited list */
                 when (result.resultCode) {

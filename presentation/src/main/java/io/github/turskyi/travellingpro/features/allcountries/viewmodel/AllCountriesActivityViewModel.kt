@@ -42,8 +42,8 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
 
     init {
         _visibilityLoader.postValue(VISIBLE)
-        pagedList = getCountryList(searchQuery)
         getNotVisitedCountriesNum()
+        pagedList = getCountryList(searchQuery)
     }
 
     private fun getCountryList(searchQuery: String): PagedList<Country> = if (searchQuery == "") {
@@ -88,6 +88,7 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
 
     fun markAsVisited(country: Country, onSuccess: () -> Unit) =
         viewModelScope.launch(Dispatchers.Main) {
+            _visibilityLoader.postValue(VISIBLE)
             interactor.markAsVisitedCountryModel(country.mapToModel(), {
                 onSuccess()
             }, { exception ->

@@ -11,7 +11,7 @@ interface CountriesRepository {
     )
 
     suspend fun updateSelfie(
-        id: Int,
+        name: String,
         selfie: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)? = null
@@ -45,16 +45,19 @@ interface CountriesRepository {
 
     suspend fun removeFromVisited(
         country: CountryModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
     )
 
     suspend fun removeCity(
         city: CityModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
     )
 
     suspend fun insertCity(
         city: CityModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)? = null
     )
 

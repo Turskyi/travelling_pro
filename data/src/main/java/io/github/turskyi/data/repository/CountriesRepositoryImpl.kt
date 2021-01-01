@@ -1,6 +1,7 @@
 package io.github.turskyi.data.repository
 
 import io.github.turskyi.data.api.datasource.CountriesNetSource
+import io.github.turskyi.data.extensions.mapModelListToEntityList
 import io.github.turskyi.data.extensions.mapNetListToModelList
 import io.github.turskyi.data.firestoreSource.FirestoreSource
 import io.github.turskyi.domain.model.CityModel
@@ -30,42 +31,51 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     })
 
     override suspend fun updateSelfie(
-        id: Int,
+        name: String,
         selfie: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.updateSelfie(id.toString(), selfie)
+    ) = firebaseSource.updateSelfie(name, selfie)
 
     override suspend fun markAsVisited(
         country: CountryModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.markAsVisited(country.name, { onSuccess() }, { onError?.invoke(it) })
+    ) = firebaseSource.markAsVisited(
+        country.name,
+        { onSuccess() },
+        { exception -> onError?.invoke(exception) })
 
     override suspend fun removeFromVisited(
         country: CountryModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.removeFromVisited(country.id.toString())
+    ) = firebaseSource.removeFromVisited(country.name,
+        { onSuccess() },
+        { exception -> onError?.invoke(exception) })
 
     override suspend fun insertCity(
         city: CityModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.insertCity(city)
+    ) = firebaseSource.insertCity(city, { onSuccess() },
+        { exception -> onError?.invoke(exception) })
 
     override suspend fun removeCity(
         city: CityModel,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.removeCity(city.id.toString())
+    ) = firebaseSource.removeCity(city.id.toString(), { onSuccess() },
+        { exception -> onError?.invoke(exception) })
 
     private fun addModelsToDb(
         countries: MutableList<CountryModel>,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = try {
-        firebaseSource.insertAllCountries(countries, { onSuccess() }, { onError?.invoke(it) })
-    } catch (e: Exception) {
-        onError?.invoke(e)
-    }
+    ) = firebaseSource.insertAllCountries(
+        countries.mapModelListToEntityList(),
+        { onSuccess() },
+        { exception -> onError?.invoke(exception) })
 
     override suspend fun getVisitedModelCountriesFromDb(
         onSuccess: (List<CountryModel>) -> Unit,
@@ -94,7 +104,12 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     override suspend fun getCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.getCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount -> onSuccess(notVisitedCount, visitedCount) },
+    ) = firebaseSource.getCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount ->
+        onSuccess(
+            notVisitedCount,
+            visitedCount
+        )
+    },
         { exception -> onError?.invoke(exception) })
 
 
