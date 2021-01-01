@@ -2,7 +2,7 @@ package io.github.turskyi.travellingpro.features.allcountries.view.adapter
 
 import androidx.paging.PositionalDataSource
 import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapModelListToActualList
+import io.github.turskyi.travellingpro.extensions.mapModelListToCountryList
 import io.github.turskyi.travellingpro.models.Country
 
 internal class FilteredPositionalDataSource(
@@ -17,7 +17,7 @@ internal class FilteredPositionalDataSource(
         interactor.getCountriesByName(
             countryName, { allCountries ->
                 callback.onResult(
-                    allCountries.mapModelListToActualList(),
+                    allCountries.mapModelListToCountryList(),
                     params.requestedStartPosition
                 )
             },

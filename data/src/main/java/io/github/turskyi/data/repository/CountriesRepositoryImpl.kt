@@ -1,8 +1,7 @@
 package io.github.turskyi.data.repository
 
 import io.github.turskyi.data.api.datasource.CountriesNetSource
-import io.github.turskyi.data.extensions.mapModelListToEntityList
-import io.github.turskyi.data.extensions.mapNetListToModelList
+import io.github.turskyi.data.extensions.*
 import io.github.turskyi.data.firestoreSource.FirestoreSource
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
@@ -58,14 +57,14 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         city: CityModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.insertCity(city, { onSuccess() },
+    ) = firebaseSource.insertCity(city.mapModelToEntity(), { onSuccess() },
         { exception -> onError?.invoke(exception) })
 
     override suspend fun removeCity(
         city: CityModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.removeCity(city.id.toString(), { onSuccess() },
+    ) = firebaseSource.removeCity(city.name, { onSuccess() },
         { exception -> onError?.invoke(exception) })
 
     private fun addModelsToDb(
@@ -81,7 +80,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getVisitedCountries({ countries ->
-        onSuccess(countries)
+        onSuccess(countries.mapEntityListToModelList())
     }, { exception ->
         onError?.invoke(exception)
     })
@@ -90,7 +89,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess: (List<CityModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getCities({ cities ->
-        onSuccess(cities)
+        onSuccess(cities.mapEntitiesToModelList())
     }, { exception ->
         onError?.invoke(exception)
     })
@@ -118,7 +117,9 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.getCountriesByRange(to, from, { list -> onSuccess(list) },
+    ) = firebaseSource.getCountriesByRange(to,
+        from,
+        { list -> onSuccess(list.mapEntityListToModelList()) },
         { onError?.invoke(it) })
 
     override fun getCountriesByName(
@@ -126,6 +127,6 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getCountriesByName(name,
-        { list -> onSuccess(list) },
+        { list -> onSuccess(list.mapEntityListToModelList()) },
         { onError?.invoke(it) })
 }

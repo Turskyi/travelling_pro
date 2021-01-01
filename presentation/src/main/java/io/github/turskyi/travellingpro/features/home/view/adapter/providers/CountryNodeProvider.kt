@@ -34,7 +34,7 @@ class CountryNodeProvider : BaseNodeProvider() {
         item: BaseNode
     ) {
         val visitedCountry: VisitedCountry = item as VisitedCountry
-        helper.getView<TextView>(R.id.tv_country).setOnLongClickListener{
+        helper.getView<TextView>(R.id.tv_country).setOnLongClickListener {
             onLongLickListener?.invoke(visitedCountry)
             true
         }
@@ -52,21 +52,21 @@ class CountryNodeProvider : BaseNodeProvider() {
         helper.getView<TextView>(R.id.tv_country).setOnClickListener {
             onTextClickListener?.invoke(visitedCountry)
         }
-        if (!item.childNode.isNullOrEmpty()) {
-            if (visitedCountry.isExpanded) {
-                    helper.setImageResource(
-                        R.id.iv_more,
-                        R.drawable.ic_arrow_expandable_up
-                    )
-                } else {
-                    helper.setImageResource(
-                        R.id.iv_more,
-                        R.drawable.ic_arrow_expandable_down
-                    )
-                }
-            helper.setVisible(R.id.iv_more, true)
-        } else {
+        if (item.childNode.isNullOrEmpty()) {
             helper.setVisible(R.id.iv_more, false)
+        } else {
+            if (visitedCountry.isExpanded) {
+                helper.setImageResource(
+                    R.id.iv_more,
+                    R.drawable.ic_arrow_expandable_up
+                )
+            } else {
+                helper.setImageResource(
+                    R.id.iv_more,
+                    R.drawable.ic_arrow_expandable_down
+                )
+            }
+            helper.setVisible(R.id.iv_more, true)
         }
     }
 
@@ -97,6 +97,7 @@ class CountryNodeProvider : BaseNodeProvider() {
                 override fun onLoadFailed() {
                     showPicturesInWebView(holder, visitedCountry)
                 }
+
                 override fun onResourceReady() {
                     holder.itemView.findViewById<ImageView>(R.id.iv_flag).visibility = VISIBLE
                     holder.itemView.findViewById<WebView>(R.id.wv_flag).visibility = GONE
@@ -105,6 +106,7 @@ class CountryNodeProvider : BaseNodeProvider() {
             .setPlaceHolder(R.drawable.anim_loading, R.drawable.ic_broken_image)
             .load(uri, holder.itemView.findViewById(R.id.iv_flag))
     }
+
     private fun showPicturesInWebView(
         holder: BaseViewHolder,
         visitedCountry: VisitedCountry

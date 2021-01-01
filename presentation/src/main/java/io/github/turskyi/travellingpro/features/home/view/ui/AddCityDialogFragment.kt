@@ -83,7 +83,7 @@ class AddCityDialogFragment : DialogFragment() {
          * There is a unique case when particular android version cannot perform location logic
          * and crashing, so here button just used as a cancel button.
          */
-        if (Build.VERSION.RELEASE == "5.1") {
+        if (Build.VERSION.RELEASE == getString(R.string.android_5_1)) {
             buttonGps.text = getString(R.string.home_dialog_btn_cancel)
             /* Removes CompoundDrawable */
             buttonGps.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
@@ -114,9 +114,9 @@ class AddCityDialogFragment : DialogFragment() {
                             name = etCity?.text.toString(),
                             parentId = parentId,
                             month = etMonth?.text.toString()
-                        ).let { city ->
+                        ).apply {
                             viewModel.insert(
-                                city, {
+                                this, {
                                     alertDialog?.dismiss()
                                 }, { exception ->
                                     toast(exception.message)
@@ -126,9 +126,9 @@ class AddCityDialogFragment : DialogFragment() {
                     }
                 } else {
                     arguments?.getInt(ARG_ID)?.let { parentId ->
-                        City(etCity?.text.toString(), parentId).let { city ->
+                        City(etCity?.text.toString(), parentId).apply {
                             viewModel.insert(
-                                city, {
+                                this, {
                                     alertDialog?.dismiss()
                                 }, { exception ->
                                     toast(exception.message)
@@ -245,8 +245,7 @@ class AddCityDialogFragment : DialogFragment() {
         }
     }
 
-    private fun addChangedLocation(editText: LinedEditText) {
-        try {
+    private fun addChangedLocation(editText: LinedEditText) = try {
             val locationListener: LocationListener = object : LocationListener {
                 override fun onLocationChanged(location: Location) {
                     val geoCoder = Geocoder(requireContext(), Locale.getDefault())
@@ -278,10 +277,9 @@ class AddCityDialogFragment : DialogFragment() {
                 0f,
                 locationListener
             )
-        } catch (ex: SecurityException) {
-            ex.printStackTrace()
+        } catch (exception: SecurityException) {
+            toast(exception.message)
         }
-    }
 
     private fun addLastLocation(
         location: Location,

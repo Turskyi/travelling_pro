@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapModelListToActualList
+import io.github.turskyi.travellingpro.extensions.mapModelListToCountryList
 import io.github.turskyi.travellingpro.models.Country
 
 class FlagsActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
@@ -24,7 +24,7 @@ class FlagsActivityViewModel(private val interactor: CountriesInteractor) : View
     fun updateSelfie(name: String, selfie: String){
         viewModelScope.launch(IO) {
             interactor.updateSelfie(name,selfie, { countries ->
-                _visitedCountries.run { postValue(countries.mapModelListToActualList()) }
+                _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
             }, {
                 it.printStackTrace()
             })
@@ -35,7 +35,7 @@ class FlagsActivityViewModel(private val interactor: CountriesInteractor) : View
         viewModelScope.launch {
             interactor.getVisitedModelCountries({ countries ->
                  visitedCount = countries.size
-                _visitedCountries.run { postValue(countries.mapModelListToActualList()) }
+                _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
             }, {
                 it.printStackTrace()
             })

@@ -129,6 +129,10 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
                             }
                         }
                         citiesCount = cities.size
+                        country.childNode = cityList
+                        if(country.id == visitedCountries.last().id){
+                            _visitedCountriesWithCities.run { postValue(visitedCountries) }
+                        }
                     }, { exception ->
                         _visibilityLoader.postValue(GONE)
                         _errorMessage.run {
@@ -139,10 +143,8 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
                         }
                     })
                 }
-                country.childNode = cityList
             }
-            _visitedCountriesWithCities.run { postValue(visitedCountries) }
-            _visitedCountries.run { postValue(countries.mapModelListToActualList()) }
+            _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
             _visibilityLoader.postValue(GONE)
         }, { exception ->
             _visibilityLoader.postValue(GONE)

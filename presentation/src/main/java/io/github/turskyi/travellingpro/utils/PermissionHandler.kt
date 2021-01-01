@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.github.turskyi.travellingpro.common.Constants
 import io.github.turskyi.travellingpro.extensions.getHomeActivity
-import io.github.turskyi.travellingpro.extensions.log
 
 object PermissionHandler {
     var isPermissionGranted = false
@@ -25,7 +24,6 @@ object PermissionHandler {
             requestPermission(activity)
         } else {
             isPermissionGranted = true
-            log("check permission true")
             activity.getHomeActivity()?.initAuthentication()
         }
     }

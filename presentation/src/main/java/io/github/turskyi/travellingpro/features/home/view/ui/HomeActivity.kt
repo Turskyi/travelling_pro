@@ -184,8 +184,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             }
         })
         viewModel.visitedCountriesWithCities.observe(this, { visitedCountries ->
-            updateAdapterWith(visitedCountries)
             initTitleWithNumberOf(visitedCountries)
+            updateAdapterWith(visitedCountries)
         })
         viewModel.visitedCountries.observe(this, { visitedCountries ->
             binding.circlePieChart.apply {
@@ -228,15 +228,15 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 when {
                     response == null -> {
                         /* User pressed back button */
-                        showSnackbar(R.string.msg_sign_in_cancelled)
+                        toast(R.string.msg_sign_in_cancelled)
                         return@registerForActivityResult
                     }
                     response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
-                        showSnackbar(R.string.msg_no_internet)
+                        toast(R.string.msg_no_internet)
                         return@registerForActivityResult
                     }
                     else -> {
-     // it is possible that here is an infinite loop
+     // it is possible that here is an infinite loop, but I could not prove it
                         toast(R.string.msg_did_not_sign_in)
                         viewModel.initAuthentication(authorizationResultLauncher)
                         registerAuthorization()

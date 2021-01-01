@@ -4,7 +4,7 @@ import android.view.View.GONE
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PositionalDataSource
 import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapModelListToActualList
+import io.github.turskyi.travellingpro.extensions.mapModelListToCountryList
 import io.github.turskyi.travellingpro.models.Country
 import java.util.*
 import kotlin.concurrent.schedule
@@ -23,7 +23,7 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
         interactor.getCountriesByRange(params.requestedLoadSize, params.requestedStartPosition,
             { initCountries ->
                 callback.onResult(
-                    initCountries.mapModelListToActualList(),
+                    initCountries.mapModelListToCountryList(),
                     params.requestedStartPosition
                 )
                 /* a little bit delay of stopping animation */
@@ -44,7 +44,7 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
     ) {
         interactor.getCountriesByRange(params.startPosition + params.loadSize, params.startPosition,
             { allCountries ->
-                callback.onResult(allCountries.mapModelListToActualList())
+                callback.onResult(allCountries.mapModelListToCountryList())
             },
             {
                 it.printStackTrace()

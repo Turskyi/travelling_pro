@@ -11,15 +11,15 @@ fun List<CountryModel>.mapModelListToEntityList() =
 
 fun CountryModel.mapModelToEntity() = CountryEntity(id, name, flag, isVisited, null)
 fun CityModel.mapModelToEntity() =
-    CityEntity(id = id, name = name, parentId = parentId, month = month)
+    CityEntity( name = name, parentId = parentId, month = month)
 
 fun CityEntity.mapEntityToModel() =
-    CityModel(id = id, name = name, parentId = parentId, month = month)
+    CityModel( name = name, parentId = parentId, month = month)
 
 fun List<CountryNet>.mapNetListToModelList() = this.mapTo(
     mutableListOf(), { countryNet -> countryNet.mapNetToEntity() })
 
-fun CountryEntity.mapEntityToModel() = CountryModel(id, name, flag, visited, selfie)
+fun CountryEntity.mapEntityToModel() = CountryModel(id, name, flag, isVisited, selfie)
 fun CountryNet.mapNetToEntity() = CountryModel(id, name, flag, visited, selfie = null)
 fun List<CityEntity>.mapEntitiesToModelList() = mapTo(
     mutableListOf(), { cityEntity -> cityEntity.mapEntityToModel() })

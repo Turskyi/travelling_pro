@@ -10,10 +10,9 @@ import io.github.turskyi.data.constants.Constants.KEY_SELFIE
 import io.github.turskyi.data.constants.Constants.REF_CITIES
 import io.github.turskyi.data.constants.Constants.REF_COUNTRIES
 import io.github.turskyi.data.constants.Constants.REF_USERS
+import io.github.turskyi.data.entities.firestore.CityEntity
 import io.github.turskyi.data.entities.firestore.CountryEntity
 import io.github.turskyi.data.extensions.log
-import io.github.turskyi.domain.model.CityModel
-import io.github.turskyi.domain.model.CountryModel
 import org.koin.core.KoinComponent
 
 class FirestoreSource : KoinComponent {
@@ -28,15 +27,15 @@ class FirestoreSource : KoinComponent {
         countries: List<CountryEntity>,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = countries.forEachIndexed { index, countryModel ->
+    ) = countries.forEachIndexed { index, countryEntity ->
         val country = CountryEntity(
             id = index,
-            name = countryModel.name,
-            flag = countryModel.flag,
+            name = countryEntity.name,
+            flag = countryEntity.flag,
             isVisited = false,
         )
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_COUNTRIES).document(countryModel.name).set(country)
+            .collection(REF_COUNTRIES).document(countryEntity.name).set(country)
             .addOnSuccessListener {
                 if (index == countries.size - 1) {
                     onSuccess()
@@ -70,23 +69,23 @@ class FirestoreSource : KoinComponent {
             .addOnFailureListener { e -> log("Error updating selfie : ${e.message}") }
     }
 
-    fun insertCity(city: CityModel, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
+    fun insertCity(city: CityEntity, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_CITIES).document(city.id.toString()).set(city)
+            .collection(REF_CITIES).document(city.name).set(city)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun removeCity(id: String, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
+    fun removeCity(name: String, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_CITIES).document(id)
+            .collection(REF_CITIES).document(name)
             .delete()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
     fun getVisitedCountries(
-        onSuccess: (List<CountryModel>) -> Unit,
+        onSuccess: (List<CountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
         val countriesRef: CollectionReference =
@@ -94,13 +93,13 @@ class FirestoreSource : KoinComponent {
                 .collection(REF_COUNTRIES)
         countriesRef.whereEqualTo(KEY_IS_VISITED, true).get()
             .addOnSuccessListener { queryDocumentSnapshots ->
-                val countries: MutableList<CountryModel> = mutableListOf()
+                val countries: MutableList<CountryEntity> = mutableListOf()
                 if (queryDocumentSnapshots.size() == 0) {
                     onSuccess(countries)
                 } else {
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: CountryModel =
-                            documentSnapshot.toObject(CountryModel::class.java)
+                        val country: CountryEntity =
+                            documentSnapshot.toObject(CountryEntity::class.java)
                         countries.add(country)
                         if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                             onSuccess(countries.sortedBy { listItem -> listItem.name })
@@ -113,21 +112,23 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun getCities(onSuccess: (List<CityModel>) -> Unit, onError: ((Exception) -> Unit?)?) {
+    fun getCities(onSuccess: (List<CityEntity>) -> Unit, onError: ((Exception) -> Unit?)?) {
         val citiesRef: CollectionReference =
             usersRef.document("${mFirebaseAuth.currentUser?.uid}")
                 .collection(REF_CITIES)
         citiesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
-                val cities: MutableList<CityModel> = mutableListOf()
+                val cities: MutableList<CityEntity> = mutableListOf()
                 for (documentSnapshot in queryDocumentSnapshots) {
-                    val city: CityModel = documentSnapshot.toObject(CityModel::class.java)
-                    cities.add(city)
+                    val cityEntity: CityEntity = documentSnapshot.toObject(CityEntity::class.java)
+                    cities.add(cityEntity)
+                    if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
+                        onSuccess(cities.sortedBy { city -> city.name })
+                    }
                 }
-                onSuccess(cities.sortedBy { city -> city.name })
             }
-            .addOnFailureListener { e ->
-                onError?.invoke(e)
+            .addOnFailureListener { exception ->
+                onError?.invoke(exception)
             }
     }
 
@@ -142,6 +143,7 @@ class FirestoreSource : KoinComponent {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result?.let { notVisitedCountries ->
+                        log("source: count not visited ${notVisitedCountries.size()}")
                         onSuccess(notVisitedCountries.size())
                     }
                 } else {
@@ -164,20 +166,21 @@ class FirestoreSource : KoinComponent {
                 .collection(REF_COUNTRIES)
         countriesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
-                val countries: MutableList<CountryModel> = mutableListOf()
+                val countries: MutableList<CountryEntity> = mutableListOf()
                 if (queryDocumentSnapshots.size() == 0) {
+                    log(" no countries in source, so download new")
                     onSuccess(0, 0)
                 } else {
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: CountryModel =
-                            documentSnapshot.toObject(CountryModel::class.java)
+                        val country: CountryEntity =
+                            documentSnapshot.toObject(CountryEntity::class.java)
                         countries.add(country)
                         /** check if it is the last document in list, filter and send success */
                         if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                             val notVisitedCount: Int =
-                                countries.filter { countryModel -> countryModel.isVisited == false }.size
+                                countries.filter { countryEntity -> countryEntity.isVisited == false }.size
                             val visitedCount: Int =
-                                countries.filter { countryModel -> countryModel.isVisited == true }.size
+                                countries.filter { countryEntity -> countryEntity.isVisited == true }.size
                             onSuccess(notVisitedCount, visitedCount)
                         }
                     }
@@ -189,7 +192,7 @@ class FirestoreSource : KoinComponent {
     }
 
     fun getCountriesByRange(
-        to: Int, from: Int, onSuccess: (List<CountryModel>) -> Unit,
+        to: Int, from: Int, onSuccess: (List<CountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
         val countriesRef: Query =
@@ -197,21 +200,21 @@ class FirestoreSource : KoinComponent {
                 .collection(REF_COUNTRIES).orderBy(KEY_ID)
         countriesRef.startAt(from).endBefore(to).get()
             .addOnSuccessListener { queryDocumentSnapshots ->
-                val countries: MutableList<CountryModel> = mutableListOf()
+                val countries: MutableList<CountryEntity> = mutableListOf()
                 for (documentSnapshot in queryDocumentSnapshots) {
-                    val country: CountryModel =
-                        documentSnapshot.toObject(CountryModel::class.java)
+                    val country: CountryEntity =
+                        documentSnapshot.toObject(CountryEntity::class.java)
                     countries.add(country)
                 }
                 onSuccess(countries)
             }
-            .addOnFailureListener { e ->
-                onError?.invoke(e)
+            .addOnFailureListener { exception ->
+                onError?.invoke(exception)
             }
     }
 
     fun getCountriesByName(
-        nameQuery: String?, onSuccess: (List<CountryModel>) -> Unit,
+        nameQuery: String?, onSuccess: (List<CountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
         val countriesRef: Query =
@@ -219,10 +222,10 @@ class FirestoreSource : KoinComponent {
                 .collection(REF_COUNTRIES).orderBy(KEY_ID)
         countriesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
-                val countries: MutableList<CountryModel> = mutableListOf()
+                val countries: MutableList<CountryEntity> = mutableListOf()
                 for (documentSnapshot in queryDocumentSnapshots) {
-                    val country: CountryModel =
-                        documentSnapshot.toObject(CountryModel::class.java)
+                    val country: CountryEntity =
+                        documentSnapshot.toObject(CountryEntity::class.java)
                     if (nameQuery != null && country.name.startsWith(nameQuery)) {
                         countries.add(country)
                     }
