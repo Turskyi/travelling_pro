@@ -36,6 +36,11 @@ class AllCountriesActivity : AppCompatActivity() {
         initObservers()
     }
 
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        super.onBackPressed()
+    }
+
     private fun initView() {
         binding = ActivityAllCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -93,16 +98,17 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun sendToGoogleMapToShowGeographicalLocation(country: Country) {
         val intent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("geo:0,0?q=${country.name}")
+            Uri.parse(getString(R.string.geo_location, country.name))
         )
         startActivity(intent)
     }
 
     private fun addToVisited(country: Country) {
         viewModel.markAsVisited(country) {
-            log("on success")
             hideKeyboard()
-            onBackPressed()
+            val intent = Intent()
+            setResult(RESULT_OK, intent)
+            finish()
         }
     }
 

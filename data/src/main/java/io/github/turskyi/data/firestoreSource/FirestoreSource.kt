@@ -15,7 +15,6 @@ import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
 import org.koin.core.KoinComponent
 
-
 class FirestoreSource : KoinComponent {
     /* init Authentication */
     var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -130,8 +129,7 @@ class FirestoreSource : KoinComponent {
             .addOnSuccessListener { queryDocumentSnapshots ->
                 val cities: MutableList<CityModel> = mutableListOf()
                 for (documentSnapshot in queryDocumentSnapshots) {
-                    val city: CityModel =
-                        documentSnapshot.toObject(CityModel::class.java)
+                    val city: CityModel = documentSnapshot.toObject(CityModel::class.java)
                     cities.add(city)
                 }
                 onSuccess(cities.sortedBy { city -> city.name })
@@ -151,17 +149,50 @@ class FirestoreSource : KoinComponent {
         countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    task.result?.let { countries ->
-                        onSuccess(countries.size())
+                    task.result?.let { notVisitedCountries ->
+                        onSuccess(notVisitedCountries.size())
                     }
                 } else {
-                    task.exception?.let {
-                        onError?.invoke(it)
+                    task.exception?.let { exception ->
+                        onError?.invoke(exception)
                     }
                 }
             }
-            .addOnFailureListener { e ->
-                onError?.invoke(e)
+            .addOnFailureListener { exception ->
+                onError?.invoke(exception)
+            }
+    }
+
+    fun getCountNotVisitedAndVisitedCountries(
+        onSuccess: (notVisited: Int, visited: Int) -> Unit,
+        onError: ((Exception) -> Unit?)?
+    ) {
+        val countriesRef: CollectionReference =
+            usersRef.document("${mFirebaseAuth.currentUser?.uid}")
+                .collection(REF_COUNTRIES)
+        countriesRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                val countries: MutableList<CountryModel> = mutableListOf()
+                if (queryDocumentSnapshots.size() == 0) {
+                    onSuccess(0, 0)
+                } else {
+                    for (documentSnapshot in queryDocumentSnapshots) {
+                        val country: CountryModel =
+                            documentSnapshot.toObject(CountryModel::class.java)
+                        countries.add(country)
+                        /** check if it is the last document in list, filter and send success */
+                        if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
+                            val notVisitedCount: Int =
+                                countries.filter { countryModel -> countryModel.isVisited == false }.size
+                            val visitedCount: Int =
+                                countries.filter { countryModel -> countryModel.isVisited == true }.size
+                            onSuccess(notVisitedCount, visitedCount)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                onError?.invoke(exception)
             }
     }
 
@@ -208,8 +239,8 @@ class FirestoreSource : KoinComponent {
                     }
                 }
             }
-            .addOnFailureListener { e ->
-                onError?.invoke(e)
+            .addOnFailureListener { exception ->
+                onError?.invoke(exception)
             }
     }
 }

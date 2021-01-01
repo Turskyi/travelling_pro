@@ -3,6 +3,7 @@
     <string name="home_dialog_date_format" translatable="false">MMMM yyyy</string>
     <string name="day_month_year" translatable="false">dd.MM.yyyy</string>
     <string name="privacy_web_page" translatable="false">https://travelling-the-countries.web.app</string>
+    <string name="geo_location" translatable="false">geo:0,0?q=%1$s</string>
     <!-- for face book sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
@@ -26,6 +27,7 @@
     <!-- end of default strings -->
 
     <!-- home screen -->
+    <string name="home_onboarding_title">…loading countries</string>
     <string name="delete_it">Delete %1$s ?</string>
     <string name="deleted">%1$s deleted</string>
     <string name="yes">YES</string>
@@ -103,7 +105,7 @@
     <string name="msg.did_not_sign_in">did not sign in</string>
     <string name="msg.sign_in_cancelled">sign in canceled</string>
     <string name="msg.no_internet">no internet connection</string>
-    <string name="home_onboarding_title">…loading countries</string>
+    <string name="msg.home_country_did_not_added">did not added anything</string>
     <!-- end of strings for toasts messages -->
 
 </resources>

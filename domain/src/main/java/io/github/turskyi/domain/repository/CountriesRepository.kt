@@ -38,6 +38,11 @@ interface CountriesRepository {
         onError: ((Exception) -> Unit?)? = null
     )
 
+    suspend fun getCountNotVisitedAndVisitedCountries(
+        onSuccess: (Int, Int) -> Unit,
+        onError: ((Exception) -> Unit?)? = null
+    )
+
     suspend fun removeFromVisited(
         country: CountryModel,
         onError: ((Exception) -> Unit?)? = null

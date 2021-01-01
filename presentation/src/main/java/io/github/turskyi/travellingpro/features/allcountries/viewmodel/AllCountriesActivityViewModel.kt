@@ -46,51 +46,47 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
         getNotVisitedCountriesNum()
     }
 
-    private fun getCountryList(searchQuery: String): PagedList<Country> {
-        return if (searchQuery == "") {
-            val config: PagedList.Config = PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setInitialLoadSizeHint(20)
-                .setPageSize(20)
-                .build()
-            val dataSource = CountriesPositionalDataSource(interactor)
-            _visibilityLoader = dataSource.visibilityLoader
-            PagedList.Builder(dataSource, config)
-                .setFetchExecutor(Executors.newSingleThreadExecutor())
-                .setNotifyExecutor(MainThreadExecutor())
-                .build()
-        } else {
-            val config: PagedList.Config = PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setInitialLoadSizeHint(1)
-                .setPageSize(1)
-                .build()
-            val filteredDataSource =
-                FilteredPositionalDataSource(countryName = searchQuery, interactor = interactor)
-            PagedList.Builder(filteredDataSource, config)
-                .setFetchExecutor(Executors.newSingleThreadExecutor())
-                .setNotifyExecutor(MainThreadExecutor())
-                .build()
-        }
+    private fun getCountryList(searchQuery: String): PagedList<Country> = if (searchQuery == "") {
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(20)
+            .setPageSize(20)
+            .build()
+        val dataSource = CountriesPositionalDataSource(interactor)
+        _visibilityLoader = dataSource.visibilityLoader
+        PagedList.Builder(dataSource, config)
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .setNotifyExecutor(MainThreadExecutor())
+            .build()
+    } else {
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(1)
+            .setPageSize(1)
+            .build()
+        val filteredDataSource =
+            FilteredPositionalDataSource(countryName = searchQuery, interactor = interactor)
+        PagedList.Builder(filteredDataSource, config)
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .setNotifyExecutor(MainThreadExecutor())
+            .build()
     }
 
-    private fun getNotVisitedCountriesNum() {
-        viewModelScope.launch {
-            interactor.getNotVisitedCountriesNum({ num ->
-                _notVisitedCountriesNumLiveData.postValue(num)
-            }, { exception ->
-                _visibilityLoader.postValue(GONE)
-                _errorMessage.run {
-                    exception.message?.let { message ->
-                        /* Trigger the event by setting a new Event as a new value */
-                        postValue(Event(message))
-                    }
+    private fun getNotVisitedCountriesNum() = viewModelScope.launch {
+        interactor.getNotVisitedCountriesNum({ num ->
+            _notVisitedCountriesNumLiveData.postValue(num)
+        }, { exception ->
+            _visibilityLoader.postValue(GONE)
+            _errorMessage.run {
+                exception.message?.let { message ->
+                    /* Trigger the event by setting a new Event as a new value */
+                    postValue(Event(message))
                 }
-            })
-        }
+            }
+        })
     }
 
-    fun markAsVisited(country: Country, onSuccess: () -> Unit) {
+    fun markAsVisited(country: Country, onSuccess: () -> Unit) =
         viewModelScope.launch(Dispatchers.Main) {
             interactor.markAsVisitedCountryModel(country.mapToModel(), {
                 onSuccess()
@@ -104,5 +100,4 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
                 }
             })
         }
-    }
 }

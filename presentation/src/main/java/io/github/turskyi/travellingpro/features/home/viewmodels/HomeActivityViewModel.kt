@@ -50,8 +50,8 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
 
     val getCountries: () -> Unit = {
         viewModelScope.launch {
-            interactor.getNotVisitedCountriesNum({ notVisitedCountriesNum ->
-                if (notVisitedCountriesNum == 0) {
+            interactor.getNotVisitedAndVisitedCountriesCount({ notVisitedCountriesNum , visitedNum ->
+                if (notVisitedCountriesNum == 0 && visitedNum == 0) {
                     viewModelScope.launch {
                         downloadCountries()
                     }
@@ -96,7 +96,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
     fun initListOfCountries() = getCountries()
 
     private suspend fun downloadCountries() = interactor.downloadCountries({
-        getCountries()
+        initListOfCountries()
     }, { exception ->
         _visibilityLoader.postValue(GONE)
         _errorMessage.run {

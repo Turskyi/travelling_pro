@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -34,33 +35,26 @@ import io.github.turskyi.travellingpro.models.VisitedCountry
 import io.github.turskyi.travellingpro.utils.PermissionHandler
 import io.github.turskyi.travellingpro.utils.PermissionHandler.isPermissionGranted
 import io.github.turskyi.travellingpro.utils.PermissionHandler.requestPermission
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
-class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDismissListener{
+class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private lateinit var binding: ActivityHomeBinding
 
     private lateinit var authorizationResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
     private var backPressedTiming: Long = 0
     private var mLastClickTime: Long = 0
     private val viewModel by inject<HomeActivityViewModel>()
     private val homeAdapter by inject<HomeAdapter>()
-
-    private var job: Job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         initView()
         registerAuthorization()
+        registerAllCountriesActivityResultLauncher()
         PermissionHandler.checkPermissionAndInitAuthentication(this@HomeActivity)
         initListeners()
         initObservers()
@@ -79,9 +73,7 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
     /**
      * Calling when "add city dialogue" dismissed.
      */
-    override fun onDismiss(dialogInterface: DialogInterface?) {
-        launch { viewModel.initListOfCountries() }
-    }
+    override fun onDismiss(dialogInterface: DialogInterface?) = viewModel.initListOfCountries()
 
     override fun onBackPressed() {
         if (backPressedTiming + TIME_INTERVAL > System.currentTimeMillis()) {
@@ -103,11 +95,6 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -115,14 +102,12 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult)
         when (requestCode) {
-            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> {
-                if ((grantResult.isNotEmpty() && grantResult[0] == PackageManager.PERMISSION_GRANTED)
-                ) {
-                    isPermissionGranted = true
-                    initAuthentication()
-                } else {
-                    requestPermission(this)
-                }
+            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> if ((grantResult.isNotEmpty() && grantResult[0] == PackageManager.PERMISSION_GRANTED)
+            ) {
+                isPermissionGranted = true
+                viewModel.initAuthentication(authorizationResultLauncher)
+            } else {
+                requestPermission(this)
             }
         }
     }
@@ -194,7 +179,7 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
         * but it is made on purpose of demonstration databinding */
         viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
             if (shouldNavigate == true) {
-                start<AllCountriesActivity>()
+                allCountriesResultLauncher.launch(Intent(this, AllCountriesActivity::class.java))
                 viewModel.onNavigatedToAllCountries()
             }
         })
@@ -221,26 +206,25 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
         })
     }
 
+    /** must be open to use it in permission handler */
     fun initAuthentication() = viewModel.initAuthentication(authorizationResultLauncher)
 
-    fun setTitle() {
-        if (viewModel.citiesCount > 0) {
-            showTitleWithCitiesAndCountries()
-        } else {
-            showTitleWithOnlyCountries()
-        }
+    fun setTitle() = if (viewModel.citiesCount > 0) {
+        showTitleWithCitiesAndCountries()
+    } else {
+        showTitleWithOnlyCountries()
     }
 
     private fun registerAuthorization() {
         authorizationResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            val response = IdpResponse.fromResultIntent(result.data)
-            /* Successfully signed in */
+        ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                launch { viewModel.initListOfCountries() }
+                /* Successfully signed in */
+                viewModel.initListOfCountries()
             } else {
                 /* Sign in failed */
+                val response = IdpResponse.fromResultIntent(result.data)
                 when {
                     response == null -> {
                         /* User pressed back button */
@@ -262,13 +246,33 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
         }
     }
 
+    private fun registerAllCountriesActivityResultLauncher() {
+        allCountriesResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                /* Country is added to visited list */
+                viewModel.initListOfCountries()
+            } else {
+                /* did not added country to visited list */
+                when (result.resultCode) {
+                    RESULT_CANCELED -> {
+                        /* User pressed back button */
+                        toast(R.string.msg_home_country_did_not_added)
+                        return@registerForActivityResult
+                    }
+                }
+            }
+        }
+    }
+
     private fun initGravityForTitle() {
         if (getScreenWidth() < 1082) binding.toolbarLayout.expandedTitleGravity = Gravity.BOTTOM
     }
 
     private fun removeCityOnLongClick(city: City) = viewModel.removeCity(city)
 
-    private fun showFloatBtn(visitedCountries: List<Country>?) {
+    private fun showFloatBtn(visitedCountries: List<Country>?) =
         if (visitedCountries.isNullOrEmpty()) {
             binding.floatBtnLarge.show()
             binding.floatBtnSmall.visibility = View.GONE
@@ -276,7 +280,6 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
             binding.floatBtnLarge.hide()
             binding.floatBtnSmall.show()
         }
-    }
 
     private fun updateAdapterWith(visitedCountries: List<VisitedCountry>) {
         for (countryNode in visitedCountries) {
@@ -285,7 +288,7 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
         homeAdapter.setList(visitedCountries)
     }
 
-    private fun initTitleWithNumberOf(visitedCountries: List<VisitedCountry>) {
+    private fun initTitleWithNumberOf(visitedCountries: List<VisitedCountry>) =
         if (viewModel.citiesCount == 0) {
             binding.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
@@ -321,9 +324,8 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
                 }"
             }
         }
-    }
 
-    private fun showTitleWithCitiesAndCountries() {
+    private fun showTitleWithCitiesAndCountries() =
         viewModel.visitedCountriesWithCities.observe(this, { countries ->
             if (viewModel.citiesCount > countries.size) {
                 binding.toolbarLayout.title = "${
@@ -353,9 +355,9 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
                 }"
             }
         })
-    }
 
-    fun showTitleWithOnlyCountries() {
+    /** must be open to use it in custom "circle pie chart" */
+    fun showTitleWithOnlyCountries() =
         viewModel.visitedCountriesWithCities.observe(this, { countryList ->
             binding.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
@@ -363,5 +365,4 @@ class HomeActivity : AppCompatActivity(), CoroutineScope, DialogInterface.OnDism
                 countryList.size
             )
         })
-    }
 }

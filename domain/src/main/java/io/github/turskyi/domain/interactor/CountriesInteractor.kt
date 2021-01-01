@@ -39,6 +39,11 @@ class CountriesInteractor : KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = repository.getCountNotVisitedCountries(onSusses, onError)
 
+    suspend fun getNotVisitedAndVisitedCountriesCount(
+        onSusses: (notVisited: Int, visited: Int) -> Unit,
+        onError: ((Exception) -> Unit?)?
+    ) = repository.getCountNotVisitedAndVisitedCountries(onSusses, onError)
+
     suspend fun getVisitedModelCountries(
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?

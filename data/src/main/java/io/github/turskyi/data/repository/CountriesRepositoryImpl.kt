@@ -17,23 +17,17 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     override suspend fun refreshCountriesInDb(
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) {
-        try {
-            netSource.getCountryNetList({ countryNetList ->
-                countryNetList?.mapNetListToModelList()?.let { modelList ->
-                    addModelsToDb(modelList, {
-                        onSuccess()
-                    }, {
-                        onError?.invoke(it)
-                    })
-                }
-            }, {
-                onError?.invoke(it)
+    ) = netSource.getCountryNetList({ countryNetList ->
+        countryNetList?.mapNetListToModelList()?.let { modelList ->
+            addModelsToDb(modelList, {
+                onSuccess()
+            }, { exception ->
+                onError?.invoke(exception)
             })
-        } catch (e: Exception) {
-            onError?.invoke(e)
         }
-    }
+    }, { exception ->
+        onError?.invoke(exception)
+    })
 
     override suspend fun updateSelfie(
         id: Int,
@@ -78,8 +72,8 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getVisitedCountries({ countries ->
         onSuccess(countries)
-    }, {
-        onError?.invoke(it)
+    }, { exception ->
+        onError?.invoke(exception)
     })
 
     override suspend fun getCities(
@@ -87,16 +81,22 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getCities({ cities ->
         onSuccess(cities)
-    }, {
-        onError?.invoke(it)
+    }, { exception ->
+        onError?.invoke(exception)
     })
-
 
     override suspend fun getCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getCountNotVisitedCountries({ count -> onSuccess(count) },
-        { onError?.invoke(it) })
+        { exception -> onError?.invoke(exception) })
+
+    override suspend fun getCountNotVisitedAndVisitedCountries(
+        onSuccess: (notVisited: Int, visited: Int) -> Unit,
+        onError: ((Exception) -> Unit?)?
+    ) = firebaseSource.getCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount -> onSuccess(notVisitedCount, visitedCount) },
+        { exception -> onError?.invoke(exception) })
+
 
     override fun getCountriesByRange(
         to: Int,
