@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.Gravity
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResult
@@ -16,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import io.github.turskyi.travellingpro.R
@@ -26,6 +26,7 @@ import io.github.turskyi.travellingpro.decoration.SectionAverageGapItemDecoratio
 import io.github.turskyi.travellingpro.extensions.*
 import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
@@ -62,12 +63,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     override fun onResume() {
         super.onResume()
-        /* makes info icon visible */
+        /** makes info icon visible */
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return true
     }
 
     /**
@@ -105,7 +102,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> if ((grantResult.isNotEmpty() && grantResult[0] == PackageManager.PERMISSION_GRANTED)
             ) {
                 isPermissionGranted = true
-                viewModel.initAuthentication(authorizationResultLauncher)
+                initAuthentication(authorizationResultLauncher)
             } else {
                 requestPermission(this)
             }
@@ -143,6 +140,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 if (SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(EXTRA_POSITION, getItemPosition(country))
+                        viewModel.visitedCountries.value?.size?.let { itemCount ->
+                            putInt(EXTRA_ITEM_COUNT, itemCount)
+                        }
                     }
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
@@ -175,14 +175,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     private fun initObservers() {
-        /*  here could be a more efficient way to handle a click to open activity,
-        * but it is made on purpose of demonstration databinding */
-        viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
-            if (shouldNavigate == true) {
-                allCountriesResultLauncher.launch(Intent(this, AllCountriesActivity::class.java))
-                viewModel.onNavigatedToAllCountries()
-            }
-        })
         viewModel.visitedCountriesWithCities.observe(this, { visitedCountries ->
             initTitleWithNumberOf(visitedCountries)
             updateAdapterWith(visitedCountries)
@@ -201,14 +193,24 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
         viewModel.errorMessage.observe(this, { event ->
             event.getMessageIfNotHandled()?.let { message ->
-                toast(message)
+                toastLong(message)
+            }
+        })
+
+        //  here could be a more efficient way to handle a click to open activity,
+        // but it is made on purpose of demonstration databinding
+        viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
+            if (shouldNavigate == true) {
+                allCountriesResultLauncher.launch(Intent(this, AllCountriesActivity::class.java))
+                viewModel.onNavigatedToAllCountries()
             }
         })
     }
 
     /** must be open to use it in permission handler */
-    fun initAuthentication() = viewModel.initAuthentication(authorizationResultLauncher)
+    fun initAuthentication() = initAuthentication(authorizationResultLauncher)
 
+    /** must be open to use it in custom "circle pie chart" widget */
     fun setTitle() = if (viewModel.citiesCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
@@ -221,6 +223,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 /* Successfully signed in */
+                binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
                 viewModel.showListOfCountries()
             } else {
                 /* Sign in failed */
@@ -236,9 +239,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                         return@registerForActivityResult
                     }
                     else -> {
-     // it is possible that here is an infinite loop, but I could not prove it
+                        // it is possible that here is an infinite loop, but I could not prove it
                         toast(R.string.msg_did_not_sign_in)
-                        viewModel.initAuthentication(authorizationResultLauncher)
+                        initAuthentication(authorizationResultLauncher)
                         registerAuthorization()
                     }
                 }
@@ -251,7 +254,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
-                /* Country is added to visited list */
+                /* New Country is added to list of visited countries */
+                binding.floatBtnLarge.hide()
                 viewModel.showListOfCountries()
             } else {
                 /* did not added country to visited list */
@@ -356,7 +360,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             }
         })
 
-    /** must be open to use it in custom "circle pie chart" */
+    /** must be open to use it in custom "circle pie chart" widget */
     fun showTitleWithOnlyCountries() =
         viewModel.visitedCountriesWithCities.observe(this, { countryList ->
             binding.toolbarLayout.title = resources.getQuantityString(
@@ -365,4 +369,27 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 countryList.size
             )
         })
+
+    private fun initAuthentication(authorizationResultLauncher: ActivityResultLauncher<Intent>) =
+        authorizationResultLauncher.launch(getAuthorizationIntent())
+
+    private fun getAuthorizationIntent(): Intent {
+        /** Choosing authentication providers */
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.FacebookBuilder().build()
+        )
+        return AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            /** Set logo drawable for authentication page */
+            .setLogo(R.drawable.pic_logo)
+            .setTheme(R.style.AuthTheme)
+            .setTosAndPrivacyPolicyUrls(
+//                TODO: replace with Terms of service
+                getString(R.string.privacy_web_page),
+                getString(R.string.privacy_web_page)
+            )
+            .build()
+    }
 }

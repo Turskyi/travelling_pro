@@ -89,7 +89,7 @@ class CountryNodeProvider : BaseNodeProvider() {
         visitedCountry: VisitedCountry,
         holder: BaseViewHolder
     ) {
-        val uri: Uri = Uri.parse(visitedCountry.img)
+        val uri: Uri = Uri.parse(visitedCountry.flag)
         GlideToVectorYou
             .init()
             .with(holder.itemView.context)
@@ -120,7 +120,7 @@ class CountryNodeProvider : BaseNodeProvider() {
             loadData(
                 "<html><head><style type='text/css'>" +
                         "body{margin:auto auto;text-align:center;} img{width:80%25;}" +
-                        " </style></head><body><img src='${visitedCountry.img}'/>" +
+                        " </style></head><body><img src='${visitedCountry.flag}'/>" +
                         "</body></html>", "text/html", "UTF-8"
             )
         }

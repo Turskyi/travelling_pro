@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.flags.callback
+package io.github.turskyi.travellingpro.features.flags.callbacks
 
 /* This interface implemented by the Activity */
 interface OnFlagFragmentListener {

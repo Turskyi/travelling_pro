@@ -6,6 +6,7 @@
     <string name="geo_location" translatable="false">geo:0,0?q=%1$s</string>
     <string name="media_providers" translatable="false">com.android.providers.media</string>
     <string name="android_5_1" translatable="false">5.1</string>
+    <string name="image_type" translatable="false">image/jpeg</string>
     <!-- for face book sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
@@ -29,7 +30,8 @@
     <!-- end of default strings -->
 
     <!-- home screen -->
-    <string name="home_onboarding_title">…loading countries</string>
+    <string name="home_onboarding_title_loading">…loading countries</string>
+    <string name="home_onboarding_title_authorization">…authorization</string>
     <string name="delete_it">Delete %1$s ?</string>
     <string name="deleted">%1$s deleted</string>
     <string name="yes">YES</string>

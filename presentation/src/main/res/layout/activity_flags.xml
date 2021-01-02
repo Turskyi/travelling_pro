@@ -33,4 +33,14 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/pb"
+        style="@style/ProgressBarStyle"
+        android:padding="@dimen/offset_4"
+        android:layout_marginTop="@dimen/offset_64"
+        android:scaleType="centerInside"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/anim_flight" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

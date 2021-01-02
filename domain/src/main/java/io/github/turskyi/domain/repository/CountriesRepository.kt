@@ -23,7 +23,7 @@ interface CountriesRepository {
         onError: ((Exception) -> Unit?)? = null
     )
 
-    suspend fun getVisitedModelCountriesFromDb(
+    suspend fun getVisitedModelCountries(
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)? = null
     )

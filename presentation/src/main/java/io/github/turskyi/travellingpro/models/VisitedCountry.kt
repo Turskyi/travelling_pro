@@ -5,7 +5,7 @@ import com.chad.library.adapter.base.entity.node.BaseNode
 
 class VisitedCountry(
     var id: Int,
-    var img: String,
-    var visited: Boolean?,
+    var flag: String,
+    var isVisited: Boolean?,
     var selfie: String?,
     override var childNode: MutableList<BaseNode>? = null, val title: String) : BaseExpandNode()

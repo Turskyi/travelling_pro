@@ -26,11 +26,14 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import org.koin.android.ext.android.inject
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
+import io.github.turskyi.travellingpro.extensions.log
 import io.github.turskyi.travellingpro.extensions.observeOnce
 import io.github.turskyi.travellingpro.extensions.toast
-import io.github.turskyi.travellingpro.features.flags.callback.OnFlagFragmentListener
+import io.github.turskyi.travellingpro.extensions.toastLong
+import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
+import io.github.turskyi.travellingpro.features.flags.callbacks.OnFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
-import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsActivityViewModel
+import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
 import io.github.turskyi.travellingpro.models.Country
 
 class FlagFragment : Fragment() {
@@ -38,9 +41,10 @@ class FlagFragment : Fragment() {
     private var _binding: FragmentFlagBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: FlagsActivityViewModel by inject()
+    private val viewModel: FlagsFragmentViewModel by inject()
 
     var mListener: OnFlagFragmentListener? = null
+    private var flagsActivityViewListener: FlagsActivityView? = null
 
     private lateinit var photoPickerResultLauncher: ActivityResultLauncher<Intent>
 
@@ -51,6 +55,12 @@ class FlagFragment : Fragment() {
             mListener = context
         } else {
             throw RuntimeException("$context must implement OnFlagFragmentListener")
+        }
+        try {
+            flagsActivityViewListener = context as FlagsActivityView?
+        } catch (castException: ClassCastException) {
+            /* in this case the activity does not implement the listener.  */
+            castException.printStackTrace()
         }
     }
 
@@ -71,6 +81,7 @@ class FlagFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         mListener = null
+        flagsActivityViewListener = null
     }
 
     override fun onResume() {
@@ -107,10 +118,7 @@ class FlagFragment : Fragment() {
                             }
                             contentImg?.selfie?.let { uri ->
                                 position?.let {
-                                    viewModel.updateSelfie(
-                                        visitedCountries[position].name,
-                                        uri
-                                    )
+                                    viewModel.updateSelfie(visitedCountries[position].name, uri)
                                 }
                             }
                         }
@@ -129,8 +137,7 @@ class FlagFragment : Fragment() {
                             }
                         }
                     viewModel.visitedCountries.observeOnce(
-                        viewLifecycleOwner,
-                        visitedCountriesObserverForCloudPhotos
+                        viewLifecycleOwner, visitedCountriesObserverForCloudPhotos
                     )
                 }
             } else {
@@ -170,7 +177,7 @@ class FlagFragment : Fragment() {
     private fun initPhotoPicker() {
         val action: String = Intent.ACTION_OPEN_DOCUMENT
         val intent = Intent(action)
-        intent.type = "image/jpeg"
+        intent.type = getString(R.string.image_type)
         val intentChooser =
             Intent.createChooser(intent, getString(R.string.flag_chooser_title_complete_using))
         photoPickerResultLauncher.launch(intentChooser)
@@ -183,6 +190,15 @@ class FlagFragment : Fragment() {
     }
 
     private fun initObservers() {
+        lifecycle.addObserver(viewModel)
+        viewModel.errorMessage.observe(this, { event ->
+            event.getMessageIfNotHandled()?.let { message ->
+                toastLong(message)
+            }
+        })
+        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+            flagsActivityViewListener?.setLoaderVisibility(currentVisibility)
+        })
         val visitedCountriesObserver = Observer<List<Country>> { countries ->
             val position = this.arguments?.getInt(EXTRA_POSITION)
             position?.let {
@@ -192,10 +208,7 @@ class FlagFragment : Fragment() {
                 } else {
                     showSelfie(countries, position)
                     binding.ivEnlargedFlag.setOnClickListener(
-                        showFlagClickListener(
-                            countries,
-                            position
-                        )
+                        showFlagClickListener(countries, position)
                     )
                 }
             }

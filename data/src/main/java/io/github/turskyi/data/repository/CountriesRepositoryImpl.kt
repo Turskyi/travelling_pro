@@ -19,38 +19,36 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = netSource.getCountryNetList({ countryNetList ->
         countryNetList?.mapNetListToModelList()?.let { modelList ->
-            addModelsToDb(modelList, {
-                onSuccess()
-            }, { exception ->
-                onError?.invoke(exception)
-            })
+            addModelsToDb(
+                modelList,
+                { onSuccess() },
+                { exception -> onError?.invoke(exception) })
         }
-    }, { exception ->
-        onError?.invoke(exception)
-    })
+    }, { exception -> onError?.invoke(exception) })
 
     override suspend fun updateSelfie(
         name: String,
         selfie: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.updateSelfie(name, selfie)
+    ) = firebaseSource.updateSelfie(name, selfie, {
+        firebaseSource.getVisitedCountries(
+            { countries -> onSuccess(countries.mapVisitedCountriesToModelList()) },
+            { exception -> onError?.invoke(exception) })
+    }, { exception -> onError?.invoke(exception) })
 
     override suspend fun markAsVisited(
         country: CountryModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.markAsVisited(
-        country.name,
-        { onSuccess() },
-        { exception -> onError?.invoke(exception) })
+        country.mapModelToEntity(), { onSuccess() }, { exception -> onError?.invoke(exception) })
 
     override suspend fun removeFromVisited(
         country: CountryModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.removeFromVisited(country.name,
-        { onSuccess() },
+    ) = firebaseSource.removeFromVisited(country.name, { onSuccess() },
         { exception -> onError?.invoke(exception) })
 
     override suspend fun insertCity(
@@ -72,27 +70,21 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.insertAllCountries(
-        countries.mapModelListToEntityList(),
-        { onSuccess() },
+        countries.mapModelListToEntityList(), { onSuccess() },
         { exception -> onError?.invoke(exception) })
 
-    override suspend fun getVisitedModelCountriesFromDb(
+    override suspend fun getVisitedModelCountries(
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getVisitedCountries({ countries ->
-        onSuccess(countries.mapEntityListToModelList())
-    }, { exception ->
-        onError?.invoke(exception)
-    })
+        onSuccess(countries.mapVisitedCountriesToModelList())
+    }, { exception -> onError?.invoke(exception) })
 
     override suspend fun getCities(
         onSuccess: (List<CityModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.getCities({ cities ->
-        onSuccess(cities.mapEntitiesToModelList())
-    }, { exception ->
-        onError?.invoke(exception)
-    })
+    ) = firebaseSource.getCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
+        { exception -> onError?.invoke(exception) })
 
     override suspend fun getCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
@@ -104,29 +96,21 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount ->
-        onSuccess(
-            notVisitedCount,
-            visitedCount
-        )
-    },
-        { exception -> onError?.invoke(exception) })
-
+        onSuccess(notVisitedCount, visitedCount)
+    }, { exception -> onError?.invoke(exception) })
 
     override fun getCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.getCountriesByRange(to,
-        from,
-        { list -> onSuccess(list.mapEntityListToModelList()) },
-        { onError?.invoke(it) })
+    ) = firebaseSource.getCountriesByRange(to, from,
+        { list -> onSuccess(list.mapEntityListToModelList()) }, { onError?.invoke(it) })
 
     override fun getCountriesByName(
         name: String?,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firebaseSource.getCountriesByName(name,
-        { list -> onSuccess(list.mapEntityListToModelList()) },
-        { onError?.invoke(it) })
+        { list -> onSuccess(list.mapEntityListToModelList()) }, { onError?.invoke(it) })
 }

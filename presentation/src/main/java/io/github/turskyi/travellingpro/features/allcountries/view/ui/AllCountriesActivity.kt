@@ -15,6 +15,7 @@ import io.github.turskyi.travellingpro.databinding.ActivityAllCountriesBinding
 import io.github.turskyi.travellingpro.extensions.log
 import io.github.turskyi.travellingpro.extensions.openInfoDialog
 import io.github.turskyi.travellingpro.extensions.toast
+import io.github.turskyi.travellingpro.extensions.toastLong
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
 import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
@@ -90,7 +91,7 @@ class AllCountriesActivity : AppCompatActivity() {
         })
         viewModel.errorMessage.observe(this, { event ->
             event.getMessageIfNotHandled()?.let { message ->
-                toast(message)
+                toastLong(message)
             }
         })
     }

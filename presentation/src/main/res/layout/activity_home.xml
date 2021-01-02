@@ -39,7 +39,7 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:scrimAnimationDuration="@android:integer/config_longAnimTime"
                 app:statusBarScrim="@android:color/black"
-                app:title="@string/home_onboarding_title"
+                app:title="@string/home_onboarding_title_authorization"
                 app:toolbarId="@+id/toolbar">
 
                 <FrameLayout

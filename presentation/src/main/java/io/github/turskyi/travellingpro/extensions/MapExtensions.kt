@@ -13,14 +13,14 @@ fun List<CountryModel>.mapModelListToNodeList() = this.mapTo(
     mutableListOf(), { model -> model.mapModelToNode() })
 
 fun CountryModel.mapModelToNode() = VisitedCountry(
-    id = id, title = name, img = flag, visited = isVisited, selfie = selfie
+    id = id, title = name, flag = flag, isVisited = isVisited, selfie = selfie
 )
 
 fun CountryModel.mapModelToCountry() = Country(id, name, flag, isVisited, selfie)
 fun Country.mapToModel() = CountryModel(id, name, flag, visited, selfie)
 fun VisitedCountry.mapVisitedCountryNodeToCountry() = Country(
-    id = id, visited = visited, name = title,
-    flag = img, selfie = selfie
+    id = id, visited = isVisited, name = title,
+    flag = flag, selfie = selfie
 )
 
 fun CityModel.mapModelToBaseNode() = City(name = name, parentId = parentId, month = month)
