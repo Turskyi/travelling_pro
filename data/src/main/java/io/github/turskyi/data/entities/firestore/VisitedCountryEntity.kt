@@ -5,8 +5,9 @@ data class VisitedCountryEntity(
     val name: String,
     val flag: String,
     var selfie: String?,
+    var selfieName: String?,
 ) {
     /* required empty constructor for firestore serialization */
-    constructor() : this(0, "", "", null)
-    constructor(name: String, flag: String) : this(0, name, flag, null)
+    constructor() : this(0, "", "", null,null)
+    constructor(name: String, flag: String) : this(0, name, flag, null,null)
 }

@@ -1,11 +1,8 @@
-package io.github.turskyi.data.firestoreSource
+package io.github.turskyi.data.firebase.dataSource
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
@@ -13,7 +10,9 @@ import com.google.firebase.storage.ktx.storageMetadata
 import io.github.turskyi.data.constants.Constants.IMG_TYPE
 import io.github.turskyi.data.constants.Constants.KEY_ID
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
+import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
 import io.github.turskyi.data.constants.Constants.KEY_SELFIE
+import io.github.turskyi.data.constants.Constants.KEY_SELFIE_NAME
 import io.github.turskyi.data.constants.Constants.REF_CITIES
 import io.github.turskyi.data.constants.Constants.REF_COUNTRIES
 import io.github.turskyi.data.constants.Constants.REF_SELFIES
@@ -22,20 +21,24 @@ import io.github.turskyi.data.constants.Constants.REF_VISITED_COUNTRIES
 import io.github.turskyi.data.entities.firestore.CityEntity
 import io.github.turskyi.data.entities.firestore.CountryEntity
 import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
+import io.github.turskyi.data.extensions.log
 import io.github.turskyi.data.extensions.mapCountryToVisitedCountry
+import io.github.turskyi.data.firebase.service.FirestoreSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 
-class FirestoreSource : KoinComponent {
+class FirestoreSourceImpl : KoinComponent, FirestoreSource {
     /* init Authentication */
-    var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-
+    private var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
-    private val storageReference = firebaseStorage.getReference(REF_SELFIES)
 
+    private val selfiesStorageRef: StorageReference = firebaseStorage.getReference(REF_SELFIES)
     private val usersRef: CollectionReference = db.collection(REF_USERS)
 
-    fun insertAllCountries(
+    override fun insertAllCountries(
         countries: List<CountryEntity>,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
@@ -57,7 +60,7 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun markAsVisited(
+    override fun markAsVisited(
         countryEntity: CountryEntity,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
@@ -79,7 +82,12 @@ class FirestoreSource : KoinComponent {
             .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun removeFromVisited(name: String, onSuccess: () -> Unit, onError: ((Exception) -> Unit?)?) {
+    override fun removeFromVisited(
+        name: String,
+        parentId: Int,
+        onSuccess: () -> Unit,
+        onError: ((Exception) -> Unit?)?
+    ) {
         /** deleting from list of visited countries */
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
             .collection(REF_VISITED_COUNTRIES).document(name)
@@ -89,15 +97,36 @@ class FirestoreSource : KoinComponent {
                 val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
                     .collection(REF_COUNTRIES).document(name)
                 countryRef.update(KEY_IS_VISITED, false)
-                    .addOnSuccessListener { onSuccess() }
-                    .addOnFailureListener { exception -> onError?.invoke(exception) }
-            }
-            .addOnFailureListener { exception -> onError?.invoke(exception) }
+                    .addOnSuccessListener {
+                        val visitedCities: CollectionReference =
+                            usersRef.document("${mFirebaseAuth.currentUser?.uid}")
+                                .collection(REF_CITIES)
+                        /** getting visited cities of deleted visited country */
+                        visitedCities.whereEqualTo(KEY_PARENT_ID, parentId)
+                            .get().addOnSuccessListener { queryDocumentSnapshots ->
+                                if (queryDocumentSnapshots.size() == 0) {
+                                    onSuccess()
+                                } else {
+                                    /* Getting a new write batch and commit all write operations */
+                                    val batch: WriteBatch = db.batch()
+                                    /** delete every visited city of deleted visited country */
+                                    for (documentSnapshot in queryDocumentSnapshots) {
+                                        batch.delete(documentSnapshot.reference)
+                                    }
+                                    batch.commit().addOnSuccessListener { onSuccess() }
+                                        .addOnFailureListener { exception ->
+                                            onError?.invoke(exception)
+                                        }
+                                }
+                            }.addOnFailureListener { exception -> onError?.invoke(exception) }
+                    }.addOnFailureListener { exception -> onError?.invoke(exception) }
+            }.addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun updateSelfie(
+    override fun updateSelfie(
         name: String,
         selfie: String,
+        previousSelfieName: String?,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
@@ -106,8 +135,10 @@ class FirestoreSource : KoinComponent {
             contentType = IMG_TYPE
         }
 
+        val selfieName = "${System.currentTimeMillis()}"
+        val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
+
         /** In the putFile method, there is a TaskSnapshot which contains the details of uploaded file */
-        val selfieRef: StorageReference = storageReference.child("${selfieImage.lastPathSegment}")
         val uploadTask: UploadTask = selfieRef.putFile(selfieImage, metadata)
 
         uploadTask.continueWithTask { task ->
@@ -127,10 +158,18 @@ class FirestoreSource : KoinComponent {
                 /** Saving the URL to the database */
                 val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
                     .collection(REF_VISITED_COUNTRIES).document(name)
-                countryRef.update(KEY_SELFIE, uploadedSelfieUrl)
-                    .addOnSuccessListener { onSuccess() }
-                    .addOnFailureListener { exception ->
-                        onError?.invoke(exception)}
+
+                /** before saving a new image deleting previous image */
+                deleteImage(previousSelfieName, {
+                    /** if deleting is successful , saving new url and new image name to model */
+                    countryRef.update(
+                        mapOf(
+                            KEY_SELFIE to uploadedSelfieUrl,
+                            KEY_SELFIE_NAME to selfieName
+                        )
+                    ).addOnSuccessListener { onSuccess() }
+                        .addOnFailureListener { exception -> onError?.invoke(exception) }
+                }, { exception -> onError?.invoke(exception) })
             } else {
                 // Handle failures
                 task.exception?.let { exception ->
@@ -140,7 +179,29 @@ class FirestoreSource : KoinComponent {
         }
     }
 
-    fun insertCity(
+    private fun deleteImage(
+        selfieName: String?,
+        onSuccess: () -> Unit,
+        onError: ((Exception) -> Unit?)?
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            log("$selfieName")
+            if (selfieName != null) {
+                selfiesStorageRef.child(selfieName).delete()
+                    .addOnSuccessListener {
+                        log("deleted")
+                        onSuccess()
+                    }
+                    .addOnFailureListener { exception -> onError?.invoke(exception) }
+            } else {
+                onSuccess()
+            }
+        } catch (exception: Exception) {
+            onError?.invoke(exception)
+        }
+    }
+
+    override fun insertCity(
         city: CityEntity,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
@@ -151,7 +212,7 @@ class FirestoreSource : KoinComponent {
             .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun removeCity(
+    override fun removeCity(
         name: String,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
@@ -163,7 +224,7 @@ class FirestoreSource : KoinComponent {
             .addOnFailureListener { exception -> onError?.invoke(exception) }
     }
 
-    fun getVisitedCountries(
+    override fun getVisitedCountries(
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
@@ -191,7 +252,7 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun getCities(
+    override fun getCities(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
@@ -219,7 +280,7 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun getCountNotVisitedCountries(
+    override fun getCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
@@ -243,7 +304,7 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun getCountNotVisitedAndVisitedCountries(
+    override fun getCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
@@ -276,7 +337,7 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun getCountriesByRange(
+    override fun getCountriesByRange(
         to: Int, from: Int, onSuccess: (List<CountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
@@ -298,7 +359,7 @@ class FirestoreSource : KoinComponent {
             }
     }
 
-    fun getCountriesByName(
+    override fun getCountriesByName(
         nameQuery: String?, onSuccess: (List<CountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {

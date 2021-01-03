@@ -18,9 +18,10 @@ class CountriesInteractor : KoinComponent {
     suspend fun updateSelfie(
         name: String,
         selfie: String,
+        selfieName: String?,
         onSusses: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = repository.updateSelfie(name, selfie, onSusses, onError)
+    ) = repository.updateSelfie(name, selfie, selfieName, onSusses, onError)
 
     fun getCountriesByRange(
         limit: Int,

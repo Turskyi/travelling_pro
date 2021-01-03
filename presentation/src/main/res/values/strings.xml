@@ -7,6 +7,16 @@
     <string name="media_providers" translatable="false">com.android.providers.media</string>
     <string name="android_5_1" translatable="false">5.1</string>
     <string name="image_type" translatable="false">image/jpeg</string>
+    <string name="encoding_utf_8" translatable="false">UTF-8</string>
+    <string name="mime_type_txt_html" translatable="false">text/html</string>
+    <string name="html_data_flag" translatable="false"><![CDATA[
+    <html>
+    <head>
+    <style type=\'text/css\'>body{margin:auto auto;text-align:center;} img{width:100%%25;}</style>
+    </head>
+    <body><img src=\'%1$s\'/></body>
+    </html>]]></string>
+
     <!-- for face book sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
@@ -110,6 +120,7 @@
     <string name="msg.sign_in_cancelled">sign in canceled</string>
     <string name="msg.no_internet">no internet connection</string>
     <string name="msg.home_country_did_not_added">did not added anything</string>
+    <string name="msg.exception_flag_listener">%1$s must implement OnFlagFragmentListener</string>
     <!-- end of strings for toasts messages -->
 
 </resources>

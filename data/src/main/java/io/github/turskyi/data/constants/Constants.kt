@@ -15,5 +15,7 @@ object Constants {
     const val REF_SELFIES = "selfies"
     const val KEY_IS_VISITED = "isVisited"
     const val KEY_SELFIE = "selfie"
+    const val KEY_SELFIE_NAME = "selfieName"
     const val KEY_ID = "id"
+    const val KEY_PARENT_ID = "parentId"
 }

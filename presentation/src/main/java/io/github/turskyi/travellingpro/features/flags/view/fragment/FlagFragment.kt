@@ -26,10 +26,7 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import org.koin.android.ext.android.inject
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
-import io.github.turskyi.travellingpro.extensions.log
-import io.github.turskyi.travellingpro.extensions.observeOnce
-import io.github.turskyi.travellingpro.extensions.toast
-import io.github.turskyi.travellingpro.extensions.toastLong
+import io.github.turskyi.travellingpro.extensions.*
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
@@ -54,7 +51,7 @@ class FlagFragment : Fragment() {
         if (context is OnFlagFragmentListener) {
             mListener = context
         } else {
-            throw RuntimeException("$context must implement OnFlagFragmentListener")
+            throw RuntimeException(getString(R.string.msg_exception_flag_listener, context))
         }
         try {
             flagsActivityViewListener = context as FlagsActivityView?
@@ -118,7 +115,11 @@ class FlagFragment : Fragment() {
                             }
                             contentImg?.selfie?.let { uri ->
                                 position?.let {
-                                    viewModel.updateSelfie(visitedCountries[position].name, uri)
+                                    viewModel.updateSelfie(
+                                        visitedCountries[position].name,
+                                        uri,
+                                        visitedCountries[position].selfieName,
+                                    )
                                 }
                             }
                         }
@@ -132,7 +133,8 @@ class FlagFragment : Fragment() {
                             position?.let {
                                 viewModel.updateSelfie(
                                     visitedCountries[position].name,
-                                    selectedImageUri.toString()
+                                    selectedImageUri.toString(),
+                                    visitedCountries[position].selfieName
                                 )
                             }
                         }
@@ -164,7 +166,9 @@ class FlagFragment : Fragment() {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             "" + imageId
         )
-        val galleryPicture = Country(id, name, flag, true, uriImage.toString())
+        val galleryPicture = Country(
+            id, name, flag, true, uriImage.toString(), null
+        )
         cursor?.close()
         return galleryPicture
     }
@@ -249,7 +253,6 @@ class FlagFragment : Fragment() {
                             fingerState = FINGER_RELEASED
                             /* perform click */
                             showSelfie(countries, position)
-//                            TODO: check if it is working
                             view.performClick()
                             /* return first clickListener */
                             binding.ivEnlargedFlag.setOnClickListener(
@@ -286,8 +289,10 @@ class FlagFragment : Fragment() {
         countries: List<Country>,
         position: Int?
     ) {
-        binding.ivEnlargedFlag.visibility = VISIBLE
-        binding.wvFlag.visibility = GONE
+        binding.apply {
+            ivEnlargedFlag.visibility = VISIBLE
+            wvFlag.visibility = GONE
+        }
         position?.let {
             val uri: Uri = Uri.parse(countries[position].selfie)
             Glide.with(this)
@@ -320,21 +325,24 @@ class FlagFragment : Fragment() {
                     private fun showFlagInWebView() {
                         binding.apply {
                             ivEnlargedFlag.visibility = GONE
-                            wvFlag.webViewClient = WebViewClient()
-                            wvFlag.visibility = VISIBLE
-                            wvFlag.setBackgroundColor(TRANSPARENT)
-                            wvFlag.loadData(
-                                "<html><head><style type='text/css'>" +
-                                        "body{margin:auto auto;text-align:center;} img{width:100%25;}" +
-                                        " </style></head><body><img src='${countries[position].flag}'/>" +
-                                        "</body></html>", "text/html", "UTF-8"
-                            )
+                            wvFlag.apply {
+                                webViewClient = WebViewClient()
+                                visibility = VISIBLE
+                                setBackgroundColor(TRANSPARENT)
+                                loadData(
+                                    getString(R.string.html_data_flag, countries[position].flag),
+                                    getString(R.string.mime_type_txt_html),
+                                    getString(R.string.encoding_utf_8)
+                                )
+                            }
                         }
                     }
 
                     override fun onResourceReady() {
-                        binding.ivEnlargedFlag.visibility = VISIBLE
-                        binding.wvFlag.visibility = GONE
+                        binding.apply {
+                            ivEnlargedFlag.visibility = VISIBLE
+                            wvFlag.visibility = GONE
+                        }
                     }
                 })
                 .setPlaceHolder(R.drawable.anim_loading, R.drawable.ic_broken_image)

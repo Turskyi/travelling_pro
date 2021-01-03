@@ -12,7 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import io.github.turskyi.data.BuildConfig.HOST_URL
 import io.github.turskyi.data.api.datasource.CountriesNetSource
 import io.github.turskyi.data.api.service.CountriesApi
-import io.github.turskyi.data.firestoreSource.FirestoreSource
+import io.github.turskyi.data.firebase.dataSource.FirestoreSourceImpl
+import io.github.turskyi.data.firebase.service.FirestoreSource
 import io.github.turskyi.data.util.hasNetwork
 import io.github.turskyi.data.repository.CountriesRepositoryImpl
 import io.github.turskyi.domain.repository.CountriesRepository
@@ -68,5 +69,5 @@ val dataProvidersModule = module {
 val sourcesModule = module {
     single { get<Retrofit>().create(CountriesApi::class.java) }
     single { CountriesNetSource(get()) }
-    single { FirestoreSource() }
+    factory<FirestoreSource> { FirestoreSourceImpl() }
 }

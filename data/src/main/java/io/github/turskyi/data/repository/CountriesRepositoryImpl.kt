@@ -2,7 +2,7 @@ package io.github.turskyi.data.repository
 
 import io.github.turskyi.data.api.datasource.CountriesNetSource
 import io.github.turskyi.data.extensions.*
-import io.github.turskyi.data.firestoreSource.FirestoreSource
+import io.github.turskyi.data.firebase.service.FirestoreSource
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
 import io.github.turskyi.domain.repository.CountriesRepository
@@ -29,9 +29,10 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     override suspend fun updateSelfie(
         name: String,
         selfie: String,
+        selfieName: String?,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.updateSelfie(name, selfie, {
+    ) = firebaseSource.updateSelfie(name, selfie, previousSelfieName = selfieName, {
         firebaseSource.getVisitedCountries(
             { countries -> onSuccess(countries.mapVisitedCountriesToModelList()) },
             { exception -> onError?.invoke(exception) })
@@ -48,7 +49,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         country: CountryModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firebaseSource.removeFromVisited(country.name, { onSuccess() },
+    ) = firebaseSource.removeFromVisited(country.name, country.id, { onSuccess() },
         { exception -> onError?.invoke(exception) })
 
     override suspend fun insertCity(

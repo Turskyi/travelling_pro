@@ -10,7 +10,7 @@ import io.github.turskyi.domain.model.CountryModel
 fun List<CountryModel>.mapModelListToEntityList() =
     mapTo(mutableListOf(), { countryModel -> countryModel.mapModelToEntity() })
 
-fun CountryModel.mapModelToEntity() = CountryEntity(id, name, flag, isVisited, null)
+fun CountryModel.mapModelToEntity() = CountryEntity(id, name, flag, isVisited)
 fun CityModel.mapModelToEntity() =
     CityEntity(name = name, parentId = parentId, month = month)
 
@@ -20,8 +20,11 @@ fun CityEntity.mapEntityToModel() =
 fun List<CountryNet>.mapNetListToModelList() = this.mapTo(
     mutableListOf(), { countryNet -> countryNet.mapNetToEntity() })
 
-fun CountryEntity.mapEntityToModel() = CountryModel(id, name, flag, isVisited, selfie)
-fun CountryNet.mapNetToEntity() = CountryModel(id, name, flag, visited, selfie = null)
+fun CountryEntity.mapEntityToModel() = CountryModel(
+    id, name, flag, isVisited, null, null
+)
+
+fun CountryNet.mapNetToEntity() = CountryModel(id, name, flag, isVisited)
 fun List<CityEntity>.mapEntitiesToModelList() = mapTo(
     mutableListOf(), { cityEntity -> cityEntity.mapEntityToModel() })
 
@@ -29,10 +32,10 @@ fun List<CountryEntity>.mapEntityListToModelList() = mapTo(
     mutableListOf(), { countryEntity -> countryEntity.mapEntityToModel() })
 
 fun CountryEntity.mapCountryToVisitedCountry() =
-    VisitedCountryEntity(id = id, name = name, flag = flag, selfie = selfie)
+    VisitedCountryEntity(id = id, name = name, flag = flag, selfie = null, selfieName = null)
 
 fun VisitedCountryEntity.mapVisitedCountryToCountry() =
-    CountryModel(id = id, name = name, flag = flag, selfie = selfie)
+    CountryModel(id = id, name = name, flag = flag, selfie = selfie, selfieName = selfieName)
 
 fun List<VisitedCountryEntity>.mapVisitedCountriesToModelList() = mapTo(
     mutableListOf(), { countryEntity -> countryEntity.mapVisitedCountryToCountry() })

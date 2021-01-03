@@ -7,5 +7,5 @@ data class CountryNet(
     var id: Int,
     @SerializedName("name") val name: String,
     @SerializedName("flag") val flag: String,
-    var visited: Boolean?
+    var isVisited: Boolean?
 )
