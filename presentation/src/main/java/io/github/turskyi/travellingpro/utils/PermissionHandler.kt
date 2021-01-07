@@ -20,9 +20,13 @@ object PermissionHandler {
                 activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
-        if (locationPermission != PackageManager.PERMISSION_GRANTED && externalStoragePermission != PackageManager.PERMISSION_GRANTED) {
+        if (locationPermission != PackageManager.PERMISSION_GRANTED
+            && externalStoragePermission != PackageManager.PERMISSION_GRANTED
+        ) {
             requestPermission(activity)
         } else {
+            /** we are getting here every time except the first time,
+             * since permission is already received */
             isPermissionGranted = true
             activity.getHomeActivity()?.initAuthentication()
         }

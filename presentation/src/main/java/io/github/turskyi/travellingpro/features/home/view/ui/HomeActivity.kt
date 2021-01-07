@@ -53,10 +53,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
-        initView()
         registerAuthorization()
         registerAllCountriesActivityResultLauncher()
         PermissionHandler.checkPermissionAndInitAuthentication(this@HomeActivity)
+        initView()
         initListeners()
         initObservers()
     }
@@ -99,8 +99,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult)
         when (requestCode) {
-            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> if ((grantResult.isNotEmpty() && grantResult[0] == PackageManager.PERMISSION_GRANTED)
+            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> if ((grantResult.isNotEmpty()
+                        && grantResult[0] == PackageManager.PERMISSION_GRANTED)
             ) {
+                /** we got here the first time, when permission is received */
                 isPermissionGranted = true
                 initAuthentication(authorizationResultLauncher)
             } else {
@@ -222,14 +224,17 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
+                toast(R.string.msg_home_signed_in)
+                authorizationResultLauncher.unregister()
                 /* Successfully signed in */
                 binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
                 viewModel.showListOfCountries()
+                return@registerForActivityResult
             } else {
                 /* Sign in failed */
                 val response = IdpResponse.fromResultIntent(result.data)
                 when {
-                    response == null -> {
+                    response == null || result.resultCode == Activity.RESULT_CANCELED -> {
                         /* User pressed back button */
                         toast(R.string.msg_sign_in_cancelled)
                         return@registerForActivityResult
@@ -238,7 +243,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                         toast(R.string.msg_no_internet)
                         return@registerForActivityResult
                     }
-                    else -> toastLong(response.error?.message)
+                    else -> {
+                        toastLong(response.error?.message)
+                        return@registerForActivityResult
+                    }
                 }
             }
         }
@@ -365,8 +373,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             )
         })
 
-    private fun initAuthentication(authorizationResultLauncher: ActivityResultLauncher<Intent>) =
+    private fun initAuthentication(authorizationResultLauncher: ActivityResultLauncher<Intent>) {
         authorizationResultLauncher.launch(getAuthorizationIntent())
+    }
 
     private fun getAuthorizationIntent(): Intent {
         /** Choosing authentication providers */
@@ -376,6 +385,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         )
         return AuthUI.getInstance()
             .createSignInIntentBuilder()
+            /* SmartLock = true -> allows the phone to automatically save the
+                    user`s  credentials and try to log them in. */
+            .setIsSmartLockEnabled(true)
             .setAvailableProviders(providers)
             /** Set logo drawable for authentication page */
             .setLogo(R.drawable.pic_logo)
