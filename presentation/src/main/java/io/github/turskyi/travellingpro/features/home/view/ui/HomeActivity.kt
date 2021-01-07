@@ -238,12 +238,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                         toast(R.string.msg_no_internet)
                         return@registerForActivityResult
                     }
-                    else -> {
-                        // it is possible that here is an infinite loop, but I could not prove it
-                        toast(R.string.msg_did_not_sign_in)
-                        initAuthentication(authorizationResultLauncher)
-                        registerAuthorization()
-                    }
+                    else -> toastLong(response.error?.message)
                 }
             }
         }

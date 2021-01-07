@@ -11,8 +11,8 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
         /* Google Services plugin (for firebase) */
         classpath 'com.google.gms:google-services:4.3.4'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        /* Crashlytics Gradle plugin */
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
     }
 }
 
@@ -43,6 +43,9 @@ subprojects {
             /*  Bill of Materials for the Firebase platform */
             implementation platform('com.google.firebase:firebase-bom:26.2.0')
             /* When using the BoM, no need to specify versions in Firebase library dependencies */
+
+            /* Declaring the dependencies for the Crashlytics and Analytics libraries */
+            implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
             /* Firebase SDK for Google Analytics */
             implementation 'com.google.firebase:firebase-analytics-ktx'
