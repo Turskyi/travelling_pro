@@ -19,10 +19,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = netSource.getCountryNetList({ countryNetList ->
         countryNetList?.mapNetListToModelList()?.let { modelList ->
-            addModelsToDb(
-                modelList,
-                { onSuccess() },
-                { exception -> onError?.invoke(exception) })
+            addModelsToDb(modelList, { onSuccess() }, { exception -> onError?.invoke(exception) })
         }
     }, { exception -> onError?.invoke(exception) })
 

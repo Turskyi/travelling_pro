@@ -9,11 +9,11 @@ import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityFlagsBinding
 import io.github.turskyi.travellingpro.extensions.openInfoDialog
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
-import io.github.turskyi.travellingpro.features.flags.callbacks.OnFlagFragmentListener
+import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.adapter.FlagsAdapter
 import io.github.turskyi.travellingpro.features.flags.view.adapter.ZoomOutPageTransformer
 
-class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnFlagFragmentListener,
+class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFragmentListener,
     FlagsActivityView {
 
     companion object {

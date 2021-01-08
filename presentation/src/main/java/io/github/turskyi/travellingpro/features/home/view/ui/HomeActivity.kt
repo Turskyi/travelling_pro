@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.SystemClock
+import android.provider.Settings.ACTION_WIRELESS_SETTINGS
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
@@ -42,11 +43,12 @@ import java.util.*
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private lateinit var binding: ActivityHomeBinding
-
-    private lateinit var authorizationResultLauncher: ActivityResultLauncher<Intent>
+    private var authorizationResultLauncher: ActivityResultLauncher<Intent>? = null
     private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
+
     private var backPressedTiming: Long = 0
     private var mLastClickTime: Long = 0
+
     private val viewModel by inject<HomeActivityViewModel>()
     private val homeAdapter by inject<HomeAdapter>()
 
@@ -104,7 +106,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ) {
                 /** we got here the first time, when permission is received */
                 isPermissionGranted = true
-                initAuthentication(authorizationResultLauncher)
+                initAuthentication(authorizationResultLauncher!!)
             } else {
                 requestPermission(this)
             }
@@ -199,8 +201,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             }
         })
 
-        //  here could be a more efficient way to handle a click to open activity,
-        // but it is made on purpose of demonstration databinding
+        /*  here could be a more efficient way to handle a click to open activity,
+         * but it is made on purpose of demonstration databinding */
         viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
             if (shouldNavigate == true) {
                 allCountriesResultLauncher.launch(Intent(this, AllCountriesActivity::class.java))
@@ -210,7 +212,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     /** must be open to use it in permission handler */
-    fun initAuthentication() = initAuthentication(authorizationResultLauncher)
+    fun initAuthentication() {
+        if(authorizationResultLauncher != null){
+            initAuthentication(authorizationResultLauncher!!)
+        } else {
+            registerAuthorization()
+            initAuthentication(authorizationResultLauncher!!)
+        }
+    }
 
     /** must be open to use it in custom "circle pie chart" widget */
     fun setTitle() = if (viewModel.citiesCount > 0) {
@@ -225,7 +234,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 toast(R.string.msg_home_signed_in)
-                authorizationResultLauncher.unregister()
+                authorizationResultLauncher?.unregister()
                 /* Successfully signed in */
                 binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
                 viewModel.showListOfCountries()
@@ -236,15 +245,20 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 when {
                     response == null || result.resultCode == Activity.RESULT_CANCELED -> {
                         /* User pressed back button */
-                        toast(R.string.msg_sign_in_cancelled)
+                        toastLong(R.string.msg_sign_in_cancelled)
+                        finishAndRemoveTask()
                         return@registerForActivityResult
                     }
                     response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
-                        toast(R.string.msg_no_internet)
+                        toastLong(R.string.msg_no_internet)
+                        val intent = Intent(ACTION_WIRELESS_SETTINGS)
+                        startActivity(intent)
+                        finishAndRemoveTask()
                         return@registerForActivityResult
                     }
                     else -> {
                         toastLong(response.error?.message)
+                        finishAndRemoveTask()
                         return@registerForActivityResult
                     }
                 }

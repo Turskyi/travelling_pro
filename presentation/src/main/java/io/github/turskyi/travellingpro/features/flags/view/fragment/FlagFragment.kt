@@ -28,7 +28,7 @@ import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
 import io.github.turskyi.travellingpro.extensions.*
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
-import io.github.turskyi.travellingpro.features.flags.callbacks.OnFlagFragmentListener
+import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
 import io.github.turskyi.travellingpro.models.Country
@@ -40,7 +40,7 @@ class FlagFragment : Fragment() {
 
     private val viewModel: FlagsFragmentViewModel by inject()
 
-    var mListener: OnFlagFragmentListener? = null
+    var mChangeFlagListener: OnChangeFlagFragmentListener? = null
     private var flagsActivityViewListener: FlagsActivityView? = null
 
     private lateinit var photoPickerResultLauncher: ActivityResultLauncher<Intent>
@@ -48,8 +48,8 @@ class FlagFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         initResultLauncher()
-        if (context is OnFlagFragmentListener) {
-            mListener = context
+        if (context is OnChangeFlagFragmentListener) {
+            mChangeFlagListener = context
         } else {
             throw RuntimeException(getString(R.string.msg_exception_flag_listener, context))
         }
@@ -77,7 +77,7 @@ class FlagFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+        mChangeFlagListener = null
         flagsActivityViewListener = null
     }
 
@@ -206,7 +206,7 @@ class FlagFragment : Fragment() {
         val visitedCountriesObserver = Observer<List<Country>> { countries ->
             val position = this.arguments?.getInt(EXTRA_POSITION)
             position?.let {
-                mListener?.onChangeToolbarTitle(countries[position].name)
+                mChangeFlagListener?.onChangeToolbarTitle(countries[position].name)
                 if (countries[position].selfie.isNullOrEmpty()) {
                     showTheFlag(countries, position)
                 } else {

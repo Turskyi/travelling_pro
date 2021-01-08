@@ -56,28 +56,31 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
                 notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
 
                 /** loading visited countries*/
-                viewModelScope.launch {
-                    interactor.getVisitedModelCountries({ visitedCountries ->
-                        /** checking if database of visited and not visited countries is empty */
-                        if (notVisitedCountriesNum == 0 && visitedCountries.isNullOrEmpty()) {
-                            viewModelScope.launch {
-                                log("vm download")
-                                downloadCountries()
-                            }
-                        } else {
-                            addCitiesToVisitedCountriesIfNotEmpty(visitedCountries)
-                        }
-                    }, { exception ->
-                        _visibilityLoader.postValue(GONE)
-                        _errorMessage.run {
-                            exception.message?.let { message ->
-                                /* Trigger the event by setting a new Event as a new value */
-                                postValue(Event(message))
-                            }
-                        }
-                    })
+                getVisitedCountries(notVisitedCountriesNum)
+            }, { exception ->
+                _errorMessage.run {
+                    exception.message?.let { message ->
+                        /* Trigger the event by setting a new Event as a new value */
+                        postValue(Event(message))
+                    }
+                }
+            })
+        }
+    }
+
+    private fun getVisitedCountries(notVisitedCountriesNum: Int) {
+        viewModelScope.launch {
+            interactor.getVisitedModelCountries({ visitedCountries ->
+                /** checking if database of visited and not visited countries is empty */
+                if (notVisitedCountriesNum == 0 && visitedCountries.isNullOrEmpty()) {
+                    viewModelScope.launch {
+                        downloadCountries()
+                    }
+                } else {
+                    addCitiesToVisitedCountriesIfNotEmpty(visitedCountries)
                 }
             }, { exception ->
+                _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
                     exception.message?.let { message ->
                         /* Trigger the event by setting a new Event as a new value */

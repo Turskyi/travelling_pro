@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityAllCountriesBinding
-import io.github.turskyi.travellingpro.extensions.log
 import io.github.turskyi.travellingpro.extensions.openInfoDialog
-import io.github.turskyi.travellingpro.extensions.toast
 import io.github.turskyi.travellingpro.extensions.toastLong
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver

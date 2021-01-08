@@ -21,8 +21,8 @@ internal class FilteredPositionalDataSource(
                     params.requestedStartPosition
                 )
             },
-            {
-                it.printStackTrace()
+            { exception ->
+                exception.printStackTrace()
                 callback.onResult(emptyList(), params.requestedStartPosition)
             })
     }
@@ -35,8 +35,8 @@ internal class FilteredPositionalDataSource(
                 /* on next call result returns nothing since only one page of countries required */
                 callback.onResult(emptyList())
             },
-            {
-                it.printStackTrace()
+            { exception ->
+                exception.printStackTrace()
                 callback.onResult(emptyList())
             })
     }

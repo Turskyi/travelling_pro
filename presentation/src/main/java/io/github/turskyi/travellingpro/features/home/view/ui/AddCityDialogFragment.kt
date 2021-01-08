@@ -126,12 +126,12 @@ class AddCityDialogFragment : DialogFragment() {
                     }
                 } else {
                     arguments?.getInt(ARG_ID)?.let { parentId ->
-                        City(etCity?.text.toString(), parentId).apply {
+                        City(name = etCity?.text.toString(), parentId = parentId).apply {
                             viewModel.insert(
                                 this, {
                                     alertDialog?.dismiss()
                                 }, { exception ->
-                                    toast(exception.message)
+                                    toastLong(exception.message)
                                 }
                             )
                         }
@@ -181,7 +181,7 @@ class AddCityDialogFragment : DialogFragment() {
     ) {
         if (requestCode == ACCESS_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                etCity?.let { addCityTo(it) }
+                etCity?.let { inputField -> addCityTo(inputField) }
             } else {
                 toastLong(R.string.msg_gps_permission_denied)
             }
@@ -209,8 +209,8 @@ class AddCityDialogFragment : DialogFragment() {
         var gpsEnabled = false
         try {
             gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (exception: Exception) {
+            exception.printStackTrace()
         }
         return gpsEnabled
     }
@@ -246,40 +246,40 @@ class AddCityDialogFragment : DialogFragment() {
     }
 
     private fun addChangedLocation(editText: LinedEditText) = try {
-            val locationListener: LocationListener = object : LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    val geoCoder = Geocoder(requireContext(), Locale.getDefault())
-                    val addressesChanged: MutableList<Address>? =
-                        location.latitude.let { latitude ->
-                            geoCoder.getFromLocation(
-                                latitude,
-                                location.longitude, 1
-                            )
-                        }
-                    val cityChanged: String? = addressesChanged?.get(0)?.locality
-                    editText.setText(cityChanged)
-                }
-
-                override fun onStatusChanged(
-                    provider: String,
-                    status: Int,
-                    extras: Bundle
-                ) {
-                }
-
-                override fun onProviderEnabled(provider: String) {}
-                override fun onProviderDisabled(provider: String) {}
+        val locationListener: LocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                val geoCoder = Geocoder(requireContext(), Locale.getDefault())
+                val addressesChanged: MutableList<Address>? =
+                    location.latitude.let { latitude ->
+                        geoCoder.getFromLocation(
+                            latitude,
+                            location.longitude, 1
+                        )
+                    }
+                val cityChanged: String? = addressesChanged?.get(0)?.locality
+                editText.setText(cityChanged)
             }
-            /** Request location updates */
-            locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER,
-                0L,
-                0f,
-                locationListener
-            )
-        } catch (exception: SecurityException) {
-            toast(exception.message)
+
+            override fun onStatusChanged(
+                provider: String,
+                status: Int,
+                extras: Bundle
+            ) {
+            }
+
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
         }
+        /** Request location updates */
+        locationManager.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER,
+            0L,
+            0f,
+            locationListener
+        )
+    } catch (exception: SecurityException) {
+        toastLong(exception.message)
+    }
 
     private fun addLastLocation(
         location: Location,

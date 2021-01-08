@@ -9,7 +9,8 @@ import io.github.turskyi.travellingpro.models.City
 
 class AddCityDialogViewModel(private val interactor: CountriesInteractor) : ViewModel() {
     fun insert(
-        city: City, onSuccess: () -> Unit,
+        city: City,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
         viewModelScope.launch {

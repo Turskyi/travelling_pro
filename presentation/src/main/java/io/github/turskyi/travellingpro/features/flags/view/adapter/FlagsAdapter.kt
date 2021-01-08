@@ -34,8 +34,6 @@ class FlagsAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity)
     override fun getItemCount(): Int = flagsActivityViewListener?.getItemCount() ?: 0
 
     override fun createFragment(position: Int): Fragment = FlagFragment().apply {
-        arguments = bundleOf(
-            EXTRA_POSITION to position
-        )
+        arguments = bundleOf(EXTRA_POSITION to position)
     }
 }

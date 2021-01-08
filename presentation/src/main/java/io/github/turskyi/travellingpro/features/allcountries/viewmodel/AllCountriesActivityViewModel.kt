@@ -47,11 +47,15 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
     }
 
     private fun getCountryList(searchQuery: String): PagedList<Country> = if (searchQuery == "") {
+        /* PagedList */
         val config: PagedList.Config = PagedList.Config.Builder()
+            /* If "true", then it should be created another viewType in Adapter "onCreateViewHolder"
+   while uploading */
             .setEnablePlaceholders(false)
             .setInitialLoadSizeHint(20)
             .setPageSize(20)
             .build()
+        /* DataSource */
         val dataSource = CountriesPositionalDataSource(interactor)
         _visibilityLoader = dataSource.visibilityLoader
         PagedList.Builder(dataSource, config)

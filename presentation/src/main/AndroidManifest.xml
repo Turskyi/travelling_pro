@@ -43,7 +43,7 @@
             android:parentActivityName=".features.home.view.ui.HomeActivity" />
 
         <provider
-            android:name=".utils.TravellingFileProvider"
+            android:name=".utils.TravellingProFileProvider"
             android:authorities="io.github.turskyi.travellingpro.provider"
             android:exported="false"
             android:grantUriPermissions="true">

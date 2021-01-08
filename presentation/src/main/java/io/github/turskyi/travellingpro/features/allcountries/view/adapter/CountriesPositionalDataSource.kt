@@ -31,8 +31,8 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
                     _visibilityLoader.postValue(GONE)
                 }
             },
-            {
-                it.printStackTrace()
+            { exception ->
+                exception.printStackTrace()
                 callback.onResult(emptyList(), params.requestedStartPosition)
                 _visibilityLoader.postValue(GONE)
             })
@@ -46,8 +46,8 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
             { allCountries ->
                 callback.onResult(allCountries.mapModelListToCountryList())
             },
-            {
-                it.printStackTrace()
+            { exception ->
+                exception.printStackTrace()
                 callback.onResult(emptyList())
                 _visibilityLoader.postValue(GONE)
             })
