@@ -243,7 +243,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 /* Sign in failed */
                 val response = IdpResponse.fromResultIntent(result.data)
                 when {
-                    response == null || result.resultCode == Activity.RESULT_CANCELED -> {
+                    response == null -> {
                         /* User pressed back button */
                         toastLong(R.string.msg_sign_in_cancelled)
                         finishAndRemoveTask()
