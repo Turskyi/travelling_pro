@@ -1,6 +1,7 @@
 package io.github.turskyi.data.firebase.dataSource
 
 import android.net.Uri
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
@@ -284,24 +285,29 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: (Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
-        val countriesRef: CollectionReference =
-            usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-                .collection(REF_COUNTRIES)
-        countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    task.result?.let { notVisitedCountries ->
-                        onSuccess(notVisitedCountries.size())
-                    }
-                } else {
-                    task.exception?.let { exception ->
-                        onError?.invoke(exception)
+        val currentUserId = mFirebaseAuth.currentUser?.uid
+        if (currentUserId != null) {
+            val countriesRef: CollectionReference =
+                usersRef.document("${mFirebaseAuth.currentUser?.uid}")
+                    .collection(REF_COUNTRIES)
+            countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        task.result?.let { notVisitedCountries ->
+                            onSuccess(notVisitedCountries.size())
+                        }
+                    } else {
+                        task.exception?.let { exception ->
+                            onError?.invoke(exception)
+                        }
                     }
                 }
-            }
-            .addOnFailureListener { exception ->
-                onError?.invoke(exception)
-            }
+                .addOnFailureListener { exception ->
+                    onError?.invoke(exception)
+                }
+        } else {
+            mFirebaseAuth.signOut()
+        }
     }
 
     override fun getCountNotVisitedAndVisitedCountries(

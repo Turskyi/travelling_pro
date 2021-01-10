@@ -1,7 +1,10 @@
 package io.github.turskyi.travellingpro.extensions
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Insets
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.ViewGroup
@@ -10,6 +13,7 @@ import android.view.WindowMetrics
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.common.view.InfoDialog
 

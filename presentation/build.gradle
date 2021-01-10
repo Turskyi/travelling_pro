@@ -17,11 +17,13 @@ android {
         applicationId "io.github.turskyi.travellingpro"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.4"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         /* to ensure that the translations of Firebase library are relevant to the application */
         resConfigs "en"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {

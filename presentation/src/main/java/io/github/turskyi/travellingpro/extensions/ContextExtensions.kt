@@ -1,10 +1,14 @@
 package io.github.turskyi.travellingpro.extensions
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ImageSpan
@@ -17,7 +21,10 @@ import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 
 fun Context.isFacebookInstalled() = try {
-    packageManager.getPackageInfo(getString(R.string.facebook_package), PackageManager.GET_META_DATA)
+    packageManager.getPackageInfo(
+        getString(R.string.facebook_package),
+        PackageManager.GET_META_DATA
+    )
     true
 } catch (e: PackageManager.NameNotFoundException) {
     false
@@ -85,7 +92,7 @@ fun Context.toast(
 ) = Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
 
 fun Context.toast(
-     msg: String?
+    msg: String?
 ) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
 fun Context.toastLong(
@@ -95,3 +102,33 @@ fun Context.toastLong(
 fun Context.toastLong(
     msg: String?
 ) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+
+/**
+ * @Description
+ * Checks if device is online or not
+ */
+fun Context.isOnline(): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val connectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        return if (network != null) {
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)!!
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                    || networkCapabilities.hasTransport(
+                NetworkCapabilities.TRANSPORT_WIFI
+            )
+        } else false
+    } else {
+        /* Initial Value */
+        var isConnected: Boolean? = false
+        val connectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        @Suppress("DEPRECATION") val activeNetwork = connectivityManager.activeNetworkInfo
+        @Suppress("DEPRECATION")
+        if (activeNetwork != null && activeNetwork.isConnected) {
+            isConnected = true
+        }
+        return isConnected ?: false
+    }
+}

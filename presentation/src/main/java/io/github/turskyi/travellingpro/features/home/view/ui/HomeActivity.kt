@@ -44,6 +44,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private lateinit var binding: ActivityHomeBinding
     private var authorizationResultLauncher: ActivityResultLauncher<Intent>? = null
+    private lateinit var internetResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
 
     private var backPressedTiming: Long = 0
@@ -55,8 +56,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
-        registerAuthorization()
-        registerAllCountriesActivityResultLauncher()
+        registerActivitiesForResult()
         PermissionHandler.checkPermissionAndInitAuthentication(this@HomeActivity)
         initView()
         initListeners()
@@ -104,7 +104,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> if ((grantResult.isNotEmpty()
                         && grantResult[0] == PackageManager.PERMISSION_GRANTED)
             ) {
-                /** we got here the first time, when permission is received */
+                /** we got here only the first time, when permission is received */
                 isPermissionGranted = true
                 initAuthentication(authorizationResultLauncher!!)
             } else {
@@ -205,17 +205,47 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
          * but it is made on purpose of demonstration databinding */
         viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
             if (shouldNavigate == true) {
-                allCountriesResultLauncher.launch(Intent(this, AllCountriesActivity::class.java))
+                val allCountriesIntent = Intent(this, AllCountriesActivity::class.java)
+                allCountriesResultLauncher.launch(allCountriesIntent)
                 viewModel.onNavigatedToAllCountries()
             }
         })
     }
 
+    private fun registerActivitiesForResult() {
+        registerAuthorization()
+        registerInternetConnectionLauncher()
+        registerAllCountriesActivityResultLauncher()
+    }
+
+    private fun registerInternetConnectionLauncher() {
+        internetResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { internetResult: ActivityResult ->
+            /* User pressed back button on internet settings page */
+            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
+                internetResultLauncher.unregister()
+                initPersonalization()
+                return@registerForActivityResult
+            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
+                toastLong(R.string.msg_no_internet)
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                internetResultLauncher.launch(internetSettingsIntent)
+                return@registerForActivityResult
+            } else {
+                /* this case is never happened before */
+                AuthUI.getInstance().signOut(this)
+                return@registerForActivityResult
+            }
+        }
+    }
+
     /** must be open to use it in permission handler */
     fun initAuthentication() {
-        if(authorizationResultLauncher != null){
+        if (authorizationResultLauncher != null) {
             initAuthentication(authorizationResultLauncher!!)
         } else {
+            /* this case is never happened before */
             registerAuthorization()
             initAuthentication(authorizationResultLauncher!!)
         }
@@ -233,37 +263,46 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                toast(R.string.msg_home_signed_in)
-                authorizationResultLauncher?.unregister()
-                /* Successfully signed in */
-                binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
-                viewModel.showListOfCountries()
+                initPersonalization()
                 return@registerForActivityResult
             } else {
                 /* Sign in failed */
-                val response = IdpResponse.fromResultIntent(result.data)
-                when {
-                    response == null -> {
-                        /* User pressed back button */
-                        toastLong(R.string.msg_sign_in_cancelled)
-                        finishAndRemoveTask()
-                        return@registerForActivityResult
-                    }
-                    response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
-                        toastLong(R.string.msg_no_internet)
-                        val intent = Intent(ACTION_WIRELESS_SETTINGS)
-                        startActivity(intent)
-                        finishAndRemoveTask()
-                        return@registerForActivityResult
-                    }
-                    else -> {
-                        toastLong(response.error?.message)
-                        finishAndRemoveTask()
-                        return@registerForActivityResult
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                if (result.resultCode == Activity.RESULT_CANCELED && !isOnline()) {
+                    toastLong(R.string.msg_no_internet)
+                    internetResultLauncher.launch(internetSettingsIntent)
+                    return@registerForActivityResult
+                } else {
+                    val response = IdpResponse.fromResultIntent(result.data)
+                    when {
+                        response == null -> {
+                            /* User pressed back button */
+                            toastLong(R.string.msg_sign_in_cancelled)
+                            finishAndRemoveTask()
+                            return@registerForActivityResult
+                        }
+                        response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
+                            toastLong(R.string.msg_bad_internet)
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            return@registerForActivityResult
+                        }
+                        else -> {
+                            toastLong(response.error?.message)
+                            finishAndRemoveTask()
+                            return@registerForActivityResult
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun initPersonalization() {
+        toast(R.string.msg_home_signed_in)
+        authorizationResultLauncher?.unregister()
+        /* Successfully signed in */
+        binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
+        viewModel.showListOfCountries()
     }
 
     private fun registerAllCountriesActivityResultLauncher() {
@@ -303,6 +342,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         }
 
     private fun updateAdapterWith(visitedCountries: List<VisitedCountry>) {
+        /** make all list items collapsed */
         for (countryNode in visitedCountries) {
             countryNode.isExpanded = false
         }
@@ -387,9 +427,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             )
         })
 
-    private fun initAuthentication(authorizationResultLauncher: ActivityResultLauncher<Intent>) {
-        authorizationResultLauncher.launch(getAuthorizationIntent())
-    }
+    private fun initAuthentication(authorizationResultLauncher: ActivityResultLauncher<Intent>) =
+        if (isOnline()) {
+            authorizationResultLauncher.launch(getAuthorizationIntent())
+        } else {
+            toastLong(R.string.msg_no_internet)
+            val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+            internetResultLauncher.launch(internetSettingsIntent)
+        }
 
     private fun getAuthorizationIntent(): Intent {
         /** Choosing authentication providers */
