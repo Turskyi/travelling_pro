@@ -2,6 +2,8 @@ package io.github.turskyi.travellingpro.extensions
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -20,11 +22,12 @@ import io.github.turskyi.travellingpro.common.Constants
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 fun View.setDynamicVisibility(visibility: Boolean) = if (visibility) {
-        this.animate().alpha(1.0f).duration = 2000
-    } else {
-        this.animate().alpha(0.0f).duration = 200
-    }
+    this.animate().alpha(1.0f).duration = 2000
+} else {
+    this.animate().alpha(0.0f).duration = 200
+}
 
 fun View.convertViewToBitmap(): Bitmap? {
     val bitmap =
@@ -72,13 +75,19 @@ fun View.toast(@StringRes msgResId: Int) = context.toast(msgResId)
 
 fun View.shareImageViaChooser() {
     val fileName =
-        "piechart${SimpleDateFormat(context.getString(R.string.day_month_year), Locale.ENGLISH).format(Date())}.jpg"
+        "piechart${
+            SimpleDateFormat(
+                context.getString(R.string.day_month_year),
+                Locale.ENGLISH
+            ).format(Date())
+        }.jpg"
     val bitmap = getScreenShot()
     val file = bitmap?.convertBitmapToFile(context, fileName)
     val uri = file?.let { screenShootFile ->
         FileProvider.getUriForFile(
             context,
-            context.packageName.toString() + ".provider",
+            context.packageName.toString()
+                    + context.resources.getString(R.string.file_provider),
             screenShootFile
         )
     }
@@ -93,13 +102,24 @@ fun View.shareImageViaChooser() {
         "#travelling_the_world \n ${Constants.GOOGLE_PLAY_ADDRESS}"
     )
     intentImage.putExtra(Intent.EXTRA_STREAM, uri)
-    try {
-        context.startActivity(
-            Intent.createChooser(
-                intentImage,
-                context.getString(R.string.share_title)
-            )
+    val chooser =  Intent.createChooser(
+        intentImage,
+        context.getString(R.string.share_title)
+    )
+
+    val resInfoList: List<ResolveInfo> =
+        context.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+    for (resolveInfo in resInfoList) {
+        val packageName = resolveInfo.activityInfo.packageName
+        context.grantUriPermission(
+            packageName,
+            uri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
         )
+    }
+    try {
+        context.startActivity(chooser)
     } catch (e: ActivityNotFoundException) {
         toast(R.string.msg_no_app_installed)
     }
@@ -116,8 +136,9 @@ fun View.shareViaFacebook(fragment: Fragment) {
         "piechart${
             SimpleDateFormat(
                 context.getString(R.string.day_month_year),
-            Locale.ENGLISH
-        ).format(Date())}"
+                Locale.ENGLISH
+            ).format(Date())
+        }"
     )
         .build()
     val mediaContent = ShareMediaContent.Builder()

@@ -1,6 +1,8 @@
 <resources>
     <!-- not translatable -->
     <string name="home_dialog_date_format" translatable="false">MMMM yyyy</string>
+    <string name="file_provider" translatable="false">.fileprovider</string>
+    <string name="dir_screenshots" translatable="false">screenshots</string>
     <string name="day_month_year" translatable="false">dd.MM.yyyy</string>
     <string name="privacy_web_page" translatable="false">https://travelling-the-countries.web.app</string>
     <string name="geo_location" translatable="false">geo:0,0?q=%1$s</string>

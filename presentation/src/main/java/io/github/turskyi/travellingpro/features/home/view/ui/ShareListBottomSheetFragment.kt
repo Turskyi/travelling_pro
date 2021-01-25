@@ -22,7 +22,10 @@ class ShareListBottomSheetFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentShareListBottomSheetBinding.inflate(inflater, container, false)
+        _binding = FragmentShareListBottomSheetBinding.inflate(
+            inflater, container,
+            false
+        )
         return binding.root
     }
 
@@ -38,12 +41,12 @@ class ShareListBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun initListeners() {
         val toolbarLayout = activity?.findViewById<View>(
-            R.id.toolbar_layout)
+            R.id.toolbar_layout
+        )
         binding.ivFacebook.setOnClickListener {
             if (requireContext().isFacebookInstalled()) {
                 toolbarLayout?.shareViaFacebook(this)
-            }
-            else toast(R.string.msg_no_facebook_app)
+            } else toast(R.string.msg_no_facebook_app)
             dismiss()
         }
         binding.ivOther.setOnClickListener {

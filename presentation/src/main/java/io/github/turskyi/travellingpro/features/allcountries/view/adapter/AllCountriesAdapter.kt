@@ -36,16 +36,12 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
                 override fun areItemsTheSame(
                     oldItem: Country,
                     newItem: Country
-                ): Boolean {
-                    return oldItem == newItem
-                }
+                ): Boolean = oldItem == newItem
 
                 override fun areContentsTheSame(
                     oldItem: Country,
                     newItem: Country
-                ): Boolean {
-                    return oldItem.name == newItem.name && oldItem.visited == newItem.visited
-                }
+                ): Boolean = oldItem.name == newItem.name && oldItem.visited == newItem.visited
             }
     }
 
