@@ -24,7 +24,10 @@
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
     <!-- for facebook auth -->
     <string name="facebook_application_id" translatable="false">2312394202364807</string>
+    <!-- for firebase FirebaseUI -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb2312394202364807</string>
+    <!-- for general use of facebook auth-->
+    <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
     <!-- end of not translatable strings -->
 
     <!-- default  strings -->
