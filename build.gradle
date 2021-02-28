@@ -10,9 +10,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
         /* Google Services plugin (for firebase) */
-        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.google.gms:google-services:4.3.5'
         /* Crashlytics Gradle plugin */
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.0'
     }
 }
 
@@ -53,7 +53,7 @@ subprojects {
             /* Declare the dependency for the Cloud Firestore library */
             implementation 'com.google.firebase:firebase-firestore-ktx'
             /* avoids "Service not registered" exception */
-            implementation 'com.google.android.gms:play-services-basement:17.5.0'
+            implementation 'com.google.android.gms:play-services-basement:17.6.0'
 
             /* Firebase for authentication */
             implementation 'com.google.firebase:firebase-auth'
