@@ -64,7 +64,7 @@ subprojects {
 allprojects {
     repositories {
         google()
-//        jcenter is required for firebase-ui-auth
+//        jcenter is required for firebase-ui-auth and org.koin:koin-android
         jcenter()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
