@@ -1,5 +1,4 @@
 package io.github.turskyi.di
-
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Cache
@@ -17,6 +16,7 @@ import io.github.turskyi.data.firebase.service.FirestoreSource
 import io.github.turskyi.data.util.hasNetwork
 import io.github.turskyi.data.repository.CountriesRepositoryImpl
 import io.github.turskyi.domain.repository.CountriesRepository
+import okhttp3.Request
 
 val repositoriesModule = module {
     factory<CountriesRepository> { CountriesRepositoryImpl() }
@@ -27,17 +27,18 @@ val dataProvidersModule = module {
         OkHttpClient.Builder()
             .cache(get<Cache>())
             .addInterceptor { chain ->
-                var request = chain.request()
-                request = if (hasNetwork(androidContext()))
+                var request: Request = chain.request()
+                request = if (hasNetwork(androidContext())) {
                     request.newBuilder().header(
                         "Cache-Control",
                         "public, max-age=" + 5
                     ).build()
-                else
+                } else {
                     request.newBuilder().header(
                         "Cache-Control",
                         "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7
                     ).build()
+                }
                 chain.proceed(request)
             }.addInterceptor(get<HttpLoggingInterceptor>())
             .build()
@@ -48,14 +49,10 @@ val dataProvidersModule = module {
             .setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
-    single<Gson> {
-        GsonBuilder()
-            .setLenient()
-            .create()
-    }
+    single<Gson> { GsonBuilder().setLenient().create() }
 
     single {
-        val cacheSize = (5 * 1024 * 1024).toLong()
+        val cacheSize: Long = (5 * 1024 * 1024).toLong()
         Cache(androidContext().cacheDir, cacheSize)
     }
     single<Retrofit> {

@@ -65,7 +65,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     override fun onResume() {
         super.onResume()
-        /** makes info icon visible */
+        // makes info icon visible
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -118,7 +118,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
         setSupportActionBar(binding.toolbar)
-        /* set drawable icon */
+        // set drawable icon
         supportActionBar?.setHomeAsUpIndicator(R.drawable.btn_info_ripple)
 
         val linearLayoutManager = LinearLayoutManager(this)
@@ -130,7 +130,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     resources.getDimensionPixelOffset(R.dimen.offset_10),
                     resources.getDimensionPixelOffset(R.dimen.offset_10),
                     resources.getDimensionPixelOffset(R.dimen.offset_20),
-                    resources.getDimensionPixelOffset(R.dimen.offset_16)
+                    resources.getDimensionPixelOffset(R.dimen.offset_16),
                 )
             )
         }
@@ -140,7 +140,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     private fun initListeners() {
         homeAdapter.apply {
             onFlagClickListener = { country ->
-                /* mis-clicking prevention, using threshold of 1000 ms */
+                // mis-clicking prevention, using threshold of 1000 ms
                 if (SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(EXTRA_POSITION, getItemPosition(country))
@@ -163,7 +163,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             }
 
             onCountryNameClickListener = { countryNode ->
-                /* Creating the new Fragment with the Country id passed in. */
+                // Creating the new Fragment with the Country id passed in.
                 val fragment = AddCityDialogFragment.newInstance(countryNode.id)
                 fragment.show(supportFragmentManager, null)
             }
@@ -222,7 +222,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         internetResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { internetResult: ActivityResult ->
-            /* User pressed back button on internet settings page */
+            // User pressed back button on internet settings page
             if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
                 internetResultLauncher.unregister()
                 initPersonalization()
@@ -233,7 +233,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 internetResultLauncher.launch(internetSettingsIntent)
                 return@registerForActivityResult
             } else {
-                /* this case is never happened before */
+                // this case is never happened before
                 AuthUI.getInstance().signOut(this)
                 return@registerForActivityResult
             }
@@ -266,7 +266,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 initPersonalization()
                 return@registerForActivityResult
             } else {
-                /* Sign in failed */
+                // Sign in failed
                 val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
                 if (result.resultCode == Activity.RESULT_CANCELED && !isOnline()) {
                     toastLong(R.string.msg_no_internet)
@@ -276,7 +276,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     val response = IdpResponse.fromResultIntent(result.data)
                     when {
                         response == null -> {
-                            /* User pressed back button */
+                            // User pressed back button
                             toastLong(R.string.msg_sign_in_cancelled)
                             finishAndRemoveTask()
                             return@registerForActivityResult
@@ -300,7 +300,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     private fun initPersonalization() {
         toast(R.string.msg_home_signed_in)
         authorizationResultLauncher?.unregister()
-        /* Successfully signed in */
+        // Successfully signed in
         binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
         viewModel.showListOfCountries()
     }
@@ -310,14 +310,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
-                /* New Country is added to list of visited countries */
+                // New Country is added to list of visited countries
                 binding.floatBtnLarge.hide()
                 viewModel.showListOfCountries()
             } else {
-                /* did not added country to visited list */
+                // did not added country to visited list
                 when (result.resultCode) {
                     RESULT_CANCELED -> {
-                        /* User pressed back button */
+                        // User pressed back button
                         toast(R.string.msg_home_country_did_not_added)
                         return@registerForActivityResult
                     }
@@ -342,7 +342,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         }
 
     private fun updateAdapterWith(visitedCountries: List<VisitedCountry>) {
-        /** make all list items collapsed */
+        // makes all list items collapsed
         for (countryNode in visitedCountries) {
             countryNode.isExpanded = false
         }
@@ -437,7 +437,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         }
 
     private fun getAuthorizationIntent(): Intent {
-        /** Choosing authentication providers */
+        // Choosing authentication providers
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build(),
             AuthUI.IdpConfig.FacebookBuilder().build()
@@ -448,7 +448,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     user`s  credentials and try to log them in. */
             .setIsSmartLockEnabled(true)
             .setAvailableProviders(providers)
-            /** Set logo drawable for authentication page */
+            // Setting logo drawable for authentication page
             .setLogo(R.drawable.pic_logo)
             .setTheme(R.style.AuthTheme)
             .setTosAndPrivacyPolicyUrls(

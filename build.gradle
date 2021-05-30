@@ -2,62 +2,61 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.2"
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-        /* Google Services plugin (for firebase) */
-        classpath 'com.google.gms:google-services:4.3.4'
-        /* Crashlytics Gradle plugin */
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
+        // Google Services plugin (used with firebase)
+        classpath 'com.google.gms:google-services:4.3.8'
+        // Crashlytics Gradle plugin
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
     }
 }
 
 subprojects {
     afterEvaluate {
-        dependencies{
-            /* Kotlin */
+        dependencies {
+            // Kotlin
             implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-            /* Add to avoid  w:Kotlin runtime JAR files in the classpath should have the same version */
+            // Add to avoid  w:Kotlin runtime JAR files in the classpath should have the same version
             implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-            /* koin */
-            implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+            // Koin main features for Android (Scope,ViewModel ...)
+            implementation "org.koin:koin-android:$koin_version"
             implementation "org.koin:koin-core:$koin_version"
             implementation "org.koin:koin-androidx-scope:$koin_version"
 
-            /* Retrofit2 */
+            // Retrofit2
             implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
             implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-            /* coroutines  */
+            // coroutines
             implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
             implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-            /* Paging */
+            // Paging
             implementation "androidx.paging:paging-runtime:$paging_version"
 
-            /*  Bill of Materials for the Firebase platform */
+            //  Bill of Materials for the Firebase platform
             implementation platform('com.google.firebase:firebase-bom:26.2.0')
-            /* When using the BoM, no need to specify versions in Firebase library dependencies */
+            // When using the BoM, no need to specify versions in Firebase library dependencies
 
-            /* Declaring the dependencies for the Crashlytics and Analytics libraries */
+            // Declaring the dependencies for the Crashlytics and Analytics libraries
             implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
-            /* Firebase SDK for Google Analytics */
+            // Firebase SDK for Google Analytics
             implementation 'com.google.firebase:firebase-analytics-ktx'
 
-            /* Declare the dependency for the Cloud Firestore library */
+            // Declare the dependency for the Cloud Firestore library
             implementation 'com.google.firebase:firebase-firestore-ktx'
-            /* avoids "Service not registered" exception */
-            implementation 'com.google.android.gms:play-services-basement:17.5.0'
+            // avoids "Service not registered" exception
+            implementation 'com.google.android.gms:play-services-basement:17.6.0'
 
-            /* Firebase for authentication */
-            implementation 'com.google.firebase:firebase-auth'
-            implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
+            // FirebaseUI for Firebase Auth
+            implementation 'com.firebaseui:firebase-ui-auth:7.1.1'
         }
     }
 }
@@ -65,9 +64,12 @@ subprojects {
 allprojects {
     repositories {
         google()
+//        jcenter is required for firebase-ui-auth and org.koin:koin-android
         jcenter()
+        mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
+        maven { url "https://dl.bintray.com/ekito/koin" }
     }
 }
 

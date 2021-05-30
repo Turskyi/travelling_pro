@@ -38,26 +38,27 @@ dependencies {
 
     implementation project(':domain')
 
-    /* kotlin */
-    //noinspection DifferentStdlibGradleVersion
+    // kotlin
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    /* koin */
+    // koin
     api "org.koin:koin-androidx-viewmodel:$koin_version"
     api "org.koin:koin-core:$koin_version"
     api "org.koin:koin-androidx-scope:$koin_version"
 
-    /* network */
-    api 'com.squareup.okhttp3:okhttp:4.9.0'
+    // network
+    api "com.squareup.okhttp3:okhttp:$okhttp_version"
+    api "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
-    api 'com.google.code.gson:gson:2.8.6'
-    api 'com.squareup.okhttp3:logging-interceptor:4.9.0'
     api "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    api 'com.google.code.gson:gson:2.8.6'
     api 'com.auth0:java-jwt:3.11.0'
-    implementation 'com.google.firebase:firebase-storage-ktx:19.2.1'
 
-    testImplementation 'junit:junit:4.13.1'
+    // firestore
+    implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version"
+
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
