@@ -25,7 +25,7 @@ object PermissionHandler {
         ) {
             requestPermission(activity)
         } else {
-            /** we are getting here every time except the first time,
+            /* we are getting here every time except the first time,
              * since permission is already received */
             isPermissionGranted = true
             activity.getHomeActivity()?.initAuthentication()
