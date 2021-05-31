@@ -30,7 +30,7 @@ Showcase for using Firestore, view-model, clean-architecture, koin and coroutine
 
 • Google Play services: [Location](https://developer.android.com/training/location);
 
-• Embeded SDK: [Facebook Sharing](https://developers.facebook.com/docs/sharing/android);
+• Embeded SDK: [Facebook Sharing](https://developers.facebook.com/docs/sharing/android), [Facebook Login](https://developers.facebook.com/docs/facebook-login/overview);
 
 • UI components: [Lottie](https://lottiefiles.com/what-is-lottie), [PhotoView](https://github.com/Baseflow/PhotoView), [ViewPager2](https://developer.android.com/jetpack/androidx/releases/viewpager2),
 [multiline-collapsingtoolbar](https://github.com/opacapp/multiline-collapsingtoolbar), [data chart](https://weeklycoding.com/mpandroidchart/), [RecyclerView](http://www.recyclerview.org/),
