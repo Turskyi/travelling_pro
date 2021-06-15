@@ -35,7 +35,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
     val visitedCountriesWithCities: LiveData<List<VisitedCountry>>
         get() = _visitedCountriesWithCities
 
-    private val _errorMessage = MutableLiveData<Event<String>>()
+    private val _errorMessage: MutableLiveData<Event<String>> = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>>
         get() = _errorMessage
 
