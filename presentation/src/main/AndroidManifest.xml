@@ -69,7 +69,6 @@
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="@string/content_provider"
             android:exported="true"
-            tools:replace="android:authorities"
             tools:ignore="ExportedContentProvider" />
 
         <meta-data
@@ -77,7 +76,7 @@
             android:value="@string/facebook_app_id"
             tools:replace="android:value" />
 
-        <!-- To use Facebook Login or Share, also add the FacebookActivity to the manifest:-->
+        <!-- To use Facebook Login or Share -->
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
