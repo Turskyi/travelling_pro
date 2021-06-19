@@ -1,18 +1,27 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    ext {
+        // sdk versions
+        compile_sdk_version = 30
+        build_tools_version = "30.0.3"
+        min_sdk_version = 21
+        target_sdk_version = 30
+        version_code = 8
+        version_name = "1.0.7"
+    }
     repositories {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath "com.android.tools.build:gradle:$build_gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
         // Google Services plugin (used with firebase)
-        classpath 'com.google.gms:google-services:4.3.8'
+        classpath "com.google.gms:google-services:$google_services_version"
         // Crashlytics Gradle plugin
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
+        classpath "com.google.firebase:firebase-crashlytics-gradle:$firebase_crashlytics_gradle_version"
     }
 }
 
@@ -41,7 +50,7 @@ subprojects {
             implementation "androidx.paging:paging-runtime:$paging_version"
 
             //  Bill of Materials for the Firebase platform
-            implementation platform('com.google.firebase:firebase-bom:26.2.0')
+            implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
             // When using the BoM, no need to specify versions in Firebase library dependencies
 
             // Declaring the dependencies for the Crashlytics and Analytics libraries
@@ -52,11 +61,12 @@ subprojects {
 
             // Declare the dependency for the Cloud Firestore library
             implementation 'com.google.firebase:firebase-firestore-ktx'
-            // avoids "Service not registered" exception
-            implementation 'com.google.android.gms:play-services-basement:17.6.0'
 
             // FirebaseUI for Firebase Auth
-            implementation 'com.firebaseui:firebase-ui-auth:7.1.1'
+            implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
+
+            // avoids "Service not registered" exception
+            implementation "com.google.android.gms:play-services-basement:$play_services_basement_version"
         }
     }
 }
