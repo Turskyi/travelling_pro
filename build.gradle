@@ -33,7 +33,7 @@ subprojects {
             // Add to avoid  w:Kotlin runtime JAR files in the classpath should have the same version
             implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-            // (di) Koin main features for Android (Scope,ViewModel ...)
+            // dependency injection (Koin)
             implementation "org.koin:koin-android:$koin_version"
             implementation "org.koin:koin-core:$koin_version"
             implementation "org.koin:koin-androidx-scope:$koin_version"
