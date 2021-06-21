@@ -22,13 +22,13 @@ android {
         resConfigs "en"
     }
     signingConfigs {
-        release {
+        production {
             storeFile file(rootProject.SIGNING_KEY_RELEASE_PATH)
             storePassword rootProject.SIGNING_KEY_RELEASE_PASSWORD
             keyAlias rootProject.SIGNING_KEY_RELEASE_KEY
             keyPassword rootProject.SIGNING_KEY_RELEASE_KEY_PASSWORD
         }
-        debug {
+        dev {
             storeFile file(rootProject.SIGNING_KEY_DEBUG_PATH)
             storePassword rootProject.SIGNING_KEY_DEBUG_PASSWORD
             keyAlias rootProject.SIGNING_KEY_DEBUG_KEY
@@ -41,13 +41,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.production
             // used in manifest provider authorities
             resValue "string", "content_provider",
                     "com.facebook.app.FacebookContentProvider2312394202364807"
         }
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.dev
             // used in manifest provider authorities
             resValue "string", "content_provider",
                     "com.facebook.app.FacebookContentProvider2312394202364807"
