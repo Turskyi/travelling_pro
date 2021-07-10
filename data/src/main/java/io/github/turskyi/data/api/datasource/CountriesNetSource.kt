@@ -2,7 +2,7 @@ package io.github.turskyi.data.api.datasource
 
 import android.accounts.NetworkErrorException
 import io.github.turskyi.data.api.service.CountriesApi
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

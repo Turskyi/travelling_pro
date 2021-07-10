@@ -38,16 +38,18 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    /* data module which is the inner (lower) layer of the project knows only about domain layer
+* (a layer with interfaces which communicates with outer (top) level of the project ) */
     implementation project(':domain')
 
     // kotlin
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    // koin
-    api "org.koin:koin-androidx-viewmodel:$koin_version"
-    api "org.koin:koin-core:$koin_version"
-    api "org.koin:koin-androidx-scope:$koin_version"
+    // Koin for Android
+    api ("io.insert-koin:koin-android:$insert_koin_version")
+    // Koin core features
+    api ("io.insert-koin:koin-core:$insert_koin_version")
 
     // network
     api "com.squareup.okhttp3:okhttp:$okhttp_version"
@@ -57,6 +59,7 @@ dependencies {
     api "com.google.code.gson:gson:$gson_version"
     api "com.auth0:java-jwt:$jwt_version"
 
+//    TODO: check if I can safely delete it
     // firestore
     implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version"
 

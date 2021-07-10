@@ -1,7 +1,7 @@
 package io.github.turskyi.domain.interactor
 
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
 import io.github.turskyi.domain.repository.CountriesRepository
