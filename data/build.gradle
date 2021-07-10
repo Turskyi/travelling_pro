@@ -59,10 +59,6 @@ dependencies {
     api "com.google.code.gson:gson:$gson_version"
     api "com.auth0:java-jwt:$jwt_version"
 
-//    TODO: check if I can safely delete it
-    // firestore
-    implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version"
-
     // test
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
