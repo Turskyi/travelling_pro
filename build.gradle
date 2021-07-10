@@ -6,8 +6,8 @@ buildscript {
         build_tools_version = "30.0.3"
         min_sdk_version = 21
         target_sdk_version = 30
-        version_code = 8
-        version_name = "1.0.7"
+        version_code = 9
+        version_name = "1.0.8"
     }
     repositories {
         google()
@@ -33,11 +33,6 @@ subprojects {
             // Add to avoid  w:Kotlin runtime JAR files in the classpath should have the same version
             implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-            // dependency injection (Koin)
-            implementation "org.koin:koin-android:$koin_version"
-            implementation "org.koin:koin-core:$koin_version"
-            implementation "org.koin:koin-androidx-scope:$koin_version"
-
             // (Asynchronous programming) coroutines
             implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
             implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
@@ -61,8 +56,9 @@ subprojects {
 
             // Declare the dependency for the Cloud Firestore library
             implementation 'com.google.firebase:firebase-firestore-ktx'
+            implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version"
 
-            // FirebaseUI for Firebase Auth
+            // FirebaseUI for authentication
             implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 
             // avoids "Service not registered" exception
@@ -74,12 +70,11 @@ subprojects {
 allprojects {
     repositories {
         google()
-//        jcenter is required for firebase-ui-auth and org.koin:koin-android
+//        jcenter is required for firebase-ui-auth
         jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
-        maven { url "https://dl.bintray.com/ekito/koin" }
     }
 }
 

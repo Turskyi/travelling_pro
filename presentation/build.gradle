@@ -72,26 +72,19 @@ dependencies {
     implementation project(":domain")
     implementation project(":di")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
-    // design components
-    implementation 'com.google.android.material:material:1.3.0'
-
     // kotlin
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    // koin
-    api "org.koin:koin-androidx-viewmodel:$koin_version"
-    api "org.koin:koin-core:$koin_version"
-    api "org.koin:koin-androidx-scope:$koin_version"
+    // design components
+    implementation "com.google.android.material:material:$material_version"
 
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
     implementation "androidx.activity:activity-ktx:$activity_version"
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'com.android.billingclient:billing:4.0.0'
 
     // firebase
@@ -149,12 +142,22 @@ dependencies {
     def lottieVersion = "3.4.4"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
-    // used for deploying app to google app market
+    // for "ci", used for deploying app to google app market
     def appCenterSdkVersion = '4.1.0'
     implementation "com.microsoft.appcenter:appcenter-distribute:${appCenterSdkVersion}"
+
+    // Koin for Android
+    implementation("io.insert-koin:koin-android:$insert_koin_version")
+
+    // Koin core features
+    implementation("io.insert-koin:koin-core:$insert_koin_version")
 
     // test
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+
+    def jupiter_version = "5.7.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
 }

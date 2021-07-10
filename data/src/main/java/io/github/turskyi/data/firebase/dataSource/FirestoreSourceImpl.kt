@@ -1,7 +1,6 @@
 package io.github.turskyi.data.firebase.dataSource
 
 import android.net.Uri
-import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
@@ -28,10 +27,10 @@ import io.github.turskyi.data.firebase.service.FirestoreSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 class FirestoreSourceImpl : KoinComponent, FirestoreSource {
-    /* init Authentication */
+    // init Authentication
     private var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
@@ -66,12 +65,12 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
-        /** set mark "isVisited = true" in list of all countries */
+        // set mark "isVisited = true" in list of all countries
         val countryRef: DocumentReference = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
             .collection(REF_COUNTRIES).document(countryEntity.name)
         countryRef.update(KEY_IS_VISITED, true)
             .addOnSuccessListener {
-                /** making copy of the country and adding to a new list of visited countries */
+                // making copy of the country and adding to a new list of visited countries
                 usersRef.document("${mFirebaseAuth.currentUser?.uid}")
                     .collection(REF_VISITED_COUNTRIES).document(countryEntity.name)
                     .set(countryEntity.mapCountryToVisitedCountry())
@@ -89,7 +88,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
-        /** deleting from list of visited countries */
+        // deleting from list of visited countries
         usersRef.document("${mFirebaseAuth.currentUser?.uid}")
             .collection(REF_VISITED_COUNTRIES).document(name)
             .delete()
@@ -108,9 +107,9 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                                 if (queryDocumentSnapshots.size() == 0) {
                                     onSuccess()
                                 } else {
-                                    /* Getting a new write batch and commit all write operations */
+                                    // Getting a new write batch and commit all write operations
                                     val batch: WriteBatch = db.batch()
-                                    /** delete every visited city of deleted visited country */
+                                    // delete every visited city of deleted visited country
                                     for (documentSnapshot in queryDocumentSnapshots) {
                                         batch.delete(documentSnapshot.reference)
                                     }
@@ -139,7 +138,8 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
 
-        /** In the putFile method, there is a TaskSnapshot which contains the details of uploaded file */
+        /* In the putFile method,
+         there is a TaskSnapshot which contains the details of uploaded file */
         val uploadTask: UploadTask = selfieRef.putFile(selfieImage, metadata)
 
         uploadTask.continueWithTask { task ->
@@ -151,18 +151,20 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
             return@continueWithTask selfieRef.downloadUrl
         }.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                /* Upload URL is needed to save it to the database */
+                // Upload URL is needed to save it to the database
                 val downloadUri: Uri? = task.result
-                /* We are using uri as String because our data type in Firestore will be String */
+                // We are using uri as String because our data type in Firestore will be String
                 val uploadedSelfieUrl: String = downloadUri.toString()
 
-                /** Saving the URL to the database */
-                val countryRef = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-                    .collection(REF_VISITED_COUNTRIES).document(name)
+                // Saving the URL to the database
+                val countryRef: DocumentReference = usersRef
+                    .document("${mFirebaseAuth.currentUser?.uid}")
+                    .collection(REF_VISITED_COUNTRIES)
+                    .document(name)
 
-                /** before saving a new image deleting previous image */
+                // before saving a new image deleting previous image
                 deleteImage(previousSelfieName, {
-                    /** if deleting is successful , saving new url and new image name to model */
+                    // if deleting is successful , saving new url and new image name to model
                     countryRef.update(
                         mapOf(
                             KEY_SELFIE to uploadedSelfieUrl,
@@ -189,10 +191,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
             log("$selfieName")
             if (selfieName != null) {
                 selfiesStorageRef.child(selfieName).delete()
-                    .addOnSuccessListener {
-                        log("deleted")
-                        onSuccess()
-                    }
+                    .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { exception -> onError?.invoke(exception) }
             } else {
                 onSuccess()
@@ -229,9 +228,9 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
-        val countriesRef: CollectionReference =
-            usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-                .collection(REF_VISITED_COUNTRIES)
+        val countriesRef: CollectionReference = usersRef
+            .document("${mFirebaseAuth.currentUser?.uid}")
+            .collection(REF_VISITED_COUNTRIES)
         countriesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 if (queryDocumentSnapshots.size() == 0) {
@@ -285,11 +284,11 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: (Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) {
-        val currentUserId = mFirebaseAuth.currentUser?.uid
+        val currentUserId: String? = mFirebaseAuth.currentUser?.uid
         if (currentUserId != null) {
-            val countriesRef: CollectionReference =
-                usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-                    .collection(REF_COUNTRIES)
+            val countriesRef: CollectionReference = usersRef
+                .document("${mFirebaseAuth.currentUser?.uid}")
+                .collection(REF_COUNTRIES)
             countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -327,7 +326,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                         val country: CountryEntity =
                             documentSnapshot.toObject(CountryEntity::class.java)
                         countries.add(country)
-                        /** check if it is the last document in list, filter and send success */
+                        // check if it is the last document in list, filter and send success
                         if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                             val notVisitedCount: Int =
                                 countries.filter { countryEntity -> countryEntity.isVisited == false }.size
