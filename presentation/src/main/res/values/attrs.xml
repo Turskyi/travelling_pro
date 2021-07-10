@@ -20,4 +20,10 @@
             <enum name="body" value="0"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="CollapsingToolbarLayoutExtension">
+        <attr name="maxLines" format="integer" />
+        <attr name="lineSpacingExtra" format="float"/>
+        <attr name="lineSpacingMultiplier" format="float"/>
+    </declare-styleable>
 </resources>

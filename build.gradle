@@ -58,8 +58,8 @@ subprojects {
             implementation 'com.google.firebase:firebase-firestore-ktx'
             implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version"
 
-            // FirebaseUI for authentication
-            implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
+            // authentication
+            implementation "com.google.firebase:firebase-auth"
 
             // avoids "Service not registered" exception
             implementation "com.google.android.gms:play-services-basement:$play_services_basement_version"
@@ -70,8 +70,6 @@ subprojects {
 allprojects {
     repositories {
         google()
-//        jcenter is required for firebase-ui-auth
-        jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
