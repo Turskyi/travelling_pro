@@ -3,7 +3,6 @@
     <color name="colorPrimaryDark">#011638</color>
     <color name="colorBrightBlue">#020DE1</color>
     <color name="colorAccent">#d50000</color>
-    <color name="colorBlack">@android:color/black</color>
     <color name="colorBgDarkDialogue">#37474F</color>
     <color name="colorLightGrey">#EAEAEA</color>
     <color name="colorBgVisitedCountry">#090909</color>

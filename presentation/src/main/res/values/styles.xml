@@ -22,6 +22,19 @@
         <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
+    <style name="FirebaseUI.Button" parent="@style/Widget.AppCompat.Button.Colored">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
+
+    <style name="FirebaseUI" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:buttonStyle">@style/FirebaseUI.Button</item>
+    </style>
+
     <!-- AppTheme for firebase authentication -->
     <style name="AuthTheme" parent="FirebaseUI">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -166,5 +179,10 @@
     </style>
 
     <style name="BottomSheetMenuTheme" parent="@style/BaseBottomSheetMenu" />
+
+    <!-- Multiline collapsing toolbar styles -->
+    <style name="Widget.Design.MultilineCollapsingToolbar" parent="@style/Widget.Design.CollapsingToolbar" />
+
+    <style name="ActionBar.Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
 
 </resources>
