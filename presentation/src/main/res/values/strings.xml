@@ -130,4 +130,6 @@
     <string name="msg.home_signed_in">Signed in</string>
     <!-- end of strings for toasts messages -->
 
+    <string name="default_notification_channel_id">Notifications from Travelling application.</string>
+
 </resources>
