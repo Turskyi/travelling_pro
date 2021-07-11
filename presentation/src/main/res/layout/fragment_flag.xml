@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <WebView
+    <io.github.turskyi.travellingpro.widgets.ListenableWebView
         android:id="@+id/wv_flag"
         style="@style/ImageViewStyle"
         android:layout_width="match_parent"
