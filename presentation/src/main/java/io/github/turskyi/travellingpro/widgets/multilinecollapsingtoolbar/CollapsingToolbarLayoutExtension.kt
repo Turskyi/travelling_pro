@@ -77,7 +77,6 @@ import kotlin.math.roundToInt
  * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_statusBarScrim
  * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_toolbarId
  */
-@SuppressLint("CustomViewStyleable")
 class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -162,7 +161,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         val parent = parent
         if (parent is AppBarLayout) {
             // Copy over from the ABL whether we should fit system windows
-            ViewCompat.setFitsSystemWindows(this, ViewCompat.getFitsSystemWindows(parent as View))
+            fitsSystemWindows = true
             if (mOnOffsetChangedListener == null) {
                 mOnOffsetChangedListener = OffsetUpdateListener()
             }
@@ -197,7 +196,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
 
         /* Consume the insets. This is done so that child views with fitSystemWindows=true do not
          * get the default padding functionality from View */
-        return insets.consumeSystemWindowInsets()
+        return WindowInsetsCompat.CONSUMED
     }
 
     override fun draw(canvas: Canvas) {
@@ -218,7 +217,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
 
         // Now draw the status bar scrim
         if (mStatusBarScrim != null && mScrimAlpha > 0) {
-            val topInset = if (mLastInsets != null) mLastInsets!!.systemWindowInsetTop else 0
+            val topInset = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
             if (topInset > 0) {
                 mStatusBarScrim!!.setBounds(
                     0, -mCurrentOffset, width,
@@ -332,7 +331,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         ensureToolbar()
         super.onMeasure(widthMeasureSpec, mHeightMeasureSpec)
         val mode = MeasureSpec.getMode(mHeightMeasureSpec)
-        val topInset = if (mLastInsets != null) mLastInsets!!.systemWindowInsetTop else 0
+        val topInset = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
             /* If we have a top inset and we're set to wrap_content height we need to make sure
              * we add the top inset to our height, therefore we re-measure */
@@ -347,7 +346,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         super.onLayout(changed, left, top, right, bottom)
         if (mLastInsets != null) {
             // Shift down any views which are not set to fit system windows
-            val insetTop: Int = mLastInsets!!.systemWindowInsetTop
+            val insetTop: Int = mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
             var i = 0
             val z = childCount
             while (i < z) {
@@ -929,7 +928,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             }
 
             // Otherwise we'll use the default computed value
-            val insetTop = if (mLastInsets != null) mLastInsets!!.systemWindowInsetTop else 0
+            val insetTop = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
             val minHeight: Int = ViewCompat.getMinimumHeight(this)
             return if (minHeight > 0) {
                 // If we have a minHeight set, lets use 2 * minHeight (capped at our height)
@@ -1065,21 +1064,21 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     private inner class OffsetUpdateListener : AppBarLayout.OnOffsetChangedListener {
         override fun onOffsetChanged(layout: AppBarLayout?, verticalOffset: Int) {
             mCurrentOffset = verticalOffset
-            val insetTop: Int = if (mLastInsets != null) mLastInsets!!.systemWindowInsetTop else 0
+            val insetTop: Int = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
             var i = 0
-            val z = childCount
-            while (i < z) {
-                val child = getChildAt(i)
-                val lp = child.layoutParams as LayoutParams
+            val childCount: Int = childCount
+            while (i < childCount) {
+                val child: View = getChildAt(i)
+                val layoutParams: LayoutParams = child.layoutParams as LayoutParams
                 val offsetHelper: ViewOffsetHelper = getViewOffsetHelper(child)
-                when (lp.collapseMode) {
+                when (layoutParams.collapseMode) {
                     LayoutParams.COLLAPSE_MODE_PIN -> offsetHelper.setTopAndBottomOffset(
                         MathUtils.clamp(
                             -verticalOffset, 0, getMaxOffsetForPinChild(child)
                         )
                     )
                     LayoutParams.COLLAPSE_MODE_PARALLAX -> offsetHelper.setTopAndBottomOffset(
-                        (-verticalOffset * lp.parallaxMultiplier).roundToInt()
+                        (-verticalOffset * layoutParams.parallaxMultiplier).roundToInt()
                     )
                 }
                 i++
