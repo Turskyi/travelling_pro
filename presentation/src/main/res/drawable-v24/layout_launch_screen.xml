@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The android: opacity = ”opaque” attribute is extremely important to prevent colorBlack flashes
+ when moving to home theme. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
+    <item android:drawable="@drawable/bg_dark_space"/>
+    <item android:drawable="@drawable/pic_logo"
+        android:width="@dimen/width_splash_logo"
+        android:height="@dimen/height_splash_logo"
+        android:gravity="center"/>
+</layer-list>

@@ -36,7 +36,7 @@ val dataProvidersModule = module {
                 } else {
                     request.newBuilder().header(
                         "Cache-Control",
-                        "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7
+                        "public, only-if-cached, max-stale=" + (60 * 60 * 24 * 7)
                     ).build()
                 }
                 chain.proceed(request)

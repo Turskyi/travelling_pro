@@ -33,6 +33,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- [START fcm_default_icon] -->
+        <!-- Default icon. This is used when no icon is set for incoming notification messages.
+              -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/pic_logo" />
+        <!-- This color used with incoming notification messages.
+         This is used when no color is set for the incoming
+             notification message.  -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorLightGrey" />
+        <!-- [END fcm_default_icon] -->
+
+        <!-- [START fcm_default_channel] -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        <!-- [END fcm_default_channel] -->
+
         <activity
             android:name="io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity"
             android:label="@string/app_name"
@@ -69,7 +89,6 @@
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="@string/content_provider"
             android:exported="true"
-            tools:replace="android:authorities"
             tools:ignore="ExportedContentProvider" />
 
         <meta-data
@@ -77,7 +96,7 @@
             android:value="@string/facebook_app_id"
             tools:replace="android:value" />
 
-        <!-- To use Facebook Login or Share, also add the FacebookActivity to the manifest:-->
+        <!-- To use Facebook Login or Share -->
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -94,5 +113,15 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+        <!-- [START firebase_service] -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- [END firebase_service] -->
     </application>
 </manifest>

@@ -6,8 +6,8 @@ import io.github.turskyi.data.firebase.service.FirestoreSource
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
 import io.github.turskyi.domain.repository.CountriesRepository
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
 

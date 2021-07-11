@@ -44,7 +44,7 @@ class AllCountriesActivity : AppCompatActivity() {
         binding = ActivityAllCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.etSearch.isFocusableInTouchMode = true
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorBlack)
+        window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
         adapter.submitList(viewModel.pagedList)
         val layoutManager = LinearLayoutManager(this)
         binding.rvAllCountries.adapter = adapter

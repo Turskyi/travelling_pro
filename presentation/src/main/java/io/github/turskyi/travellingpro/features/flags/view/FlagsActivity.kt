@@ -62,7 +62,7 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorBlack)
+        window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
         initAdapter()
     }
 
