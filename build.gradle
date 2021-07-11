@@ -22,6 +22,8 @@ buildscript {
         classpath "com.google.gms:google-services:$google_services_version"
         // Crashlytics Gradle plugin
         classpath "com.google.firebase:firebase-crashlytics-gradle:$firebase_crashlytics_gradle_version"
+       // the dependency for the Performance Monitoring plugin
+        classpath 'com.google.firebase:perf-plugin:1.4.0'
     }
 }
 
