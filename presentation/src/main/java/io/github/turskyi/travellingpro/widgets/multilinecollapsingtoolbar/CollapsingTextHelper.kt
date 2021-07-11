@@ -731,6 +731,7 @@ internal class CollapsingTextHelper(private val mView: View) {
             mTextPaint.typeface = mCurrentTypeface
 
             //  Text layout creation and text truncation
+            @Suppress("DEPRECATION")
             val layout = StaticLayout(
                 mText, mTextPaint,
                 availableWidth.toInt(),
@@ -774,6 +775,7 @@ internal class CollapsingTextHelper(private val mView: View) {
                  Gravity.START -> Layout.Alignment.ALIGN_NORMAL
                 else -> Layout.Alignment.ALIGN_NORMAL
             }
+            @Suppress("DEPRECATION")
             mTextLayout = StaticLayout(
                 mTextToDraw, mTextPaint, availableWidth.toInt(),
                 alignment, lineSpacingMultiplier, lineSpacingExtra, false
