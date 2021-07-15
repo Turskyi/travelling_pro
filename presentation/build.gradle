@@ -94,7 +94,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
     implementation "com.google.firebase:firebase-database-ktx:$firebase_storage_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
-    implementation 'com.google.firebase:firebase-perf:20.0.1'
+    implementation 'com.google.firebase:firebase-perf:20.0.2'
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
 
     // ViewModel and LiveData
@@ -134,11 +134,11 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
     // Facebook SDK
-    def facebookVersion = "8.1.0"
+    def facebookVersion = "11.1.0"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
-    implementation 'com.facebook.android:facebook-android-sdk:5.1.1'
+    implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
 
     // used for animation
     def lottieVersion = "3.4.4"

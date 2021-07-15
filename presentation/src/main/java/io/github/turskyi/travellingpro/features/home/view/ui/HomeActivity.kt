@@ -43,15 +43,15 @@ import java.util.*
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private lateinit var binding: ActivityHomeBinding
-    private var authorizationResultLauncher: ActivityResultLauncher<Intent>? = null
+    private lateinit var authorizationResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var internetResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
 
     private var backPressedTiming: Long = 0
     private var mLastClickTime: Long = 0
 
-    private val viewModel by inject<HomeActivityViewModel>()
-    private val homeAdapter by inject<HomeAdapter>()
+    private val viewModel: HomeActivityViewModel by inject()
+    private val homeAdapter: HomeAdapter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -72,7 +72,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     /**
      * Calling when "add city dialogue" dismissed.
      */
-    override fun onDismiss(dialogInterface: DialogInterface?) = viewModel.showListOfCountries()
+    override fun onDismiss(dialogInterface: DialogInterface?) = viewModel.showListOfVisitedCountries()
 
     override fun onBackPressed() {
         if (backPressedTiming + TIME_INTERVAL > System.currentTimeMillis()) {
@@ -101,14 +101,16 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult)
         when (requestCode) {
-            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> if ((grantResult.isNotEmpty()
-                        && grantResult[0] == PackageManager.PERMISSION_GRANTED)
-            ) {
-                /** we got here only the first time, when permission is received */
-                isPermissionGranted = true
-                initAuthentication(authorizationResultLauncher!!)
-            } else {
-                requestPermission(this)
+            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> {
+                if ((grantResult.isNotEmpty()
+                            && grantResult[0] == PackageManager.PERMISSION_GRANTED)
+                ) {
+                    // we got here only the first time, when permission is received
+                    isPermissionGranted = true
+                    initAuthentication()
+                } else {
+                    requestPermission(this)
+                }
             }
         }
     }
@@ -240,17 +242,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         }
     }
 
-    /** must be open to use it in permission handler */
-    fun initAuthentication() {
-        if (authorizationResultLauncher != null) {
-            initAuthentication(authorizationResultLauncher!!)
-        } else {
-            /* this case is never happened before */
-            registerAuthorization()
-            initAuthentication(authorizationResultLauncher!!)
-        }
-    }
-
     /** must be open to use it in custom "circle pie chart" widget */
     fun setTitle() = if (viewModel.citiesCount > 0) {
         showTitleWithCitiesAndCountries()
@@ -273,7 +264,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     internetResultLauncher.launch(internetSettingsIntent)
                     return@registerForActivityResult
                 } else {
-                    val response = IdpResponse.fromResultIntent(result.data)
+                    val response: IdpResponse? = IdpResponse.fromResultIntent(result.data)
                     when {
                         response == null -> {
                             // User pressed back button
@@ -299,10 +290,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private fun initPersonalization() {
         toast(R.string.msg_home_signed_in)
-        authorizationResultLauncher?.unregister()
+        authorizationResultLauncher.unregister()
         // Successfully signed in
         binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
-        viewModel.showListOfCountries()
+        viewModel.showListOfVisitedCountries()
     }
 
     private fun registerAllCountriesActivityResultLauncher() {
@@ -312,7 +303,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             if (result.resultCode == RESULT_OK) {
                 // New Country is added to list of visited countries
                 binding.floatBtnLarge.hide()
-                viewModel.showListOfCountries()
+                viewModel.showListOfVisitedCountries()
             } else {
                 // did not added country to visited list
                 when (result.resultCode) {
@@ -349,7 +340,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         homeAdapter.setList(visitedCountries)
     }
 
-    private fun initTitleWithNumberOf(visitedCountries: List<VisitedCountry>) =
+    private fun initTitleWithNumberOf(visitedCountries: List<VisitedCountry>) {
         if (viewModel.citiesCount == 0) {
             binding.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
@@ -385,6 +376,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 }"
             }
         }
+    }
 
     private fun showTitleWithCitiesAndCountries() =
         viewModel.visitedCountriesWithCities.observe(this, { countries ->
@@ -427,7 +419,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             )
         })
 
-    private fun initAuthentication(authorizationResultLauncher: ActivityResultLauncher<Intent>) =
+    /** [initAuthentication] must be open to use it in permission handler */
+    fun initAuthentication() {
         if (isOnline()) {
             authorizationResultLauncher.launch(getAuthorizationIntent())
         } else {
@@ -435,6 +428,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
             internetResultLauncher.launch(internetSettingsIntent)
         }
+    }
 
     private fun getAuthorizationIntent(): Intent {
         // Choosing authentication providers

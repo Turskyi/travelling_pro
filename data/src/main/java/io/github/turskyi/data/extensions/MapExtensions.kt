@@ -31,12 +31,15 @@ fun List<CityEntity>.mapEntitiesToModelList() = mapTo(
 fun List<CountryEntity>.mapEntityListToModelList() = mapTo(
     mutableListOf(), { countryEntity -> countryEntity.mapEntityToModel() })
 
-fun CountryEntity.mapCountryToVisitedCountry() =
-    VisitedCountryEntity(id = id, name = name, flag = flag, selfie = null, selfieName = null)
+fun CountryEntity.mapCountryToVisitedCountry(): VisitedCountryEntity {
+    return VisitedCountryEntity(id = id, name = name, flag = flag)
+}
 
-fun VisitedCountryEntity.mapVisitedCountryToCountry() =
-    CountryModel(id = id, name = name, flag = flag, selfie = selfie, selfieName = selfieName)
+fun VisitedCountryEntity.mapVisitedCountryToCountry(): CountryModel {
+    return CountryModel(id = id, name = name, flag = flag, selfie = selfie, selfieName = selfieName)
+}
 
-fun List<VisitedCountryEntity>.mapVisitedCountriesToModelList() = mapTo(
-    mutableListOf(), { countryEntity -> countryEntity.mapVisitedCountryToCountry() })
+fun List<VisitedCountryEntity>.mapVisitedCountriesToModelList(): MutableList<CountryModel> {
+    return mapTo(mutableListOf(), { countryEntity -> countryEntity.mapVisitedCountryToCountry() })
+}
 

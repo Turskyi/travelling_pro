@@ -35,12 +35,12 @@ class CountriesInteractor : KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = repository.refreshCountriesInDb(onSusses, onError)
 
-    suspend fun getNotVisitedCountriesNum(
+    suspend fun setNotVisitedCountriesNum(
         onSusses: (Int) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = repository.getCountNotVisitedCountries(onSusses, onError)
 
-    suspend fun getVisitedModelCountries(
+    suspend fun setVisitedModelCountries(
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = repository.getVisitedModelCountries(onSuccess, onError)

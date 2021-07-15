@@ -23,7 +23,7 @@ buildscript {
         // Crashlytics Gradle plugin
         classpath "com.google.firebase:firebase-crashlytics-gradle:$firebase_crashlytics_gradle_version"
        // the dependency for the Performance Monitoring plugin
-        classpath 'com.google.firebase:perf-plugin:1.4.0'
+        classpath "com.google.firebase:perf-plugin:$firebase_perf_version"
     }
 }
 

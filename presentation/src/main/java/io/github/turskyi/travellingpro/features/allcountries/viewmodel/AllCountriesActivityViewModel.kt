@@ -77,7 +77,7 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
     }
 
     private fun getNotVisitedCountriesNum() = viewModelScope.launch {
-        interactor.getNotVisitedCountriesNum({ num ->
+        interactor.setNotVisitedCountriesNum({ num ->
             _notVisitedCountriesNumLiveData.postValue(num)
         }, { exception ->
             _visibilityLoader.postValue(GONE)

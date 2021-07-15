@@ -11,11 +11,11 @@ import io.github.turskyi.travellingpro.extensions.getHomeActivity
 object PermissionHandler {
     var isPermissionGranted = false
     fun checkPermissionAndInitAuthentication(activity: AppCompatActivity) {
-        val locationPermission = ContextCompat.checkSelfPermission(
+        val locationPermission: Int = ContextCompat.checkSelfPermission(
             activity,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
-        val externalStoragePermission =
+        val externalStoragePermission: Int =
             ContextCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE

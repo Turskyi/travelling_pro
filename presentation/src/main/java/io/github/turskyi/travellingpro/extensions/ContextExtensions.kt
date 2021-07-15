@@ -120,7 +120,7 @@ fun Context.isOnline(): Boolean {
             )
         } else false
     } else {
-        /* Initial Value */
+        // Initial Value
         var isConnected: Boolean? = false
         val connectivityManager =
             this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
