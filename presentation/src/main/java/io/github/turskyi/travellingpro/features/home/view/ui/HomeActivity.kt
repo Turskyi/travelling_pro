@@ -20,8 +20,6 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.common.Constants.ACCESS_LOCATION_AND_EXTERNAL_STORAGE
-import io.github.turskyi.travellingpro.common.Constants.TIME_INTERVAL
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
 import io.github.turskyi.travellingpro.decoration.SectionAverageGapItemDecoration
 import io.github.turskyi.travellingpro.extensions.*
@@ -72,10 +70,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     /**
      * Calling when "add city dialogue" dismissed.
      */
-    override fun onDismiss(dialogInterface: DialogInterface?) = viewModel.showListOfVisitedCountries()
+    override fun onDismiss(dialogInterface: DialogInterface?) =
+        viewModel.showListOfVisitedCountries()
 
     override fun onBackPressed() {
-        if (backPressedTiming + TIME_INTERVAL > System.currentTimeMillis()) {
+        if (backPressedTiming + resources.getInteger(R.integer.desired_time_interval) > System.currentTimeMillis()) {
             super.onBackPressed()
             return
         } else {
@@ -101,7 +100,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult)
         when (requestCode) {
-            ACCESS_LOCATION_AND_EXTERNAL_STORAGE -> {
+            resources.getInteger(R.integer.location_and_storage_request_code) -> {
                 if ((grantResult.isNotEmpty()
                             && grantResult[0] == PackageManager.PERMISSION_GRANTED)
                 ) {

@@ -1,5 +1,7 @@
 <resources>
-    <!-- not translatable -->
+    <!-- START of not translatable -->
+
+    <string name="share_massage" translatable="false">#travelling_the_world \n https://play.google.com/store/apps/details?id=%1$s</string>
     <string name="home_dialog_date_format" translatable="false">MMMM yyyy</string>
     <string name="file_provider" translatable="false">.fileprovider</string>
     <string name="dir_screenshots" translatable="false">screenshots</string>
@@ -18,6 +20,7 @@
     </head>
     <body><img src=\'%1$s\'/></body>
     </html>]]></string>
+    <string name="default_notification_channel_id" translatable="false">Notifications from Travelling application.</string>
 
     <!-- for face book sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
@@ -28,7 +31,8 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb2312394202364807</string>
     <!-- for general use of facebook auth-->
     <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
-    <!-- end of not translatable strings -->
+
+    <!-- END of not translatable strings -->
 
     <!-- default  strings -->
     <string name="app_name">Travelling Pro</string>
@@ -129,7 +133,5 @@
     <string name="msg.exception_flag_listener">%1$s must implement OnFlagFragmentListener</string>
     <string name="msg.home_signed_in">Signed in</string>
     <!-- end of strings for toasts messages -->
-
-    <string name="default_notification_channel_id">Notifications from Travelling application.</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.net.Uri
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -17,8 +18,9 @@ import com.facebook.share.model.ShareMediaContent
 import com.facebook.share.model.SharePhoto
 import com.facebook.share.widget.ShareDialog
 import com.google.android.material.snackbar.Snackbar
+import io.github.turskyi.travellingpro.BuildConfig
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.common.Constants
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,9 +83,9 @@ fun View.shareImageViaChooser() {
                 Locale.ENGLISH
             ).format(Date())
         }.jpg"
-    val bitmap = getScreenShot()
-    val file = bitmap?.convertBitmapToFile(context, fileName)
-    val uri = file?.let { screenShootFile ->
+    val bitmap: Bitmap? = getScreenShot()
+    val file: File? = bitmap?.convertBitmapToFile(context, fileName)
+    val uri: Uri? = file?.let { screenShootFile ->
         FileProvider.getUriForFile(
             context,
             context.packageName.toString()
@@ -98,11 +100,10 @@ fun View.shareImageViaChooser() {
     intentImage.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     intentImage.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
     intentImage.putExtra(
-        Intent.EXTRA_TEXT,
-        "#travelling_the_world \n ${Constants.GOOGLE_PLAY_ADDRESS}"
+        Intent.EXTRA_TEXT, resources.getString(R.string.share_massage, BuildConfig.APPLICATION_ID)
     )
     intentImage.putExtra(Intent.EXTRA_STREAM, uri)
-    val chooser =  Intent.createChooser(
+    val chooser = Intent.createChooser(
         intentImage,
         context.getString(R.string.share_title)
     )
@@ -127,9 +128,9 @@ fun View.shareImageViaChooser() {
 
 
 fun View.shareViaFacebook(fragment: Fragment) {
-    val webAddress =
+    val webAddress: ShareHashtag =
         ShareHashtag.Builder()
-            .setHashtag("#travelling_the_world \n ${Constants.GOOGLE_PLAY_ADDRESS}")
+            .setHashtag(resources.getString(R.string.share_massage, BuildConfig.APPLICATION_ID))
             .build()
     val bitmap = getScreenShot()
     val sharePhoto = SharePhoto.Builder().setBitmap(bitmap).setCaption(

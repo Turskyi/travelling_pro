@@ -24,7 +24,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import org.koin.android.ext.android.inject
-import io.github.turskyi.travellingpro.common.Constants.ACCESS_LOCATION
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.extensions.isOnline
 import io.github.turskyi.travellingpro.extensions.toast
@@ -182,7 +181,7 @@ class AddCityDialogFragment : DialogFragment() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == ACCESS_LOCATION) {
+        if (requestCode == resources.getInteger(R.integer.location_access_request_code)) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 etCity?.let { inputField -> addCityTo(inputField) }
             } else {
@@ -233,7 +232,7 @@ class AddCityDialogFragment : DialogFragment() {
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
-                ACCESS_LOCATION
+                resources.getInteger(R.integer.location_access_request_code)
             )
         } else {
             val findLastLocationTask: Task<Location> = fusedLocationClient.lastLocation

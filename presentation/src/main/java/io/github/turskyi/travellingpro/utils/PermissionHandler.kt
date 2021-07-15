@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import io.github.turskyi.travellingpro.common.Constants
+import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.extensions.getHomeActivity
 
 object PermissionHandler {
@@ -38,6 +38,7 @@ object PermissionHandler {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ).toTypedArray(),
-        Constants.ACCESS_LOCATION_AND_EXTERNAL_STORAGE
+        activity.applicationContext.resources.getInteger(R.integer.location_and_storage_request_code)
+
     )
 }
