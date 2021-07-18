@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.extensions
+package io.github.turskyi.travellingpro.utils.extensions
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -24,22 +24,20 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 fun View.setDynamicVisibility(visibility: Boolean) = if (visibility) {
     this.animate().alpha(1.0f).duration = 2000
 } else {
     this.animate().alpha(0.0f).duration = 200
 }
 
-fun View.convertViewToBitmap(): Bitmap? {
-    val bitmap =
-        Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888)
+fun View.convertViewToBitmap(): Bitmap {
+    val bitmap: Bitmap = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     this.draw(canvas)
     return bitmap
 }
 
-fun View.getScreenShot() = convertViewToBitmap()?.let { Bitmap.createBitmap(it) }
+fun View.getScreenShot(): Bitmap = Bitmap.createBitmap(convertViewToBitmap())
 
 /**
  * Show a snackbar with [messageRes]
@@ -76,27 +74,24 @@ inline fun View.showSnackWithAction(
 fun View.toast(@StringRes msgResId: Int) = context.toast(msgResId)
 
 fun View.shareImageViaChooser() {
-    val fileName =
-        "piechart${
-            SimpleDateFormat(
-                context.getString(R.string.day_month_year),
-                Locale.ENGLISH
-            ).format(Date())
-        }.jpg"
-    val bitmap: Bitmap? = getScreenShot()
-    val file: File? = bitmap?.convertBitmapToFile(context, fileName)
-    val uri: Uri? = file?.let { screenShootFile ->
-        FileProvider.getUriForFile(
-            context,
-            context.packageName.toString()
-                    + context.resources.getString(R.string.file_provider),
-            screenShootFile
-        )
-    }
+    val fileName: String = resources.getString(
+        R.string.picture_file_name,
+        SimpleDateFormat(
+            resources.getString(R.string.day_month_year),
+            Locale.ENGLISH
+        ).format(Date())
+    )
+    val bitmap: Bitmap = getScreenShot()
+    val file: File = bitmap.convertBitmapToFile(context, fileName)
+    val uri: Uri? = FileProvider.getUriForFile(
+        context,
+        context.packageName.toString() + context.resources.getString(R.string.file_provider),
+        file
+    )
 
     val intentImage = Intent()
     intentImage.action = Intent.ACTION_SEND
-    intentImage.type = "image/*"
+    intentImage.type = resources.getString(R.string.image_type)
     intentImage.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     intentImage.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
     intentImage.putExtra(
@@ -132,17 +127,17 @@ fun View.shareViaFacebook(fragment: Fragment) {
         ShareHashtag.Builder()
             .setHashtag(resources.getString(R.string.share_massage, BuildConfig.APPLICATION_ID))
             .build()
-    val bitmap = getScreenShot()
+    val bitmap: Bitmap = getScreenShot()
     val sharePhoto = SharePhoto.Builder().setBitmap(bitmap).setCaption(
-        "piechart${
-            SimpleDateFormat(
+        resources.getString(
+            R.string.picture_name, SimpleDateFormat(
                 context.getString(R.string.day_month_year),
                 Locale.ENGLISH
             ).format(Date())
-        }"
+        )
     )
         .build()
-    val mediaContent = ShareMediaContent.Builder()
+    val mediaContent: ShareMediaContent = ShareMediaContent.Builder()
         .addMedium(sharePhoto)
         .setShareHashtag(webAddress)
         .build()

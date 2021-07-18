@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.extensions
+package io.github.turskyi.travellingpro.utils.extensions
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData

@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.extensions
+package io.github.turskyi.travellingpro.utils.extensions
 
 import android.content.Context
 import android.graphics.Bitmap

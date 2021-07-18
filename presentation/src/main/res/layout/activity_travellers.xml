@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tool="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:animationCache="true"
     android:background="@android:color/black"
     android:persistentDrawingCache="animation"
-    tool:context=".features.allcountries.view.ui.AllCountriesActivity">
+    tools:context=".features.travellers.view.TravellersActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/offset8"
@@ -29,7 +31,7 @@
                 android:gravity="top"
                 app:contentInsetStartWithNavigation="0dp"
                 app:navigationIcon="?attr/homeAsUpIndicator"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
                 app:theme="@style/ToolbarTitleStyle">
 
                 <TextView
@@ -37,7 +39,7 @@
                     style="@style/ToolbarTitleStyle"
                     android:layout_marginEnd="@dimen/offset_29"
                     android:fontFamily="casual"
-                    tool:text="250 visitedCountryNodes remain to visit" />
+                    tools:text="250 travellers visited more countries than you" />
             </androidx.appcompat.widget.Toolbar>
 
             <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
@@ -70,19 +72,20 @@
                     android:layout_height="wrap_content"
                     android:autofillHints="country"
                     android:background="@android:color/transparent"
-                    android:hint="@string/hint.search_country"
-                    android:inputType="textCapSentences"
+                    android:hint="@string/hint.search_traveller"
+                    android:inputType="textPersonName"
                     android:labelFor="@+id/ib_search"
                     android:maxLength="100"
                     android:paddingStart="@dimen/offset8"
                     android:paddingEnd="@dimen/offset8"
                     android:singleLine="true" />
             </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_all_countries"
+        android:id="@+id/rv_travellers"
         style="@style/RecyclerViewStyle"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
@@ -126,6 +129,6 @@
         app:maxImageSize="@dimen/size_all_countries_fab_max_image"
         app:srcCompat="@drawable/btn_info_ripple"
         app:useCompatPadding="true"
-        tool:visibility="visible" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        tools:visibility="visible"/>
 
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,9 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings.ACTION_WIRELESS_SETTINGS
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +23,7 @@ import com.firebase.ui.auth.IdpResponse
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
 import io.github.turskyi.travellingpro.decoration.SectionAverageGapItemDecoration
-import io.github.turskyi.travellingpro.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.*
 import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
@@ -34,7 +32,7 @@ import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
 import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.models.VisitedCountry
+import io.github.turskyi.travellingpro.models.VisitedCountryNode
 import org.koin.android.ext.android.inject
 import java.util.*
 
@@ -44,9 +42,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     private val homeAdapter: HomeAdapter by inject()
 
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var authorizationResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var internetResultLauncher: ActivityResultLauncher<Intent>
-    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -62,6 +60,13 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         super.onResume()
         // makes info icon visible
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // makes social network icon visible
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_travellers, menu)
+        return true
     }
 
     /**
@@ -85,6 +90,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         return when (item.itemId) {
             android.R.id.home -> {
                 openInfoDialog(R.string.txt_info_home)
+                true
+            }
+            R.id.action_travellers -> {
+//                TODO: open screen with list of users
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -136,41 +145,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         initGravityForTitle()
     }
 
-    private fun checkPermissionAndInitAuthentication(activity: AppCompatActivity) {
-        val locationPermission: Int = ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-        val externalStoragePermission: Int = ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        if (locationPermission != PackageManager.PERMISSION_GRANTED
-            && externalStoragePermission != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermission(activity)
-        } else {
-            /* we are getting here every time except the first time,
-             * since permission is already received */
-            viewModel.isPermissionGranted = true
-            initAuthentication()
-        }
-    }
-
-    private fun requestPermission(activity: AppCompatActivity) = ActivityCompat.requestPermissions(
-        activity,
-        listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ).toTypedArray(),
-        resources.getInteger(R.integer.location_and_storage_request_code)
-    )
-
     private fun initListeners() {
         homeAdapter.apply {
             onFlagClickListener = { country ->
                 // mis-clicking prevention, using threshold of 1000 ms
-                if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > 1000) {
+                if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > resources.getInteger(R.integer.click_interval)) {
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(EXTRA_POSITION, getItemPosition(country))
                         viewModel.visitedCountries.value?.size?.let { itemCount ->
@@ -208,7 +187,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     private fun initObservers() {
-        viewModel.visitedCountriesWithCities.observe(this, { visitedCountries ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
             initTitleWithNumberOf(visitedCountries)
             updateAdapterWith(visitedCountries)
         })
@@ -240,6 +219,36 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             }
         })
     }
+
+    private fun checkPermissionAndInitAuthentication(activity: AppCompatActivity) {
+        val locationPermission: Int = ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val externalStoragePermission: Int = ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (locationPermission != PackageManager.PERMISSION_GRANTED
+            && externalStoragePermission != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermission(activity)
+        } else {
+            /* we are getting here every time except the first time,
+             * since permission is already received */
+            viewModel.isPermissionGranted = true
+            initAuthentication()
+        }
+    }
+
+    private fun requestPermission(activity: AppCompatActivity) = ActivityCompat.requestPermissions(
+        activity,
+        listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).toTypedArray(),
+        resources.getInteger(R.integer.location_and_storage_request_code)
+    )
 
     private fun registerActivitiesForResult() {
         registerAuthorization()
@@ -360,23 +369,23 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         }
     }
 
-    private fun updateAdapterWith(visitedCountries: List<VisitedCountry>) {
+    private fun updateAdapterWith(visitedCountryNodes: List<VisitedCountryNode>) {
         // makes all list items collapsed
-        for (countryNode in visitedCountries) {
+        for (countryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
         }
-        homeAdapter.setList(visitedCountries)
+        homeAdapter.setList(visitedCountryNodes)
     }
 
-    private fun initTitleWithNumberOf(visitedCountries: List<VisitedCountry>) {
+    private fun initTitleWithNumberOf(visitedCountryNodes: List<VisitedCountryNode>) {
         if (viewModel.citiesCount == 0) {
             binding.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
-                visitedCountries.size,
-                visitedCountries.size
+                visitedCountryNodes.size,
+                visitedCountryNodes.size
             )
         } else {
-            if (viewModel.citiesCount > visitedCountries.size) {
+            if (viewModel.citiesCount > visitedCountryNodes.size) {
                 binding.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
@@ -385,21 +394,21 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     )
                 } ${
                     resources.getQuantityString(
-                        R.plurals.numberOfCountriesOfCitiesVisited, visitedCountries.size,
-                        visitedCountries.size
+                        R.plurals.numberOfCountriesOfCitiesVisited, visitedCountryNodes.size,
+                        visitedCountryNodes.size
                     )
                 }"
             } else {
                 binding.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
-                        visitedCountries.size,
-                        visitedCountries.size
+                        visitedCountryNodes.size,
+                        visitedCountryNodes.size
                     )
                 } ${
                     resources.getQuantityString(
-                        R.plurals.numberOfCountriesOfCitiesVisited, visitedCountries.size,
-                        visitedCountries.size
+                        R.plurals.numberOfCountriesOfCitiesVisited, visitedCountryNodes.size,
+                        visitedCountryNodes.size
                     )
                 }"
             }
@@ -407,7 +416,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     private fun showTitleWithCitiesAndCountries() {
-        viewModel.visitedCountriesWithCities.observe(this, { countries ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { countries ->
             if (viewModel.citiesCount > countries.size) {
                 binding.toolbarLayout.title = "${
                     resources.getQuantityString(
@@ -440,7 +449,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     /** must be open to use it in custom "circle pie chart" widget */
     fun showTitleWithOnlyCountries() {
-        viewModel.visitedCountriesWithCities.observe(this, { countryList ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { countryList ->
             binding.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
                 countryList.size,

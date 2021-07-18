@@ -1,12 +1,14 @@
 package io.github.turskyi.travellingpro.models
 
-import com.chad.library.adapter.base.entity.node.BaseExpandNode
-import com.chad.library.adapter.base.entity.node.BaseNode
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-class VisitedCountry(
+@Parcelize
+data class VisitedCountry(
     var id: Int,
+    val title: String,
     var flag: String,
-    var isVisited: Boolean?,
     var selfie: String?,
     var selfieName: String?,
-    override var childNode: MutableList<BaseNode>? = null, val title: String) : BaseExpandNode()
+    var cities: List<City>,
+) : Parcelable

@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityAllCountriesBinding
-import io.github.turskyi.travellingpro.extensions.openInfoDialog
-import io.github.turskyi.travellingpro.extensions.toastLong
+import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
 import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
 import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.utils.hideKeyboard
-import io.github.turskyi.travellingpro.utils.showKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
 import org.koin.android.ext.android.inject
 
 class AllCountriesActivity : AppCompatActivity() {

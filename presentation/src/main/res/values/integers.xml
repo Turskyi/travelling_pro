@@ -2,6 +2,7 @@
 <resources>
 <!--    # milliseconds, desired time passed between two back presses. -->
     <integer name="desired_time_interval">2000</integer>
+    <integer name="click_interval">1000</integer>
     <!-- Constants for the app. -->
     <integer name="location_and_storage_request_code">10001</integer>
     <integer name="location_access_request_code">10002</integer>

@@ -1,4 +1,4 @@
-package io.github.turskyi.domain.interactor
+package io.github.turskyi.domain.interactors
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

@@ -16,7 +16,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.models.VisitedCountry
+import io.github.turskyi.travellingpro.models.VisitedCountryNode
 
 class CountryNodeProvider : BaseNodeProvider() {
     override val itemViewType: Int
@@ -25,37 +25,37 @@ class CountryNodeProvider : BaseNodeProvider() {
     override val layoutId: Int
         get() = R.layout.item_list_country
 
-    var onImageClickListener: ((data: VisitedCountry) -> Unit)? = null
-    var onTextClickListener: ((data: VisitedCountry) -> Unit)? = null
-    var onLongLickListener: ((data: VisitedCountry) -> Unit)? = null
+    var onImageClickListener: ((data: VisitedCountryNode) -> Unit)? = null
+    var onTextClickListener: ((data: VisitedCountryNode) -> Unit)? = null
+    var onLongLickListener: ((data: VisitedCountryNode) -> Unit)? = null
 
     override fun convert(
         helper: BaseViewHolder,
         item: BaseNode
     ) {
-        val visitedCountry: VisitedCountry = item as VisitedCountry
+        val visitedCountryNode: VisitedCountryNode = item as VisitedCountryNode
         helper.getView<TextView>(R.id.tv_country).setOnLongClickListener {
-            onLongLickListener?.invoke(visitedCountry)
+            onLongLickListener?.invoke(visitedCountryNode)
             true
         }
         showPicturesInSVG(item, helper)
-        helper.setText(R.id.tv_country, visitedCountry.title)
+        helper.setText(R.id.tv_country, visitedCountryNode.title)
         setSelectableBorderLessFor(helper.getView<ImageView>(R.id.iv_flag))
         helper.getView<ImageView>(R.id.iv_flag).setOnClickListener {
-            onImageClickListener?.invoke(visitedCountry)
+            onImageClickListener?.invoke(visitedCountryNode)
         }
         setSelectableBorderLessFor(helper.getView<WebView>(R.id.wv_flag))
         helper.getView<WebView>(R.id.wv_flag).setOnClickListener {
-            onImageClickListener?.invoke(visitedCountry)
+            onImageClickListener?.invoke(visitedCountryNode)
         }
         setSelectableBackgroundFor(helper.getView<TextView>(R.id.tv_country))
         helper.getView<TextView>(R.id.tv_country).setOnClickListener {
-            onTextClickListener?.invoke(visitedCountry)
+            onTextClickListener?.invoke(visitedCountryNode)
         }
         if (item.childNode.isNullOrEmpty()) {
             helper.setVisible(R.id.iv_more, false)
         } else {
-            if (visitedCountry.isExpanded) {
+            if (visitedCountryNode.isExpanded) {
                 helper.setImageResource(
                     R.id.iv_more,
                     R.drawable.ic_arrow_expandable_up
@@ -86,16 +86,16 @@ class CountryNodeProvider : BaseNodeProvider() {
     }
 
     private fun showPicturesInSVG(
-        visitedCountry: VisitedCountry,
+        visitedCountryNode: VisitedCountryNode,
         holder: BaseViewHolder
     ) {
-        val uri: Uri = Uri.parse(visitedCountry.flag)
+        val uri: Uri = Uri.parse(visitedCountryNode.flag)
         GlideToVectorYou
             .init()
             .with(holder.itemView.context)
             .withListener(object : GlideToVectorYouListener {
                 override fun onLoadFailed() {
-                    showPicturesInWebView(holder, visitedCountry)
+                    showPicturesInWebView(holder, visitedCountryNode)
                 }
 
                 override fun onResourceReady() {
@@ -109,7 +109,7 @@ class CountryNodeProvider : BaseNodeProvider() {
 
     private fun showPicturesInWebView(
         holder: BaseViewHolder,
-        visitedCountry: VisitedCountry
+        visitedCountryNode: VisitedCountryNode
     ) {
         holder.itemView.findViewById<ImageView>(R.id.iv_flag).visibility = GONE
         val wvFlag = holder.itemView.findViewById<WebView>(R.id.wv_flag)
@@ -120,7 +120,7 @@ class CountryNodeProvider : BaseNodeProvider() {
             loadData(
                 "<html><head><style type='text/css'>" +
                         "body{margin:auto auto;text-align:center;} img{width:80%25;}" +
-                        " </style></head><body><img src='${visitedCountry.flag}'/>" +
+                        " </style></head><body><img src='${visitedCountryNode.flag}'/>" +
                         "</body></html>", "text/html", "UTF-8"
             )
         }

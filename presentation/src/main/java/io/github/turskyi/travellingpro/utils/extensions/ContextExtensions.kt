@@ -1,6 +1,5 @@
-package io.github.turskyi.travellingpro.extensions
+package io.github.turskyi.travellingpro.utils.extensions
 
-import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -76,6 +75,11 @@ fun Context.convertPictureToSpannableString(imgRes: Int): SpannableString {
 fun <T> Context.openActivityWithArgs(destination: Class<T>, extras: Bundle.() -> Unit = {}) {
     val intent = Intent(this, destination)
     intent.putExtras(Bundle().apply(extras))
+    startActivity(intent)
+}
+
+fun <T> Context.openActivity(destination: Class<T>) {
+    val intent = Intent(this, destination)
     startActivity(intent)
 }
 

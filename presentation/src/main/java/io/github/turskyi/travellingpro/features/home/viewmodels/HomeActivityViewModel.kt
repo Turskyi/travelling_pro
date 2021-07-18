@@ -7,12 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chad.library.adapter.base.entity.node.BaseNode
-import io.github.turskyi.domain.interactor.CountriesInteractor
+import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.domain.model.CountryModel
-import io.github.turskyi.travellingpro.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.*
 import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.models.VisitedCountry
+import io.github.turskyi.travellingpro.models.VisitedCountryNode
 import io.github.turskyi.travellingpro.utils.Event
 import kotlinx.coroutines.launch
 
@@ -32,10 +32,10 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
     val visitedCountries: LiveData<List<Country>>
         get() = _visitedCountries
 
-    private val _visitedCountriesWithCities: MutableLiveData<List<VisitedCountry>> =
-        MutableLiveData<List<VisitedCountry>>()
-    val visitedCountriesWithCities: LiveData<List<VisitedCountry>>
-        get() = _visitedCountriesWithCities
+    private val _visitedCountriesWithCitiesNode: MutableLiveData<List<VisitedCountryNode>> =
+        MutableLiveData<List<VisitedCountryNode>>()
+    val visitedCountriesWithCitiesNode: LiveData<List<VisitedCountryNode>>
+        get() = _visitedCountriesWithCitiesNode
 
     private val _errorMessage: MutableLiveData<Event<String>> = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>>
@@ -88,13 +88,13 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
     }
 
     private fun addCitiesToVisitedCountriesIfNotEmpty(countries: List<CountryModel>) {
-        val visitedCountries: MutableList<VisitedCountry> = countries.mapModelListToNodeList()
+        val visitedCountryNodes: MutableList<VisitedCountryNode> = countries.mapModelListToNodeList()
         if (countries.isNullOrEmpty()) {
-            _visitedCountriesWithCities.run { postValue(visitedCountries) }
+            _visitedCountriesWithCitiesNode.run { postValue(visitedCountryNodes) }
             _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
             _visibilityLoader.postValue(GONE)
         } else {
-            for (country in visitedCountries) {
+            for (country in visitedCountryNodes) {
                 val cityList = mutableListOf<BaseNode>()
                 viewModelScope.launch {
                     interactor.getCities({ cities ->
@@ -105,9 +105,9 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
                         }
                         citiesCount = cities.size
                         country.childNode = cityList
-                        if (country.id == visitedCountries.last().id) {
+                        if (country.id == visitedCountryNodes.last().id) {
                             // showing countries with included cities
-                            _visitedCountriesWithCities.run { postValue(visitedCountries) }
+                            _visitedCountriesWithCitiesNode.run { postValue(visitedCountryNodes) }
                             _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
                             _visibilityLoader.postValue(GONE)
                         }

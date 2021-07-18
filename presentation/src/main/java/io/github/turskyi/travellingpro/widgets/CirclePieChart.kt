@@ -12,7 +12,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
-import io.github.turskyi.travellingpro.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.*
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
 import io.github.turskyi.travellingpro.models.Country

@@ -26,7 +26,7 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import org.koin.android.ext.android.inject
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
-import io.github.turskyi.travellingpro.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.*
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
@@ -182,7 +182,7 @@ class FlagFragment : Fragment() {
     private fun initPhotoPicker() {
         val action: String = Intent.ACTION_OPEN_DOCUMENT
         val intent = Intent(action)
-        intent.type = getString(R.string.image_type)
+        intent.type = getString(R.string.image_and_jpeg_type)
         val intentChooser =
             Intent.createChooser(intent, getString(R.string.flag_chooser_title_complete_using))
         photoPickerResultLauncher.launch(intentChooser)

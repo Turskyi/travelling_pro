@@ -9,7 +9,7 @@ data class CountryModel(
     var selfie: String?,
     val selfieName: String?,
 ) {
-    /* required empty constructor for firestore serialization */
+    // required empty constructor for firestore serialization
     constructor() : this(0, "", "", null, "", null)
     constructor(id: Int, name: String, flag: String) : this(
         id, name, flag, null, null, null

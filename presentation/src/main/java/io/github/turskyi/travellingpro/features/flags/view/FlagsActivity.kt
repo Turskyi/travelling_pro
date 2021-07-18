@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityFlagsBinding
-import io.github.turskyi.travellingpro.extensions.openInfoDialog
+import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.adapter.FlagsAdapter

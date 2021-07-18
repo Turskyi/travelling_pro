@@ -3,8 +3,8 @@ package io.github.turskyi.travellingpro.features.flags.viewmodel
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
-import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapModelListToCountryList
+import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.travellingpro.utils.extensions.mapModelListToCountryList
 import io.github.turskyi.travellingpro.models.Country
 import io.github.turskyi.travellingpro.utils.Event
 import kotlinx.coroutines.Dispatchers.IO

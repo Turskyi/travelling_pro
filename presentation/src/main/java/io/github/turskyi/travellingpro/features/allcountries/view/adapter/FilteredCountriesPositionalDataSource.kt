@@ -1,11 +1,11 @@
 package io.github.turskyi.travellingpro.features.allcountries.view.adapter
 
 import androidx.paging.PositionalDataSource
-import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapModelListToCountryList
+import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.travellingpro.utils.extensions.mapModelListToCountryList
 import io.github.turskyi.travellingpro.models.Country
 
-internal class FilteredPositionalDataSource(
+internal class FilteredCountriesPositionalDataSource(
     private val countryName: String?,
     private val interactor: CountriesInteractor
 ) : PositionalDataSource<Country>() {

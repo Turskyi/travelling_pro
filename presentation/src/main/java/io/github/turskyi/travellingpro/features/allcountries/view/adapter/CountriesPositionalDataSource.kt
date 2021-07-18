@@ -3,8 +3,8 @@ package io.github.turskyi.travellingpro.features.allcountries.view.adapter
 import android.view.View.GONE
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PositionalDataSource
-import io.github.turskyi.domain.interactor.CountriesInteractor
-import io.github.turskyi.travellingpro.extensions.mapModelListToCountryList
+import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.travellingpro.utils.extensions.mapModelListToCountryList
 import io.github.turskyi.travellingpro.models.Country
 import java.util.*
 import kotlin.concurrent.schedule

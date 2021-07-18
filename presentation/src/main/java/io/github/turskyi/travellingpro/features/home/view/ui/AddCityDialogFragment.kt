@@ -25,9 +25,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import org.koin.android.ext.android.inject
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.extensions.isOnline
-import io.github.turskyi.travellingpro.extensions.toast
-import io.github.turskyi.travellingpro.extensions.toastLong
+import io.github.turskyi.travellingpro.utils.extensions.isOnline
+import io.github.turskyi.travellingpro.utils.extensions.toast
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
 import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.widgets.LinedEditText
