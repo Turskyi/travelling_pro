@@ -46,13 +46,15 @@ class SectionAverageGapItemDecoration(
     private val mDataObserver: AdapterDataObserver = object : AdapterDataObserver() {
         override fun onChanged() = markSections()
         override fun onItemRangeChanged(positionStart: Int, itemCount: Int) = markSections()
-        override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) =
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
             markSections()
+        }
 
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = markSections()
         override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = markSections()
-        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) =
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
             markSections()
+        }
     }
 
     override fun getItemOffsets(
@@ -71,20 +73,20 @@ class SectionAverageGapItemDecoration(
             val entity = adapter?.getItem(position)
             entity?.let {
                 if (entity.isHeader) {
-                    /*header*/
+                    //header
                     outRect[0, 0, 0] = 0
                     return
                 }
             }
-            val section = findSectionLastItemPos(position)
+            val section: Section? = findSectionLastItemPos(position)
             if (gapHSizePx < 0 || gapVSizePx < 0) spanCount?.let { spanCountNum ->
                 transformGapDefinition(spanCountNum)
             }
             outRect.top = gapVSizePx
             outRect.bottom = 0
 
-            /* visualPos Section */
-            val visualPos = position + 1 - section!!.startPos
+            // visualPos Section
+            val visualPos: Int = position + 1 - section!!.startPos
             when {
                 visualPos % spanCount!! == 1 -> {
                     outRect.left = sectionEdgeHPaddingPx
@@ -110,7 +112,7 @@ class SectionAverageGapItemDecoration(
 
     private fun setUpWithAdapter(adapter: BaseSectionQuickAdapter<*, *>?) {
         mAdapter.unregisterAdapterDataObserver(mDataObserver)
-        adapter?.let{ mAdapter = adapter }
+        adapter?.let { mAdapter = adapter }
         mAdapter.registerAdapterDataObserver(mDataObserver)
         markSections()
     }
@@ -121,12 +123,12 @@ class SectionAverageGapItemDecoration(
         var sectionEntity: SectionEntity?
         var section = Section()
         var i = 0
-        val size = adapter.itemCount
+        val size: Int = adapter.itemCount
         while (i < size) {
             sectionEntity = adapter.getItem(i)
             if (sectionEntity.isHeader) {
                 if (i != 0) {
-             /*       section */
+                    //       section
                     section.endPos = i - 1
                     mSectionList.add(section)
                 }
@@ -167,7 +169,7 @@ class SectionAverageGapItemDecoration(
 
     private fun findSectionLastItemPos(curPos: Int): Section? {
         for (section in mSectionList) {
-            section?.contains(curPos)?.let{
+            section?.contains(curPos)?.let {
                 if (section.contains(curPos)) {
                     return section
                 }
@@ -177,7 +179,7 @@ class SectionAverageGapItemDecoration(
     }
 
     private fun isLastRow(visualPos: Int, spanCount: Int, sectionItemCount: Int): Boolean {
-        var lastRowCount = sectionItemCount % spanCount
+        var lastRowCount: Int = sectionItemCount % spanCount
         lastRowCount = if (lastRowCount == 0) spanCount else lastRowCount
         return visualPos > sectionItemCount - lastRowCount
     }

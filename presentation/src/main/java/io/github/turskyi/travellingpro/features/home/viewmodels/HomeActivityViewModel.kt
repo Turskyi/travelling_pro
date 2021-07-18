@@ -1,11 +1,10 @@
 package io.github.turskyi.travellingpro.features.home.viewmodels
 
-import android.app.Application
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chad.library.adapter.base.entity.node.BaseNode
 import io.github.turskyi.domain.interactor.CountriesInteractor
@@ -17,11 +16,13 @@ import io.github.turskyi.travellingpro.models.VisitedCountry
 import io.github.turskyi.travellingpro.utils.Event
 import kotlinx.coroutines.launch
 
-class HomeActivityViewModel(private val interactor: CountriesInteractor, application: Application) :
-    AndroidViewModel(application) {
+class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
 
+    var backPressedTiming: Long = 0
     var notVisitedCountriesCount: Float = 0F
     var citiesCount: Int = 0
+    var mLastClickTime: Long = 0
+    var isPermissionGranted: Boolean = false
 
     private val _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
     val visibilityLoader: MutableLiveData<Int>
@@ -114,7 +115,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
                         _visibilityLoader.postValue(GONE)
                         _errorMessage.run {
                             exception.message?.let { message ->
-                                /* Trigger the event by setting a new Event as a new value */
+                                // Trigger the event by setting a new Event as a new value
                                 postValue(Event(message))
                             }
                         }
@@ -133,7 +134,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
         _visibilityLoader.postValue(GONE)
         _errorMessage.run {
             exception.message?.let { message ->
-                /* Trigger the event by setting a new Event as a new value */
+                // Trigger the event by setting a new Event as a new value
                 postValue(Event(message))
             }
         }
@@ -155,7 +156,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
             _visibilityLoader.postValue(GONE)
             _errorMessage.run {
                 exception.message?.let { message ->
-                    /* Trigger the event by setting a new Event as a new value */
+                    // Trigger the event by setting a new Event as a new value
                     postValue(Event(message))
                 }
             }
@@ -170,7 +171,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor, applica
             _visibilityLoader.postValue(GONE)
             _errorMessage.run {
                 exception.message?.let { message ->
-                    /* Trigger the event by setting a new Event as a new value */
+                    // Trigger the event by setting a new Event as a new value
                     postValue(Event(message))
                 }
             }

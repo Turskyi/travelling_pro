@@ -14,14 +14,12 @@ import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 import io.github.turskyi.travellingpro.extensions.*
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.extensions.*
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
 import io.github.turskyi.travellingpro.models.Country
 import io.github.turskyi.travellingpro.utils.IntFormatter
-import io.github.turskyi.travellingpro.utils.PermissionHandler.isPermissionGranted
 
 /**
- * This custom view is a convenient way to incapsulate all logic related to pie chart to a separate
+ * This custom view is a convenient way to encapsulate all logic related to pie chart to a separate
  * class
  */
 class CirclePieChart @JvmOverloads constructor(
@@ -38,22 +36,22 @@ class CirclePieChart @JvmOverloads constructor(
     override fun onChartGestureStart(
         me: MotionEvent?,
         lastPerformedGesture: ChartTouchListener.ChartGesture?
-    ) { /* nothing has to be here */
+    ) { // nothing has to be here
     }
 
     override fun onChartGestureEnd(
         me: MotionEvent?,
         lastPerformedGesture: ChartTouchListener.ChartGesture?
-    ) { /* nothing has to be here */
+    ) { // nothing has to be here
     }
 
     override fun onChartLongPressed(me: MotionEvent?) {
-        /* hide info icon */
+        // hide info icon
         context.getAppCompatActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        /* hide sync icon */
+        // hide sync icon
         val toolbar: androidx.appcompat.widget.Toolbar = rootView.findViewById(R.id.toolbar)
         toolbar.menu.clear()
-        /*----------------*/
+        //---------------------
         val bottomSheet = ShareListBottomSheetFragment()
         context.getFragmentActivity()?.supportFragmentManager?.let { fragmentManager ->
             bottomSheet.show(fragmentManager, null)
@@ -61,7 +59,7 @@ class CirclePieChart @JvmOverloads constructor(
     }
 
     override fun onChartDoubleTapped(me: MotionEvent?) {
-        /* nothing has to be here */
+        // nothing has to be here
     }
 
     override fun onChartSingleTapped(me: MotionEvent?) {
@@ -89,45 +87,45 @@ class CirclePieChart @JvmOverloads constructor(
         me2: MotionEvent?,
         velocityX: Float,
         velocityY: Float
-    ) { /* nothing has to be here */
+    ) { // nothing has to be here
     }
 
     override fun onChartScale(
         me: MotionEvent?,
         scaleX: Float,
         scaleY: Float
-    ) {/* nothing has to be here */
+    ) {// nothing has to be here
     }
 
     override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
-/* nothing has to be here */
+// nothing has to be here
     }
 
     fun initPieChart() {
         description.isEnabled = false
 
-        /* work around instead of click listener */
+        // work around instead of click listener
         onChartGestureListener = this
 
         if (!isCenterPieChartEnabled) {
-            /* remove hole inside */
+            // remove hole inside
             isDrawHoleEnabled = false
         }
 
-        /* removes color squares */
+        // removes color squares
         legend.isEnabled = false
 
-        /* rotate the pie chart to 45 degrees */
+        // rotate the pie chart to 45 degrees
         rotationAngle = -10f
 
-        /* init animated background for piechart */
+        // init animated background for piechart
         setBackgroundResource(R.drawable.gradient_list)
         val animationDrawable: AnimationDrawable = background as AnimationDrawable
         animationDrawable.setEnterFadeDuration(2000)
         animationDrawable.setExitFadeDuration(4000)
         animationDrawable.start()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            /* set radius of an open eye */
+            // set radius of an open eye
             holeRadius = 78F
         } else {
             holeRadius = 20F
@@ -159,9 +157,7 @@ class CirclePieChart @JvmOverloads constructor(
     }
 
     fun animatePieChart() {
-        if (isPermissionGranted) {
-            /* nice and smooth animation of a chart */
-            animateY(1500)
-        }
+        // nice and smooth animation of a chart
+        animateY(1500)
     }
 }
