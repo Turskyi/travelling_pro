@@ -9,11 +9,13 @@ import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
+import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
 import org.koin.dsl.module
 
 val adaptersModule = module {
     factory { HomeAdapter() }
     factory { AllCountriesAdapter() }
+    factory { TravellersAdapter() }
 }
 
 val viewModelsModule = module {

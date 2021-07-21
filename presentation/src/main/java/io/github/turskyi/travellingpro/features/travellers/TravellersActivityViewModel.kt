@@ -9,7 +9,7 @@ import androidx.paging.PagedList
 import io.github.turskyi.domain.interactors.TravellersInteractor
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.FilteredTravellersPositionalDataSource
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersPositionalDataSource
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.models.Traveller
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
     val visibilityLoader: LiveData<Int>
         get() = _visibilityLoader
 
-    var pagedList: PagedList<Country>
+    var pagedList: PagedList<Traveller>
 
     var searchQuery = ""
         set(value) {
@@ -43,7 +43,7 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
         pagedList = getUserList(searchQuery)
     }
 
-    private fun getUserList(searchQuery: String): PagedList<Country> = if (searchQuery == "") {
+    private fun getUserList(searchQuery: String): PagedList<Traveller> = if (searchQuery == "") {
         // PagedList
         val config: PagedList.Config = PagedList.Config.Builder()
             /* If "true", then it should be created another viewType in Adapter "onCreateViewHolder"

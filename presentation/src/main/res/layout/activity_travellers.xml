@@ -124,7 +124,7 @@
         app:elevation="@dimen/elevation_4"
         app:fabCustomSize="@dimen/size_all_countries_fab_custom"
         app:fabSize="auto"
-        app:layout_anchor="@id/rv_all_countries"
+        app:layout_anchor="@id/rv_travellers"
         app:layout_anchorGravity="bottom|end"
         app:maxImageSize="@dimen/size_all_countries_fab_max_image"
         app:srcCompat="@drawable/btn_info_ripple"

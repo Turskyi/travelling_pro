@@ -30,6 +30,7 @@ import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Compani
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
+import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
 import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.models.Country
 import io.github.turskyi.travellingpro.models.VisitedCountryNode
@@ -93,7 +94,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 true
             }
             R.id.action_travellers -> {
-//                TODO: open screen with list of users
+                openActivity(TravellersActivity::class.java)
                 true
             }
             else -> super.onOptionsItemSelected(item)

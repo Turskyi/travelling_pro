@@ -1,8 +1,8 @@
 package io.github.turskyi.domain.model
 
-data class Traveller(
+data class TravellerModel(
     val id: String,
     val name: String,
     val avatar: String,
-    val countryList: List<CountryModel>
+    val countryList: List<VisitedCountryModel>
 )

@@ -23,9 +23,9 @@ import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
 import org.koin.android.ext.android.inject
 
 class AllCountriesActivity : AppCompatActivity() {
-
     private val viewModel: AllCountriesActivityViewModel by inject()
     private val adapter: AllCountriesAdapter by inject()
+
     private lateinit var binding: ActivityAllCountriesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +46,8 @@ class AllCountriesActivity : AppCompatActivity() {
         binding.etSearch.isFocusableInTouchMode = true
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
         adapter.submitList(viewModel.pagedList)
-        val layoutManager = LinearLayoutManager(this)
         binding.rvAllCountries.adapter = adapter
+        val layoutManager = LinearLayoutManager(this)
         binding.rvAllCountries.layoutManager = layoutManager
     }
 
@@ -120,8 +120,7 @@ class AllCountriesActivity : AppCompatActivity() {
         binding.rvAllCountries.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
-        val width =
-            binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         hideKeyboard()
         binding.etSearch.setText("")
         binding.tvToolbarTitle.animate().alpha(1f).duration = 200

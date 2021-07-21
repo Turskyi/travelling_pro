@@ -102,6 +102,9 @@
     <string name="txt_info_all_countries">• If you press on a country, you will be able to see
         the geographical location of it
     </string>
+    <string name="txt_info_all_travellers">• If you click on a traveller, you will be able to see
+         his visited countries
+    </string>
 
     <plurals name="numberOfCountriesRemain">
         <item quantity="one">%d country remains to visit</item>
