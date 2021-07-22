@@ -7,12 +7,12 @@ data class CountryModel(
     @field:JvmField
     var isVisited: Boolean?,
     var selfie: String?,
-    val selfieName: String?,
+    val selfieName: String,
 ) {
     // required empty constructor for firestore serialization
-    constructor() : this(0, "", "", null, "", null)
+    constructor() : this(0, "", "", null, "", "")
     constructor(id: Int, name: String, flag: String) : this(
-        id, name, flag, null, null, null
+        id, name, flag, null, null, ""
     )
 
     constructor(id: Int, name: String, flag: String, isVisited: Boolean?) : this(
@@ -21,10 +21,10 @@ data class CountryModel(
         flag,
         isVisited,
         null,
-        null
+        ""
     )
 
-    constructor(id: Int, name: String, flag: String, selfie: String?, selfieName: String?) : this(
+    constructor(id: Int, name: String, flag: String, selfie: String?, selfieName: String) : this(
         id,
         name,
         flag,

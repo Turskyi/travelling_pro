@@ -18,7 +18,7 @@ class CountriesInteractor : KoinComponent {
     suspend fun updateSelfie(
         name: String,
         selfie: String,
-        selfieName: String?,
+        selfieName: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = repository.updateSelfie(name, selfie, selfieName, onSuccess, onError)

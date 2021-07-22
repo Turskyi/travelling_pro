@@ -23,7 +23,7 @@ fun List<CountryNet>.mapNetListToModelList() = this.mapTo(
     mutableListOf(), { countryNet -> countryNet.mapNetToEntity() })
 
 fun CountryEntity.mapEntityToModel() = CountryModel(
-    id, name, flag, isVisited, null, null
+    id, name, flag, isVisited, null, ""
 )
 
 fun VisitedCountryEntity.mapEntityToModel() = VisitedCountryModel(

@@ -73,7 +73,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     /**
      * Calling when "add city dialogue" dismissed.
      */
-    override fun onDismiss(dialogInterface: DialogInterface?) {
+    override fun onDismiss(dialogInterface: DialogInterface) {
         viewModel.showListOfVisitedCountries()
     }
 
@@ -110,7 +110,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         when (requestCode) {
             resources.getInteger(R.integer.location_and_storage_request_code) -> {
                 if ((grantResult.isNotEmpty()
-                            && grantResult[0] == PackageManager.PERMISSION_GRANTED)
+                            && grantResult.first() == PackageManager.PERMISSION_GRANTED)
                 ) {
                     // we got here only the first time, when permission is received
                     viewModel.isPermissionGranted = true

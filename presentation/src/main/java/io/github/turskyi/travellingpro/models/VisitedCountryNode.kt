@@ -7,7 +7,7 @@ data class VisitedCountryNode(
     var id: Int,
     var flag: String,
     var selfie: String?,
-    var selfieName: String?,
+    var selfieName: String,
     override var childNode: MutableList<BaseNode>? = null,
     val title: String,
 ) : BaseExpandNode()

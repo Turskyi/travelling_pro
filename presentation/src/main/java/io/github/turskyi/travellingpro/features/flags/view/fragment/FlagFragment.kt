@@ -156,7 +156,7 @@ class FlagFragment : Fragment() {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) MediaStore.Images.Media.DATE_TAKEN
             else MediaStore.Images.Media._ID
 
-        /** This cursor will hold the result of the query
+        /* This cursor will hold the result of the query
         and put all data in Cursor by sorting in descending order */
         val cursor = requireContext().contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -168,7 +168,7 @@ class FlagFragment : Fragment() {
             "" + imageId
         )
         val galleryPicture = Country(
-            id, name, flag, true, uriImage.toString(), null
+            id, name, flag, true, uriImage.toString(), ""
         )
         cursor?.close()
         return galleryPicture

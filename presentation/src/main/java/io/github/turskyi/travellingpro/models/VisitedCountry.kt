@@ -9,6 +9,6 @@ data class VisitedCountry(
     val title: String,
     var flag: String,
     var selfie: String?,
-    var selfieName: String?,
+    var selfieName: String,
     var cities: List<City>,
 ) : Parcelable

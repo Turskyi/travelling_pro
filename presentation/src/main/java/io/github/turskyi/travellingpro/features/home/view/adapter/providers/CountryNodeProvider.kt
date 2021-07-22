@@ -95,7 +95,7 @@ class CountryNodeProvider : BaseNodeProvider() {
             .with(holder.itemView.context)
             .withListener(object : GlideToVectorYouListener {
                 override fun onLoadFailed() {
-                    showPicturesInWebView(holder, visitedCountryNode)
+                        showPicturesInWebView(holder, visitedCountryNode)
                 }
 
                 override fun onResourceReady() {

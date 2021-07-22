@@ -9,7 +9,7 @@ data class Country(
     val flag: String,
     var visited: Boolean? = null,
     var selfie: String?,
-    val selfieName: String?,
+    val selfieName: String,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as Int,
@@ -17,7 +17,7 @@ data class Country(
         parcel.readValue(String::class.java.classLoader) as String,
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
         parcel.readValue(String::class.java.classLoader) as? String,
-        parcel.readValue(String::class.java.classLoader) as? String
+        parcel.readValue(String::class.java.classLoader) as String
     )
 
     companion object CREATOR : Parcelable.Creator<Country> {

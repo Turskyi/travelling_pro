@@ -26,14 +26,19 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     override suspend fun updateSelfie(
         name: String,
         selfie: String,
-        selfieName: String?,
+        selfieName: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firestoreSource.updateSelfie(name, selfie, previousSelfieName = selfieName, {
-        firestoreSource.getVisitedCountries(
-            { countries -> onSuccess(countries.mapVisitedCountriesToModelList()) },
-            { exception -> onError?.invoke(exception) })
-    }, { exception -> onError?.invoke(exception) })
+    ) = firestoreSource.updateSelfie(
+        name = name,
+        selfie = selfie,
+        previousSelfieName = selfieName,
+        {
+            firestoreSource.getVisitedCountries(
+                { countries -> onSuccess(countries.mapVisitedCountriesToModelList()) },
+                { exception -> onError?.invoke(exception) })
+        },
+        { exception -> onError?.invoke(exception) })
 
     override suspend fun markAsVisited(
         country: CountryModel,
@@ -69,10 +74,12 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     private fun addModelsToDb(
         countries: MutableList<CountryModel>,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = firestoreSource.insertAllCountries(
-        countries.mapModelListToEntityList(), { onSuccess() },
-        { exception -> onError?.invoke(exception) })
+        countries.mapModelListToEntityList(),
+        { onSuccess() },
+        { exception -> onError.invoke(exception) },
+    )
 
     override suspend fun getVisitedModelCountries(
         onSuccess: (List<CountryModel>) -> Unit,

@@ -45,7 +45,7 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
         }
     }
 
-    fun updateSelfie(name: String, selfie: String, selfieName: String?) {
+    fun updateSelfie(name: String, selfie: String, selfieName: String) {
         _visibilityLoader.postValue(VISIBLE)
         viewModelScope.launch(IO) {
             interactor.updateSelfie(name, selfie, selfieName, { countries ->
