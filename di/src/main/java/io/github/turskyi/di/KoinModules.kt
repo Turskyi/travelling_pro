@@ -9,10 +9,10 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import io.github.turskyi.data.BuildConfig.HOST_URL
-import io.github.turskyi.data.api.datasource.CountriesNetSource
-import io.github.turskyi.data.api.service.CountriesApi
-import io.github.turskyi.data.firebase.dataSource.FirestoreSourceImpl
-import io.github.turskyi.data.firebase.service.FirestoreSource
+import io.github.turskyi.data.network.datasource.CountriesNetSource
+import io.github.turskyi.data.network.service.CountriesApi
+import io.github.turskyi.data.firestore.dataSource.FirestoreSourceImpl
+import io.github.turskyi.data.firestore.service.FirestoreSource
 import io.github.turskyi.data.util.hasNetwork
 import io.github.turskyi.data.repository.CountriesRepositoryImpl
 import io.github.turskyi.data.repository.TravellersRepositoryImpl

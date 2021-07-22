@@ -1,10 +1,10 @@
-package io.github.turskyi.domain.model
+package io.github.turskyi.data.entities.firestore
 
-data class TravellerModel(
+data class TravellerEntity(
     val id: String,
     val name: String,
     val avatar: String,
-    val countryList: List<VisitedCountryModel>
+    val countryList: List<VisitedCountryEntity>
 ) {
     // required empty constructor for firestore serialization
     constructor():this("","","", emptyList())

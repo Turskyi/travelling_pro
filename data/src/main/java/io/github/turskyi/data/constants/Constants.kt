@@ -1,13 +1,13 @@
 package io.github.turskyi.data.constants
 
 /**
- * @Description Constants for the app.
+ * @Description Constants for the data module of the travelling pro app.
  */
 object Constants {
     const val LOG = "===>"
     const val IMG_TYPE = "image/jpg"
 
-    /* constants for firestore */
+    // constants for firestore
     const val REF_USERS = "users"
     const val REF_COUNTRIES = "countries"
     const val REF_VISITED_COUNTRIES = "visited_countries"

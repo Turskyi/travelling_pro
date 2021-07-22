@@ -1,4 +1,4 @@
-package io.github.turskyi.data.firebase.dataSource
+package io.github.turskyi.data.firestore.dataSource
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
@@ -20,10 +20,12 @@ import io.github.turskyi.data.constants.Constants.REF_USERS
 import io.github.turskyi.data.constants.Constants.REF_VISITED_COUNTRIES
 import io.github.turskyi.data.entities.firestore.CityEntity
 import io.github.turskyi.data.entities.firestore.CountryEntity
+import io.github.turskyi.data.entities.firestore.TravellerEntity
 import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
 import io.github.turskyi.data.extensions.log
 import io.github.turskyi.data.extensions.mapCountryToVisitedCountry
-import io.github.turskyi.data.firebase.service.FirestoreSource
+import io.github.turskyi.data.firestore.service.FirestoreSource
+import io.github.turskyi.data.util.exceptions.NotFoundException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -204,12 +206,16 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
     override fun insertCity(
         city: CityEntity,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) {
-        usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-            .collection(REF_CITIES).document(city.name).set(city)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception -> onError?.invoke(exception) }
+        if (mFirebaseAuth.currentUser?.uid != null) {
+            usersRef.document(mFirebaseAuth.currentUser?.uid ?: "")
+                .collection(REF_CITIES).document(city.name).set(city)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            onError(NotFoundException())
+        }
     }
 
     override fun removeCity(
@@ -364,20 +370,19 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
             }
     }
 
-    override fun getCountriesByName(
-        nameQuery: String?, onSuccess: (List<CountryEntity>) -> Unit,
-        onError: ((Exception) -> Unit?)?
+    override fun setCountriesByName(
+        nameQuery: String, onSuccess: (List<CountryEntity>) -> Unit,
+        onError: (Exception) -> Unit
     ) {
-        val countriesRef: Query =
-            usersRef.document("${mFirebaseAuth.currentUser?.uid}")
-                .collection(REF_COUNTRIES).orderBy(KEY_ID)
+        val countriesRef: Query = usersRef.document("${mFirebaseAuth.currentUser?.uid}")
+            .collection(REF_COUNTRIES).orderBy(KEY_ID)
         countriesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 val countries: MutableList<CountryEntity> = mutableListOf()
                 for (documentSnapshot in queryDocumentSnapshots) {
                     val country: CountryEntity =
                         documentSnapshot.toObject(CountryEntity::class.java)
-                    if (nameQuery != null && country.name.startsWith(nameQuery)) {
+                    if (country.name.startsWith(nameQuery)) {
                         countries.add(country)
                     }
                     if (documentSnapshot == queryDocumentSnapshots.last()) {
@@ -386,7 +391,15 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                 }
             }
             .addOnFailureListener { exception ->
-                onError?.invoke(exception)
+                onError.invoke(exception)
             }
+    }
+
+    override fun setTravellersByName(
+        nameQuery: String,
+        onSuccess: (List<TravellerEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+//        TODO: implement query of users
     }
 }

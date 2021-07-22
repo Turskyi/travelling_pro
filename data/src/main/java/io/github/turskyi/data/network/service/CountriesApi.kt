@@ -1,4 +1,4 @@
-package io.github.turskyi.data.api.service
+package io.github.turskyi.data.network.service
 
 import retrofit2.Call
 import retrofit2.http.GET

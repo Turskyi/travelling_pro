@@ -5,7 +5,7 @@ import io.github.turskyi.domain.interactors.TravellersInteractor
 import io.github.turskyi.travellingpro.models.Traveller
 
 internal class FilteredTravellersPositionalDataSource(
-    private val userName: String?,
+    private val userName: String,
     private val interactor: TravellersInteractor
 ) : PositionalDataSource<Traveller>() {
 

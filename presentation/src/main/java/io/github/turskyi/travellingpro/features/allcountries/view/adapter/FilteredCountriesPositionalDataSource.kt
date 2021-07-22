@@ -6,7 +6,7 @@ import io.github.turskyi.travellingpro.utils.extensions.mapModelListToCountryLis
 import io.github.turskyi.travellingpro.models.Country
 
 internal class FilteredCountriesPositionalDataSource(
-    private val countryName: String?,
+    private val countryName: String,
     private val interactor: CountriesInteractor
 ) : PositionalDataSource<Country>() {
 
@@ -14,7 +14,7 @@ internal class FilteredCountriesPositionalDataSource(
         params: LoadInitialParams,
         callback: LoadInitialCallback<Country>
     ) {
-        interactor.getCountriesByName(
+        interactor.setCountriesByName(
             countryName, { allCountries ->
                 callback.onResult(
                     allCountries.mapModelListToCountryList(),
@@ -31,8 +31,8 @@ internal class FilteredCountriesPositionalDataSource(
         params: LoadRangeParams,
         callback: LoadRangeCallback<Country>
     ) {
-        interactor.getCountriesByName(countryName, {
-                /* on next call result returns nothing since only one page of countries required */
+        interactor.setCountriesByName(countryName, {
+                // on next call result returns nothing since only one page of countries required
                 callback.onResult(emptyList())
             },
             { exception ->

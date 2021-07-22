@@ -4,11 +4,12 @@ data class VisitedCountryEntity(
     var id: Int,
     val name: String,
     val flag: String,
-    var selfie: String?,
-    var selfieName: String?,
+    val cities: List<CityEntity>,
+    val selfie: String?,
+    val selfieName: String?,
 ) {
     // required empty constructor for firestore serialization
-    constructor() : this(0, "", "", null, null)
-    constructor(name: String, flag: String) : this(0, name, flag, null, null)
-    constructor(id: Int, name: String, flag: String) : this(id, name, flag, null, null)
+    constructor() : this(0, "", "", emptyList(), null, null)
+    constructor(name: String, flag: String) : this(0, name, flag, emptyList(), null, null)
+    constructor(id: Int, name: String, flag: String) : this(id, name, flag, emptyList(), null, null)
 }

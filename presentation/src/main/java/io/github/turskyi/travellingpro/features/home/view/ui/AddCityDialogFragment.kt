@@ -16,21 +16,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
-import org.koin.android.ext.android.inject
 import io.github.turskyi.travellingpro.R
+import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
+import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.utils.extensions.isOnline
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
-import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
-import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.widgets.LinedEditText
+import org.koin.android.ext.android.inject
 import java.io.IOException
 import java.util.*
 
@@ -49,35 +48,31 @@ class AddCityDialogFragment : DialogFragment() {
         }
     }
 
-    private val viewModel by inject<AddCityDialogViewModel>()
+    private val viewModel: AddCityDialogViewModel by inject()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
-    private var etCity: LinedEditText? = null
-    private var etMonth: EditText? = null
+    private lateinit var etCity: LinedEditText
+    private lateinit var etMonth: EditText
     override fun onCreateDialog(savedInstanceState: Bundle?): AlertDialog {
         initLocationServices()
 
-        val builder: AlertDialog.Builder? = context?.let { context ->
-            AlertDialog.Builder(
-                context,
-                R.style.RoundShapedDarkAlertDialogStyle
-            )
-        }
+        val builder: AlertDialog.Builder = AlertDialog.Builder(
+            requireContext(),
+            R.style.RoundShapedDarkAlertDialogStyle
+        )
 
-        val viewGroup: ViewGroup = (activity as AppCompatActivity)
-            .findViewById(android.R.id.content)
-        val dialogView: View = LayoutInflater.from(context)
-            .inflate(
-                R.layout.dialogue_city, viewGroup,
-                false
-            )
+        val viewGroup: ViewGroup = requireActivity().findViewById(android.R.id.content)
+        val dialogView: View = LayoutInflater.from(context).inflate(
+            R.layout.dialogue_city, viewGroup,
+            false
+        )
 
-        builder?.setView(dialogView)
-        val alertDialog = builder?.create()
+        builder.setView(dialogView)
+        val alertDialog: AlertDialog = builder.create()
 
-        val buttonSave = dialogView.findViewById<Button>(R.id.buttonSave)
-        val buttonDate = dialogView.findViewById<Button>(R.id.btnDate)
-        val buttonGps = dialogView.findViewById<Button>(R.id.btnGps)
+        val buttonSave: Button = dialogView.findViewById(R.id.buttonSave)
+        val buttonDate: Button = dialogView.findViewById(R.id.btnDate)
+        val buttonGps: Button = dialogView.findViewById(R.id.btnGps)
         etCity = dialogView.findViewById(R.id.letCity)
         etMonth = dialogView.findViewById(R.id.etMonth)
 
@@ -91,35 +86,35 @@ class AddCityDialogFragment : DialogFragment() {
             buttonGps.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         }
 
-        etCity?.visibility = VISIBLE
-        etCity?.setText("")
-        etMonth?.setText("")
+        etCity.visibility = VISIBLE
+        etCity.setText("")
+        etMonth.setText("")
         buttonSave.visibility = VISIBLE
         buttonGps.visibility = VISIBLE
 
         initListeners(buttonSave, alertDialog, buttonGps, buttonDate)
 
-        return alertDialog!!
+        return alertDialog
     }
 
     private fun initListeners(
         buttonSave: Button,
-        alertDialog: AlertDialog?,
+        alertDialog: AlertDialog,
         buttonGps: Button,
         buttonDate: Button
     ) {
         buttonSave.setOnClickListener {
-            if (etCity?.text.toString() != "") {
-                if (etMonth?.text.toString() != "") {
+            if (etCity.text.toString() != "") {
+                if (etMonth.text.toString() != "") {
                     arguments?.getInt(ARG_ID)?.let { parentId ->
                         City(
-                            name = etCity?.text.toString(),
+                            name = etCity.text.toString(),
                             parentId = parentId,
-                            month = etMonth?.text.toString()
+                            month = etMonth.text.toString()
                         ).apply {
                             viewModel.insert(
                                 this, {
-                                    alertDialog?.dismiss()
+                                    alertDialog.dismiss()
                                 }, { exception ->
                                     toast(exception.message)
                                 }
@@ -128,10 +123,10 @@ class AddCityDialogFragment : DialogFragment() {
                     }
                 } else {
                     arguments?.getInt(ARG_ID)?.let { parentId ->
-                        City(name = etCity?.text.toString(), parentId = parentId).apply {
+                        City(name = etCity.text.toString(), parentId = parentId).apply {
                             viewModel.insert(
                                 this, {
-                                    alertDialog?.dismiss()
+                                    alertDialog.dismiss()
                                 }, { exception ->
                                     toastLong(exception.message)
                                 }
@@ -140,7 +135,7 @@ class AddCityDialogFragment : DialogFragment() {
                     }
                 }
             } else {
-                alertDialog?.cancel()
+                alertDialog.cancel()
                 toast(R.string.home_city_did_not_save)
             }
         }
@@ -150,12 +145,10 @@ class AddCityDialogFragment : DialogFragment() {
              * There is a unique case when particular android version cannot perform location logic
              * and crashing, so here button just used as a cancel button.
              */
-            etCity?.let { inputField ->
-                if (Build.VERSION.RELEASE == getString(R.string.android_5_1)) {
-                    alertDialog?.cancel()
-                } else {
-                    checkIfGpsEnabled(inputField)
-                }
+            if (Build.VERSION.RELEASE == getString(R.string.android_5_1)) {
+                alertDialog.cancel()
+            } else {
+                checkIfGpsEnabled(etCity)
             }
         }
 
@@ -164,13 +157,13 @@ class AddCityDialogFragment : DialogFragment() {
                 getString(R.string.home_dialog_date_format),
                 Date()
             )
-            etMonth?.setText(monthYear)
+            etMonth.setText(monthYear)
         }
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        val activity: Activity? = activity
+        val activity: Activity = requireActivity()
         if (activity is DialogInterface.OnDismissListener) {
             (activity as DialogInterface.OnDismissListener).onDismiss(dialog)
         }
@@ -183,7 +176,7 @@ class AddCityDialogFragment : DialogFragment() {
     ) {
         if (requestCode == resources.getInteger(R.integer.location_access_request_code)) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                etCity?.let { inputField -> addCityTo(inputField) }
+                addCityTo(etCity)
             } else {
                 toastLong(R.string.msg_gps_permission_denied)
             }
@@ -191,8 +184,7 @@ class AddCityDialogFragment : DialogFragment() {
     }
 
     private fun initLocationServices() {
-        locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
@@ -289,12 +281,12 @@ class AddCityDialogFragment : DialogFragment() {
     ) {
         val geoCoder = Geocoder(requireContext(), Locale.getDefault())
         try {
-            val addresses: MutableList<Address>? = geoCoder.getFromLocation(
+            val addresses: MutableList<Address> = geoCoder.getFromLocation(
                 location.latitude,
                 location.longitude, 1
             )
 
-            val cityName: String? = addresses?.get(0)?.locality
+            val cityName: String = addresses.first().locality
             editText.setText(cityName)
         } catch (exception: IOException) {
             toastLong(exception.message)

@@ -7,24 +7,22 @@ import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityTravellersBinding
+import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
 import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
 import io.github.turskyi.travellingpro.models.Traveller
-import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
-import io.github.turskyi.travellingpro.utils.extensions.openActivityWithArgs
-import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
-import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
 
 class TravellersActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_TRAVELLER = "io.github.turskyi.travellingpro.TRAVELLER"
     }
+
     private val viewModel: TravellersActivityViewModel by inject()
     private val adapter: TravellersAdapter by inject()
 
@@ -34,6 +32,7 @@ class TravellersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initView()
         initListeners()
+        initObservers()
     }
 
     private fun initView() {
@@ -43,7 +42,7 @@ class TravellersActivity : AppCompatActivity() {
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
         adapter.submitList(viewModel.pagedList)
         binding.rvTravellers.adapter = adapter
-        val layoutManager = GridLayoutManager(this,2)
+        val layoutManager = GridLayoutManager(this, 2)
         binding.rvTravellers.layoutManager = layoutManager
     }
 
@@ -71,6 +70,22 @@ class TravellersActivity : AppCompatActivity() {
             }
         })
         binding.floatBtnInfo.setOnClickListener { openInfoDialog(getString(R.string.txt_info_all_travellers)) }
+    }
+
+    private fun initObservers() {
+        val observer = EmptyListObserver(binding.rvTravellers, binding.tvNoResults)
+        adapter.registerAdapterDataObserver(observer)
+        viewModel.topTravellersPercentLiveData.observe(this, { topPercent ->
+            updateTitle(topPercent)
+        })
+        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+            binding.pb.visibility = currentVisibility
+        })
+        viewModel.errorMessage.observe(this, { event ->
+            event.getMessageIfNotHandled()?.let { message ->
+                toastLong(message)
+            }
+        })
     }
 
     private fun showTraveller(traveller: Traveller) {
@@ -131,5 +146,9 @@ class TravellersActivity : AppCompatActivity() {
             duration = 400
         }.start()
         showKeyboard()
+    }
+
+    private fun updateTitle(percent: Int) {
+        binding.tvToolbarTitle.text = getString(R.string.title_activity_travellers, percent)
     }
 }

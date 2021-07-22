@@ -17,9 +17,9 @@ import java.util.concurrent.Executors
 
 class TravellersActivityViewModel(private val interactor: TravellersInteractor) : ViewModel() {
 
-    private val _topTravellersNumLiveData = MutableLiveData<Int>()
-    val topTravellersNumLiveData: MutableLiveData<Int>
-        get() = _topTravellersNumLiveData
+    private val _topTravellersPercentLiveData = MutableLiveData<Int>()
+    val topTravellersPercentLiveData: MutableLiveData<Int>
+        get() = _topTravellersPercentLiveData
 
     private var _visibilityLoader = MutableLiveData<Int>()
     val visibilityLoader: LiveData<Int>

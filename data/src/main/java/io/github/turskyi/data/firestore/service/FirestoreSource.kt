@@ -1,7 +1,8 @@
-package io.github.turskyi.data.firebase.service
+package io.github.turskyi.data.firestore.service
 
 import io.github.turskyi.data.entities.firestore.CityEntity
 import io.github.turskyi.data.entities.firestore.CountryEntity
+import io.github.turskyi.data.entities.firestore.TravellerEntity
 import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
 
 interface FirestoreSource {
@@ -32,11 +33,7 @@ interface FirestoreSource {
         onError: ((Exception) -> Unit?)?
     )
 
-    fun insertCity(
-        city: CityEntity,
-        onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
-    )
+    fun insertCity(city: CityEntity, onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
     fun removeCity(
         name: String,
@@ -69,8 +66,15 @@ interface FirestoreSource {
         onError: ((Exception) -> Unit?)?
     )
 
-    fun getCountriesByName(
-        nameQuery: String?, onSuccess: (List<CountryEntity>) -> Unit,
-        onError: ((Exception) -> Unit?)?
+    fun setCountriesByName(
+        nameQuery: String,
+        onSuccess: (List<CountryEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    )
+
+    fun setTravellersByName(
+        nameQuery: String,
+        onSuccess: (List<TravellerEntity>) -> Unit,
+        onError: (Exception) -> Unit
     )
 }

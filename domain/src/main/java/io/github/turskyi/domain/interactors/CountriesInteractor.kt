@@ -9,36 +9,36 @@ import io.github.turskyi.domain.repository.CountriesRepository
 class CountriesInteractor : KoinComponent {
     private val repository: CountriesRepository by inject()
 
-    fun getCountriesByName(
-        name: String?,
-        onSusses: (List<CountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
-    ) = repository.getCountriesByName(name, onSusses, onError)
+    fun setCountriesByName(
+        name: String,
+        onSuccess: (List<CountryModel>) -> Unit,
+        onError: ((Exception) -> Unit)
+    ): Unit = repository.setCountriesByName(name, onSuccess, onError)
 
     suspend fun updateSelfie(
         name: String,
         selfie: String,
         selfieName: String?,
-        onSusses: (List<CountryModel>) -> Unit,
+        onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = repository.updateSelfie(name, selfie, selfieName, onSusses, onError)
+    ) = repository.updateSelfie(name, selfie, selfieName, onSuccess, onError)
 
     fun getCountriesByRange(
         limit: Int,
         offset: Int,
-        onSusses: (List<CountryModel>) -> Unit,
+        onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = repository.getCountriesByRange(limit, offset, onSusses, onError)
+    ) = repository.getCountriesByRange(limit, offset, onSuccess, onError)
 
     suspend fun downloadCountries(
-        onSusses: () -> Unit,
+        onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = repository.refreshCountriesInDb(onSusses, onError)
+    ) = repository.refreshCountriesInDb(onSuccess, onError)
 
     suspend fun setNotVisitedCountriesNum(
-        onSusses: (Int) -> Unit,
+        onSuccess: (Int) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = repository.getCountNotVisitedCountries(onSusses, onError)
+    ) = repository.getCountNotVisitedCountries(onSuccess, onError)
 
     suspend fun setVisitedModelCountries(
         onSuccess: (List<CountryModel>) -> Unit,
@@ -71,6 +71,6 @@ class CountriesInteractor : KoinComponent {
     suspend fun insertCity(
         city: CityModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     ) = repository.insertCity(city, onSuccess = onSuccess, onError = onError)
 }

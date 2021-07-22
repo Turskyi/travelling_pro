@@ -59,7 +59,7 @@ interface CountriesRepository {
     suspend fun insertCity(
         city: CityModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     fun getCountriesByRange(
@@ -69,9 +69,9 @@ interface CountriesRepository {
         onError: ((Exception) -> Unit?)? = null
     )
 
-    fun getCountriesByName(
-        name: String?,
+    fun setCountriesByName(
+        name: String,
         onSuccess: (List<CountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 }
