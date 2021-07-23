@@ -144,9 +144,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onError: (Exception) -> Unit
     ) {
         val selfieImage: Uri = Uri.parse(selfie)
-        val metadata: StorageMetadata = storageMetadata {
-            contentType = IMG_TYPE
-        }
+        val metadata: StorageMetadata = storageMetadata { contentType = IMG_TYPE }
 
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
@@ -157,11 +155,11 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
 
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
-                task.exception?.let { exception ->
-                    onError.invoke(exception)
+                if(task.exception != null){
+                    onError.invoke(task.exception!!)
                 }
             }
-            return@continueWithTask selfieRef.downloadUrl
+            selfieRef.downloadUrl
         }.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Upload URL is needed to save it to the database
@@ -205,12 +203,12 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
     }
 
     private fun deleteImage(
-        selfieName: String?,
+        selfieName: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            if (selfieName != null) {
+            if (selfieName != "") {
                 selfiesStorageRef.child(selfieName).delete()
                     .addOnSuccessListener { onSuccess.invoke() }
                     .addOnFailureListener { exception -> onError.invoke(exception) }

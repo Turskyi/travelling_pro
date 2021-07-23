@@ -2,6 +2,7 @@ package io.github.turskyi.domain.repository
 
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
+import io.github.turskyi.domain.model.VisitedCountryModel
 
 interface CountriesRepository {
 
@@ -14,19 +15,19 @@ interface CountriesRepository {
         name: String,
         selfie: String,
         selfieName: String,
-        onSuccess: (List<CountryModel>) -> Unit,
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)? = null
     )
 
     suspend fun markAsVisited(
         country: CountryModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     suspend fun getVisitedModelCountries(
-        onSuccess: (List<CountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
+        onError: (Exception) -> Unit
     )
 
     suspend fun getCities(

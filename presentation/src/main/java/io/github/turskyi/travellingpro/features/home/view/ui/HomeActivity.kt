@@ -33,6 +33,7 @@ import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityView
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
 import io.github.turskyi.travellingpro.models.City
 import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.models.VisitedCountry
 import io.github.turskyi.travellingpro.models.VisitedCountryNode
 import org.koin.android.ext.android.inject
 import java.util.*
@@ -314,8 +315,13 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                             internetResultLauncher.launch(internetSettingsIntent)
                             return@registerForActivityResult
                         }
+                        response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
+                            toastLong(R.string.msg_bad_internet)
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            return@registerForActivityResult
+                        }
                         else -> {
-                            toastLong(response.error?.message)
+                            toastLong(response.error?.localizedMessage)
                             finishAndRemoveTask()
                             return@registerForActivityResult
                         }
@@ -360,8 +366,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private fun removeCityOnLongClick(city: City) = viewModel.removeCity(city)
 
-    private fun showFloatBtn(visitedCountries: List<Country>?) {
-        if (visitedCountries.isNullOrEmpty()) {
+    private fun showFloatBtn(visitedCountries: List<VisitedCountry>) {
+        if (visitedCountries.isEmpty()) {
             binding.floatBtnLarge.show()
             binding.floatBtnSmall.visibility = View.GONE
         } else {

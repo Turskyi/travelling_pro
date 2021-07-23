@@ -12,11 +12,11 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
-import io.github.turskyi.travellingpro.utils.extensions.*
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.models.VisitedCountry
 import io.github.turskyi.travellingpro.utils.IntFormatter
+import io.github.turskyi.travellingpro.utils.extensions.*
 
 /**
  * This custom view is a convenient way to encapsulate all logic related to pie chart to a separate
@@ -135,7 +135,7 @@ class CirclePieChart @JvmOverloads constructor(
         }
     }
 
-    fun createPieChartWith(visitedCountries: List<Country>, notVisitedCount: Float) {
+    fun createPieChartWith(visitedCountries: List<VisitedCountry>, notVisitedCount: Float) {
         val entries: MutableList<PieEntry> = mutableListOf()
         entries.add(PieEntry(visitedCountries.size.toFloat()))
         entries.add(PieEntry(notVisitedCount))

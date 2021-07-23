@@ -4,9 +4,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import io.github.turskyi.domain.interactors.CountriesInteractor
-import io.github.turskyi.travellingpro.utils.extensions.mapModelListToCountryList
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.models.VisitedCountry
 import io.github.turskyi.travellingpro.utils.Event
+import io.github.turskyi.travellingpro.utils.extensions.mapVisitedModelListToVisitedList
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
@@ -18,8 +18,8 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
     val visibilityLoader: MutableLiveData<Int>
         get() = _visibilityLoader
 
-    private val _visitedCountries = MutableLiveData<List<Country>>()
-    val visitedCountries: LiveData<List<Country>>
+    private val _visitedCountries = MutableLiveData<List<VisitedCountry>>()
+    val visitedCountries: LiveData<List<VisitedCountry>>
         get() = _visitedCountries
 
     private val _errorMessage = MutableLiveData<Event<String>>()
@@ -31,13 +31,13 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
         viewModelScope.launch {
             interactor.setVisitedModelCountries({ countries ->
                 visitedCount = countries.size
-                _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
+                _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)
             }, {exception ->
                 _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
                     exception.message?.let { message ->
-                        /* Trigger the event by setting a new Event as a new value */
+                        // Trigger the event by setting a new Event as a new value
                         postValue(Event(message))
                     }
                 }
@@ -49,13 +49,13 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
         _visibilityLoader.postValue(VISIBLE)
         viewModelScope.launch(IO) {
             interactor.updateSelfie(name, selfie, selfieName, { countries ->
-                _visitedCountries.run { postValue(countries.mapModelListToCountryList()) }
+                _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)
             }, {exception ->
                 _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
                     exception.message?.let { message ->
-                        /* Trigger the event by setting a new Event as a new value */
+                        // Trigger the event by setting a new Event as a new value
                         postValue(Event(message))
                     }
                 }

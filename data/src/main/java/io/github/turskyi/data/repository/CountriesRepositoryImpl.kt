@@ -5,6 +5,7 @@ import io.github.turskyi.data.extensions.*
 import io.github.turskyi.data.firestore.service.FirestoreSource
 import io.github.turskyi.domain.model.CityModel
 import io.github.turskyi.domain.model.CountryModel
+import io.github.turskyi.domain.model.VisitedCountryModel
 import io.github.turskyi.domain.repository.CountriesRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -27,7 +28,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         name: String,
         selfie: String,
         selfieName: String,
-        onSuccess: (List<CountryModel>) -> Unit,
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
     ) = firestoreSource.updateSelfie(
         name = name,
@@ -35,7 +36,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         previousSelfieName = selfieName,
         {
             firestoreSource.getVisitedCountries(
-                { countries -> onSuccess(countries.mapVisitedCountriesToModelList()) },
+                { countries -> onSuccess(countries.mapVisitedCountriesToVisitedModelList()) },
                 { exception -> onError?.invoke(exception) })
         },
         { exception -> onError?.invoke(exception) })
@@ -43,9 +44,9 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     override suspend fun markAsVisited(
         country: CountryModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = firestoreSource.markAsVisited(
-        country.mapModelToEntity(), { onSuccess() }, { exception -> onError?.invoke(exception) })
+        country.mapModelToEntity(), { onSuccess() }, { exception -> onError.invoke(exception) })
 
     override suspend fun removeFromVisited(
         country: CountryModel,
@@ -82,11 +83,11 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     )
 
     override suspend fun getVisitedModelCountries(
-        onSuccess: (List<CountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
+        onError: (Exception) -> Unit
     ) = firestoreSource.getVisitedCountries({ countries ->
-        onSuccess(countries.mapVisitedCountriesToModelList())
-    }, { exception -> onError?.invoke(exception) })
+        onSuccess(countries.mapVisitedCountriesToVisitedModelList())
+    }, { exception -> onError.invoke(exception) })
 
     override suspend fun getCities(
         onSuccess: (List<CityModel>) -> Unit,

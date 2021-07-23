@@ -5,8 +5,8 @@ data class CountryEntity(
         val name: String,
         val flag: String,
         @field:JvmField
-        var isVisited: Boolean?,
+        var isVisited: Boolean,
 ){
         // required empty constructor for firestore serialization
-        constructor() : this(0, "", "", null)
+        constructor() : this(0, "", "", false)
 }

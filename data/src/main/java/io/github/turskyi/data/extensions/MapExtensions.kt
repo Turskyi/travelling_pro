@@ -23,7 +23,7 @@ fun List<CountryNet>.mapNetListToModelList() = this.mapTo(
     mutableListOf(), { countryNet -> countryNet.mapNetToEntity() })
 
 fun CountryEntity.mapEntityToModel() = CountryModel(
-    id, name, flag, isVisited, null, ""
+    id, name, flag, isVisited, "", ""
 )
 
 fun VisitedCountryEntity.mapEntityToModel() = VisitedCountryModel(
@@ -66,7 +66,22 @@ fun VisitedCountryEntity.mapVisitedCountryToCountry(): CountryModel {
     return CountryModel(id = id, name = name, flag = flag, selfie = selfie, selfieName = selfieName)
 }
 
+fun VisitedCountryEntity.mapVisitedCountryEntityToVisitedCountry(): VisitedCountryModel {
+    return VisitedCountryModel(
+        id = id,
+        title = name,
+        flag = flag,
+        selfie = selfie,
+        selfieName = selfieName,
+        cities = cities.mapEntitiesToModelList(),
+    )
+}
+
 fun List<VisitedCountryEntity>.mapVisitedCountriesToModelList(): MutableList<CountryModel> {
     return mapTo(mutableListOf(), { countryEntity -> countryEntity.mapVisitedCountryToCountry() })
+}
+
+fun List<VisitedCountryEntity>.mapVisitedCountriesToVisitedModelList(): MutableList<VisitedCountryModel> {
+    return mapTo(mutableListOf(), { countryEntity -> countryEntity.mapVisitedCountryEntityToVisitedCountry() })
 }
 
