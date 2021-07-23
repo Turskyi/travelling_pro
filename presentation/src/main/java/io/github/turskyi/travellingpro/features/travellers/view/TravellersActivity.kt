@@ -95,6 +95,10 @@ class TravellersActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateTitle(percent: Int) {
+        binding.tvToolbarTitle.text = getString(R.string.title_activity_travellers, percent)
+    }
+
     private fun collapseSearch() {
         binding.rvTravellers.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
@@ -124,7 +128,7 @@ class TravellersActivity : AppCompatActivity() {
     private fun expandSearch() {
         binding.rvTravellers.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         binding.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),
@@ -146,9 +150,5 @@ class TravellersActivity : AppCompatActivity() {
             duration = 400
         }.start()
         showKeyboard()
-    }
-
-    private fun updateTitle(percent: Int) {
-        binding.tvToolbarTitle.text = getString(R.string.title_activity_travellers, percent)
     }
 }

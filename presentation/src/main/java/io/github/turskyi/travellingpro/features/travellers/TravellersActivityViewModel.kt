@@ -1,5 +1,6 @@
 package io.github.turskyi.travellingpro.features.travellers
 
+import android.view.View
 import android.view.View.VISIBLE
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,11 +18,11 @@ import java.util.concurrent.Executors
 
 class TravellersActivityViewModel(private val interactor: TravellersInteractor) : ViewModel() {
 
-    private val _topTravellersPercentLiveData = MutableLiveData<Int>()
+    private val _topTravellersPercentLiveData: MutableLiveData<Int> = MutableLiveData<Int>()
     val topTravellersPercentLiveData: MutableLiveData<Int>
         get() = _topTravellersPercentLiveData
 
-    private var _visibilityLoader = MutableLiveData<Int>()
+    private var _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
     val visibilityLoader: LiveData<Int>
         get() = _visibilityLoader
 
@@ -33,13 +34,13 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
             pagedList = getUserList(value)
         }
 
-    private val _errorMessage = MutableLiveData<Event<String>>()
+    private val _errorMessage: MutableLiveData<Event<String>> = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>>
         get() = _errorMessage
 
     init {
         _visibilityLoader.postValue(VISIBLE)
-        setTopTravellersNum()
+        setTopTravellersPercent()
         pagedList = getUserList(searchQuery)
     }
 
@@ -73,7 +74,17 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
             .build()
     }
 
-    private fun setTopTravellersNum() = viewModelScope.launch {
-//TODO: implement setting number of better travellers
+    private fun setTopTravellersPercent() = viewModelScope.launch {
+        interactor.setTopTravellersPercent({ percent ->
+            _topTravellersPercentLiveData.postValue(percent)
+        }, { exception ->
+            _visibilityLoader.postValue(View.GONE)
+            _errorMessage.run {
+                exception.message?.let { message ->
+                    // Trigger the event by setting a new Event as a new value
+                    postValue(Event(message))
+                }
+            }
+        })
     }
 }

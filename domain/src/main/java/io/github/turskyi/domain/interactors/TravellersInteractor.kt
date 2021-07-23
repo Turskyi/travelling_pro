@@ -13,4 +13,8 @@ class TravellersInteractor : KoinComponent {
         onSusses: (List<TravellerModel>) -> Unit,
         onError: ((Exception) -> Unit)
     ): Unit = repository.setTravellersByName(name, onSusses, onError)
+
+    fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+        repository.setTopTravellersPercent(onSuccess, onError)
+    }
 }

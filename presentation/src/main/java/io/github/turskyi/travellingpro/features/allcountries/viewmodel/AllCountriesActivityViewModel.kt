@@ -21,11 +21,11 @@ import java.util.concurrent.Executors
 
 class AllCountriesActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
 
-    private val _notVisitedCountriesNumLiveData = MutableLiveData<Int>()
+    private val _notVisitedCountriesNumLiveData: MutableLiveData<Int> = MutableLiveData<Int>()
     val notVisitedCountriesNumLiveData: MutableLiveData<Int>
         get() = _notVisitedCountriesNumLiveData
 
-    private var _visibilityLoader = MutableLiveData<Int>()
+    private var _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
     val visibilityLoader: LiveData<Int>
         get() = _visibilityLoader
 
@@ -37,13 +37,13 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
             pagedList = getCountryList(value)
         }
 
-    private val _errorMessage = MutableLiveData<Event<String>>()
+    private val _errorMessage: MutableLiveData<Event<String>> = MutableLiveData<Event<String>>()
     val errorMessage: LiveData<Event<String>>
         get() = _errorMessage
 
     init {
         _visibilityLoader.postValue(VISIBLE)
-        getNotVisitedCountriesNum()
+        setNotVisitedCountriesNum()
         pagedList = getCountryList(searchQuery)
     }
 
@@ -77,7 +77,7 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
             .build()
     }
 
-    private fun getNotVisitedCountriesNum() = viewModelScope.launch {
+    private fun setNotVisitedCountriesNum() = viewModelScope.launch {
         interactor.setNotVisitedCountriesNum({ num ->
             _notVisitedCountriesNumLiveData.postValue(num)
         }, { exception ->

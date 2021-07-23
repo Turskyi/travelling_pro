@@ -145,7 +145,7 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun expandSearch() {
         binding.rvAllCountries.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         binding.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),

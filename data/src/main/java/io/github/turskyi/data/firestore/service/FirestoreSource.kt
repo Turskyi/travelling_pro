@@ -41,28 +41,27 @@ interface FirestoreSource {
         onError: (Exception) -> Unit
     )
 
-    fun getVisitedCountries(
+    fun setVisitedCountries(
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun getCities(
+    fun setCities(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun getCountNotVisitedCountries(
-        onSuccess: (Int) -> Unit,
+    fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+
+    fun setCountNotVisitedAndVisitedCountries(
+        onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun getCountNotVisitedAndVisitedCountries(
-        onSuccess: (notVisited: Int, visited: Int) -> Unit,
-        onError:(Exception) -> Unit
-    )
-
-    fun getCountriesByRange(
-        to: Int, from: Int, onSuccess: (List<CountryEntity>) -> Unit,
+    fun setCountriesByRange(
+        to: Int,
+        from: Int,
+        onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
@@ -77,4 +76,6 @@ interface FirestoreSource {
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
+
+    fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 }

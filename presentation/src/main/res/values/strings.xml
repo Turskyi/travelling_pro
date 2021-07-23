@@ -120,7 +120,7 @@
     <!-- END of strings for the screen of flags -->
 
     <!-- START of strings for the screen with travellers -->
-    <string name="title_activity_travellers">%d\% of travellers visited more countries than you</string>
+    <string name="title_activity_travellers">%d%% of travellers visited more countries than you</string>
     <!-- END of strings for the screen with travellers -->
 
     <!-- START of list with strings for messages -->

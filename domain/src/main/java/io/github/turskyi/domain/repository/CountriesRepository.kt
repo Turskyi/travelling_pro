@@ -25,7 +25,7 @@ interface CountriesRepository {
         onError: (Exception) -> Unit
     )
 
-    suspend fun getVisitedModelCountries(
+    suspend fun setVisitedModelCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
     )
@@ -35,9 +35,9 @@ interface CountriesRepository {
         onError: ((Exception) -> Unit?)? = null
     )
 
-    suspend fun getCountNotVisitedCountries(
+    suspend fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     suspend fun getCountNotVisitedAndVisitedCountries(

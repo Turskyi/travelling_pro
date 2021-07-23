@@ -35,7 +35,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         selfie = selfie,
         previousSelfieName = selfieName,
         {
-            firestoreSource.getVisitedCountries(
+            firestoreSource.setVisitedCountries(
                 { countries -> onSuccess(countries.mapVisitedCountriesToVisitedModelList()) },
                 { exception -> onError?.invoke(exception) })
         },
@@ -82,29 +82,31 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         { exception -> onError.invoke(exception) },
     )
 
-    override suspend fun getVisitedModelCountries(
+    override suspend fun setVisitedModelCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = firestoreSource.getVisitedCountries({ countries ->
+    ) = firestoreSource.setVisitedCountries({ countries ->
         onSuccess(countries.mapVisitedCountriesToVisitedModelList())
     }, { exception -> onError.invoke(exception) })
 
     override suspend fun getCities(
         onSuccess: (List<CityModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firestoreSource.getCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
+    ) = firestoreSource.setCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
         { exception -> onError?.invoke(exception) })
 
-    override suspend fun getCountNotVisitedCountries(
+    override suspend fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
-        onError: ((Exception) -> Unit?)?
-    ) = firestoreSource.getCountNotVisitedCountries({ count -> onSuccess(count) },
-        { exception -> onError?.invoke(exception) })
+        onError: (Exception) -> Unit
+    ) = firestoreSource.setCountNotVisitedCountries(
+        { count -> onSuccess(count) },
+        { exception -> onError.invoke(exception) },
+    )
 
     override suspend fun getCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firestoreSource.getCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount ->
+    ) = firestoreSource.setCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount ->
         onSuccess(notVisitedCount, visitedCount)
     }, { exception -> onError?.invoke(exception) })
 
@@ -113,7 +115,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = firestoreSource.getCountriesByRange(to, from,
+    ) = firestoreSource.setCountriesByRange(to, from,
         { list -> onSuccess(list.mapEntityListToModelList()) }, { onError?.invoke(it) })
 
     override fun setCountriesByName(

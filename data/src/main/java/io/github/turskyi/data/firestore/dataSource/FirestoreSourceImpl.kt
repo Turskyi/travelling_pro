@@ -155,7 +155,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
 
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
-                if(task.exception != null){
+                if (task.exception != null) {
                     onError.invoke(task.exception!!)
                 }
             }
@@ -265,7 +265,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun getVisitedCountries(
+    override fun setVisitedCountries(
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -295,7 +295,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun getCities(
+    override fun setCities(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -327,7 +327,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun getCountNotVisitedCountries(
+    override fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -355,7 +355,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun getCountNotVisitedAndVisitedCountries(
+    override fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -392,8 +392,10 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun getCountriesByRange(
-        to: Int, from: Int, onSuccess: (List<CountryEntity>) -> Unit,
+    override fun setCountriesByRange(
+        to: Int,
+        from: Int,
+        onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
         if (mFirebaseAuth.currentUser != null) {
@@ -453,5 +455,9 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onError: (Exception) -> Unit
     ) {
 //        TODO: implement query of users
+    }
+
+    override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+//        TODO: implement retrieving a percent of top travellers
     }
 }

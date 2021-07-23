@@ -20,4 +20,11 @@ class TravellersRepositoryImpl : TravellersRepository, KoinComponent {
             { onError.invoke(it) },
         )
     }
+
+    override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+        firestoreSource.setTopTravellersPercent(
+            { percent -> onSuccess(percent) },
+            { exception -> onError.invoke(exception) },
+        )
+    }
 }

@@ -2,15 +2,16 @@ package io.github.turskyi.travellingpro.features.travellers.view.adapter
 
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import io.github.turskyi.travellingpro.R
+import io.github.turskyi.travellingpro.databinding.ItemTravellerBinding
 import io.github.turskyi.travellingpro.models.Traveller
 
-class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.ViewHolder>(
+class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.TravellerViewHolder>(
     COUNTRIES_DIFF_CALLBACK
 ) {
 
@@ -40,27 +41,42 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.ViewHold
 
     var onTravellerClickListener: ((country: Traveller) -> Unit)? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater
-            .from(parent.context).inflate(R.layout.item_traveller, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        TODO: implement onBindViewHolder
-    }
-
-    private fun setSelectableItemBackground(holder: ViewHolder) {
-        val outValue = TypedValue()
-        holder.itemView.context.theme.resolveAttribute(
-            R.attr.selectableItemBackground,
-            outValue,
-            true
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TravellerViewHolder {
+        val binding: ItemTravellerBinding = ItemTravellerBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false,
         )
+        return TravellerViewHolder(binding)
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//TODO: implement view holder
+    override fun onBindViewHolder(holderTraveller: TravellerViewHolder, position: Int) {
+        val currentItem: Traveller? = getItem(position)
+        if (currentItem != null) {
+            holderTraveller.bind(currentItem)
+        }
+    }
+
+    inner class TravellerViewHolder(private val binding: ItemTravellerBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(traveller: Traveller) {
+            setSelectableItemBackground(this)
+            binding.apply {
+                Glide.with(itemView)
+                    .load(traveller.avatar)
+                    .into(ivAvatar)
+
+                tvName.text = traveller.name
+            }
+        }
+
+        private fun setSelectableItemBackground(holderTraveller: TravellerViewHolder) {
+            val outValue = TypedValue()
+            holderTraveller.itemView.context.theme.resolveAttribute(
+                R.attr.selectableItemBackground,
+                outValue,
+                true
+            )
+        }
     }
 }
 

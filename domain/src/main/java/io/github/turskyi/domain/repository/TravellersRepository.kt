@@ -8,4 +8,6 @@ interface TravellersRepository {
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
     )
+
+    fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 }
