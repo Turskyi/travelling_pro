@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.models
+package io.github.turskyi.travellingpro.entities
 
 import com.chad.library.adapter.base.entity.node.BaseExpandNode
 import com.chad.library.adapter.base.entity.node.BaseNode

@@ -10,7 +10,6 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
 import io.github.turskyi.data.constants.Constants.IMG_TYPE
-import io.github.turskyi.data.constants.Constants.KEY_CITIES
 import io.github.turskyi.data.constants.Constants.KEY_ID
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
 import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
@@ -25,14 +24,13 @@ import io.github.turskyi.data.entities.firestore.CityEntity
 import io.github.turskyi.data.entities.firestore.CountryEntity
 import io.github.turskyi.data.entities.firestore.TravellerEntity
 import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
-import io.github.turskyi.data.extensions.mapCountryToVisitedCountry
+import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
 import io.github.turskyi.data.firestore.service.FirestoreSource
 import io.github.turskyi.data.util.exceptions.NotFoundException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import java.util.HashMap
 
 class FirestoreSourceImpl : KoinComponent, FirestoreSource {
     // init Authentication
@@ -242,12 +240,12 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                         val country: VisitedCountryEntity =
                             document.toObject(VisitedCountryEntity::class.java)
                         if (country.id == city.parentId) {
-                            country.cities.add(city)
-                            val countryRef: DocumentReference = userDocRef
-                                .collection(REF_VISITED_COUNTRIES)
-                                .document(country.name)
-                            // Update country or creating a new one if it does not already exist.
-                            countryRef.set(country, SetOptions.merge())
+                            val cityRef: DocumentReference = userDocRef
+                                .collection(REF_CITIES)
+                                .document("${city.name},${country.name}")
+                            city.id = cityRef.id
+                            cityRef
+                                .set(city)
                                 .addOnSuccessListener { onSuccess.invoke() }
                                 .addOnFailureListener { exception -> onError.invoke(exception) }
                         }
@@ -261,14 +259,15 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun removeCity(
-        name: String,
+    override fun removeCityById(
+        id: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
-            usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                .collection(REF_CITIES).document(name)
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            usersRef.document(currentUser.uid)
+                .collection(REF_CITIES).document(id)
                 .delete()
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { exception -> onError.invoke(exception) }

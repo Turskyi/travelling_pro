@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ItemTravellerBinding
-import io.github.turskyi.travellingpro.models.Traveller
+import io.github.turskyi.travellingpro.entities.Traveller
 
 class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.TravellerViewHolder>(
     COUNTRIES_DIFF_CALLBACK

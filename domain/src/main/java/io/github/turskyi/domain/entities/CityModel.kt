@@ -1,10 +1,11 @@
-package io.github.turskyi.domain.model
+package io.github.turskyi.domain.entities
 
 data class CityModel(
+    val id: String,
     var name: String,
     var parentId: Int,
     var month: String
 ) {
     // required empty constructor for firestore serialization
-    constructor() : this( "", 0, "")
+    constructor() : this("", "", 0, "")
 }

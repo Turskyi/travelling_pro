@@ -1,23 +1,26 @@
-package io.github.turskyi.data.extensions
+package io.github.turskyi.data.util.extensions
 
 import io.github.turskyi.data.entities.network.CountryNet
 import io.github.turskyi.data.entities.firestore.CityEntity
 import io.github.turskyi.data.entities.firestore.CountryEntity
 import io.github.turskyi.data.entities.firestore.TravellerEntity
 import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
-import io.github.turskyi.domain.model.CityModel
-import io.github.turskyi.domain.model.CountryModel
-import io.github.turskyi.domain.model.TravellerModel
-import io.github.turskyi.domain.model.VisitedCountryModel
+import io.github.turskyi.domain.entities.CityModel
+import io.github.turskyi.domain.entities.CountryModel
+import io.github.turskyi.domain.entities.TravellerModel
+import io.github.turskyi.domain.entities.VisitedCountryModel
 
 fun List<CountryModel>.mapModelListToEntityList() =
     mapTo(mutableListOf(), { countryModel -> countryModel.mapModelToEntity() })
 
 fun CountryModel.mapModelToEntity() = CountryEntity(id, name, flag, isVisited)
-fun CityModel.mapModelToEntity() =
-    CityEntity(name = name, parentId = parentId, month = month)
+fun CityModel.mapModelToEntity(): CityEntity {
+    return CityEntity(id = id,name = name, parentId = parentId, month = month)
+}
 
-fun CityEntity.mapEntityToModel() = CityModel(name = name, parentId = parentId, month = month)
+fun CityEntity.mapEntityToModel(): CityModel {
+    return CityModel(id= id,name = name, parentId = parentId, month = month)
+}
 
 fun List<CountryNet>.mapNetListToModelList() = this.mapTo(
     mutableListOf(), { countryNet -> countryNet.mapNetToEntity() })
@@ -32,7 +35,6 @@ fun VisitedCountryEntity.mapEntityToModel() = VisitedCountryModel(
     flag = flag,
     selfie = selfie,
     selfieName = selfieName,
-    cities = cities.mapEntitiesToModelList()
 )
 
 fun TravellerEntity.mapEntityToModel() = TravellerModel(
@@ -73,7 +75,6 @@ fun VisitedCountryEntity.mapVisitedCountryEntityToVisitedCountry(): VisitedCount
         flag = flag,
         selfie = selfie,
         selfieName = selfieName,
-        cities = cities.mapEntitiesToModelList(),
     )
 }
 

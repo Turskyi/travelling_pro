@@ -7,7 +7,7 @@ import com.chad.library.adapter.base.entity.node.BaseNode
 import com.chad.library.adapter.base.provider.BaseNodeProvider
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.models.City
+import io.github.turskyi.travellingpro.entities.City
 
 class CityProvider : BaseNodeProvider() {
 

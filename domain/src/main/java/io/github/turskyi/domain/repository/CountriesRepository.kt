@@ -1,8 +1,8 @@
 package io.github.turskyi.domain.repository
 
-import io.github.turskyi.domain.model.CityModel
-import io.github.turskyi.domain.model.CountryModel
-import io.github.turskyi.domain.model.VisitedCountryModel
+import io.github.turskyi.domain.entities.CityModel
+import io.github.turskyi.domain.entities.CountryModel
+import io.github.turskyi.domain.entities.VisitedCountryModel
 
 interface CountriesRepository {
 
@@ -54,7 +54,7 @@ interface CountriesRepository {
     suspend fun removeCity(
         city: CityModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     suspend fun insertCity(

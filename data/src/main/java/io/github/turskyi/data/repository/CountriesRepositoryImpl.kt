@@ -1,11 +1,11 @@
 package io.github.turskyi.data.repository
 
 import io.github.turskyi.data.network.datasource.CountriesNetSource
-import io.github.turskyi.data.extensions.*
+import io.github.turskyi.data.util.extensions.*
 import io.github.turskyi.data.firestore.service.FirestoreSource
-import io.github.turskyi.domain.model.CityModel
-import io.github.turskyi.domain.model.CountryModel
-import io.github.turskyi.domain.model.VisitedCountryModel
+import io.github.turskyi.domain.entities.CityModel
+import io.github.turskyi.domain.entities.CountryModel
+import io.github.turskyi.domain.entities.VisitedCountryModel
 import io.github.turskyi.domain.repository.CountriesRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -68,9 +68,12 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
     override suspend fun removeCity(
         city: CityModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
-    ) = firestoreSource.removeCity(city.name, { onSuccess() },
-        { exception -> onError?.invoke(exception) })
+        onError: (Exception) -> Unit
+    ) = firestoreSource.removeCityById(
+        city.id,
+        { onSuccess() },
+        { exception -> onError.invoke(exception) },
+    )
 
     private fun addModelsToDb(
         countries: MutableList<CountryModel>,
@@ -93,7 +96,7 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
     ) = firestoreSource.setCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
-        { exception -> onError?.invoke(exception) })
+        { exception -> onError.invoke(exception) })
 
     override suspend fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,

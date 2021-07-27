@@ -24,7 +24,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
-import io.github.turskyi.travellingpro.models.City
+import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.utils.extensions.isOnline
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong

@@ -2,7 +2,7 @@ package io.github.turskyi.travellingpro.features.travellers.view.adapter
 
 import androidx.paging.PositionalDataSource
 import io.github.turskyi.domain.interactors.TravellersInteractor
-import io.github.turskyi.travellingpro.models.Traveller
+import io.github.turskyi.travellingpro.entities.Traveller
 
 internal class FilteredTravellersPositionalDataSource(
     private val userName: String,

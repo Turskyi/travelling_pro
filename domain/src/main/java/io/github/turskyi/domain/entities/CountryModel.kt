@@ -1,4 +1,4 @@
-package io.github.turskyi.domain.model
+package io.github.turskyi.domain.entities
 
 data class CountryModel(
     var id: Int,

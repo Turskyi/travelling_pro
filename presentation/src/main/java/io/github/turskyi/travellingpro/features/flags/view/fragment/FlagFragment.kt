@@ -32,8 +32,7 @@ import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityVie
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
-import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.models.VisitedCountry
+import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.widgets.ListenableWebView
 
 class FlagFragment : Fragment() {

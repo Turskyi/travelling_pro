@@ -3,7 +3,7 @@ package io.github.turskyi.travellingpro.features.travellers.view.adapter
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PositionalDataSource
 import io.github.turskyi.domain.interactors.TravellersInteractor
-import io.github.turskyi.travellingpro.models.Traveller
+import io.github.turskyi.travellingpro.entities.Traveller
 
 internal class TravellersPositionalDataSource(private val interactor: TravellersInteractor) :
     PositionalDataSource<Traveller>() {

@@ -16,7 +16,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.models.VisitedCountryNode
+import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 
 class CountryNodeProvider : BaseNodeProvider() {
     override val itemViewType: Int

@@ -14,7 +14,7 @@ import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyL
 import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
-import io.github.turskyi.travellingpro.models.Traveller
+import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
 

@@ -1,12 +1,12 @@
 package io.github.turskyi.travellingpro.utils.extensions
 
-import io.github.turskyi.domain.model.CityModel
-import io.github.turskyi.domain.model.CountryModel
-import io.github.turskyi.domain.model.VisitedCountryModel
-import io.github.turskyi.travellingpro.models.City
-import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.models.VisitedCountry
-import io.github.turskyi.travellingpro.models.VisitedCountryNode
+import io.github.turskyi.domain.entities.CityModel
+import io.github.turskyi.domain.entities.CountryModel
+import io.github.turskyi.domain.entities.VisitedCountryModel
+import io.github.turskyi.travellingpro.entities.City
+import io.github.turskyi.travellingpro.entities.Country
+import io.github.turskyi.travellingpro.entities.VisitedCountry
+import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 
 fun List<CountryModel>.mapModelListToCountryList(): MutableList<Country> {
     return this.mapTo(
@@ -57,5 +57,5 @@ fun VisitedCountry.mapVisitedCountryToNode() = VisitedCountryNode(
     selfieName = selfieName
 )
 
-fun CityModel.mapModelToBaseNode() = City(name = name, parentId = parentId, month = month)
-fun City.mapNodeToModel() = CityModel(name = name, parentId = parentId, month = month)
+fun CityModel.mapModelToBaseNode() = City(id = id, name = name, parentId = parentId, month = month)
+fun City.mapNodeToModel() = CityModel(id = id, name = name, parentId = parentId, month = month)

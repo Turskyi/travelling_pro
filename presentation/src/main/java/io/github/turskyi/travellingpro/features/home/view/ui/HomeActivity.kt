@@ -31,10 +31,10 @@ import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Compani
 import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
-import io.github.turskyi.travellingpro.models.City
-import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.models.VisitedCountry
-import io.github.turskyi.travellingpro.models.VisitedCountryNode
+import io.github.turskyi.travellingpro.entities.City
+import io.github.turskyi.travellingpro.entities.Country
+import io.github.turskyi.travellingpro.entities.VisitedCountry
+import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 import org.koin.android.ext.android.inject
 import java.util.*
 

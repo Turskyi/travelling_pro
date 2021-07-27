@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.travellingpro.utils.extensions.mapNodeToModel
-import io.github.turskyi.travellingpro.models.City
+import io.github.turskyi.travellingpro.entities.City
 
 class AddCityDialogViewModel(private val interactor: CountriesInteractor) : ViewModel() {
     fun insert(

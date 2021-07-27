@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.entities.Country
 
 class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.CountryViewHolder>(
     COUNTRIES_DIFF_CALLBACK

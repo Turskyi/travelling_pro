@@ -1,6 +1,6 @@
 package io.github.turskyi.domain.interactors
 
-import io.github.turskyi.domain.model.TravellerModel
+import io.github.turskyi.domain.entities.TravellerModel
 import io.github.turskyi.domain.repository.TravellersRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

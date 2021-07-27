@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.models
+package io.github.turskyi.travellingpro.entities
 
 import android.os.Parcel
 import android.os.Parcelable

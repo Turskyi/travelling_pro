@@ -13,7 +13,7 @@ import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.travellingpro.utils.extensions.mapToModel
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.CountriesPositionalDataSource
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.FilteredCountriesPositionalDataSource
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
 import kotlinx.coroutines.Job

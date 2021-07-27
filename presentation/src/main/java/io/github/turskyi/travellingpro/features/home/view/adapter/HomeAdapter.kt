@@ -4,8 +4,8 @@ import com.chad.library.adapter.base.BaseNodeAdapter
 import com.chad.library.adapter.base.entity.node.BaseNode
 import io.github.turskyi.travellingpro.features.home.view.adapter.providers.CityProvider
 import io.github.turskyi.travellingpro.features.home.view.adapter.providers.CountryNodeProvider
-import io.github.turskyi.travellingpro.models.City
-import io.github.turskyi.travellingpro.models.VisitedCountryNode
+import io.github.turskyi.travellingpro.entities.City
+import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 
 class HomeAdapter : BaseNodeAdapter() {
 

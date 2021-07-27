@@ -4,7 +4,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import io.github.turskyi.domain.interactors.CountriesInteractor
-import io.github.turskyi.travellingpro.models.VisitedCountry
+import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.mapVisitedModelListToVisitedList
 import kotlinx.coroutines.Dispatchers.IO

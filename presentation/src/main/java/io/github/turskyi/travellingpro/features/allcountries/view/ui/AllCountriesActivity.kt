@@ -17,7 +17,7 @@ import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
 import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
 import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
 import org.koin.android.ext.android.inject

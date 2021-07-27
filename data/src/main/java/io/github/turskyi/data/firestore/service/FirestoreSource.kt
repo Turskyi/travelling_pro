@@ -35,11 +35,7 @@ interface FirestoreSource {
 
     fun insertCity(city: CityEntity, onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
-    fun removeCity(
-        name: String,
-        onSuccess: () -> Unit,
-        onError: (Exception) -> Unit
-    )
+    fun removeCityById(id: String, onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
     fun setVisitedCountries(
         onSuccess: (List<VisitedCountryEntity>) -> Unit,

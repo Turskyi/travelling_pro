@@ -1,4 +1,4 @@
-package io.github.turskyi.domain.model
+package io.github.turskyi.domain.entities
 
 sealed class Result<out T : Any> {
 

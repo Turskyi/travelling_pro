@@ -14,7 +14,7 @@ import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
-import io.github.turskyi.travellingpro.models.VisitedCountry
+import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.utils.IntFormatter
 import io.github.turskyi.travellingpro.utils.extensions.*
 

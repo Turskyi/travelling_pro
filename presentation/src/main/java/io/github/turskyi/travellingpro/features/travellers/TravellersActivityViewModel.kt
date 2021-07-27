@@ -10,7 +10,7 @@ import androidx.paging.PagedList
 import io.github.turskyi.domain.interactors.TravellersInteractor
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.FilteredTravellersPositionalDataSource
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersPositionalDataSource
-import io.github.turskyi.travellingpro.models.Traveller
+import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
 import kotlinx.coroutines.launch

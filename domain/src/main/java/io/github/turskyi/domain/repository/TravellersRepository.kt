@@ -1,6 +1,6 @@
 package io.github.turskyi.domain.repository
 
-import io.github.turskyi.domain.model.TravellerModel
+import io.github.turskyi.domain.entities.TravellerModel
 
 interface TravellersRepository {
     fun setTravellersByName(

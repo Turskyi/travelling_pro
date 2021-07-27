@@ -1,4 +1,4 @@
-package io.github.turskyi.domain.model
+package io.github.turskyi.domain.entities
 
 data class TravellerModel(
     val id: String,

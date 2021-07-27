@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chad.library.adapter.base.entity.node.BaseNode
 import io.github.turskyi.domain.interactors.CountriesInteractor
-import io.github.turskyi.travellingpro.models.City
-import io.github.turskyi.travellingpro.models.Country
-import io.github.turskyi.travellingpro.models.VisitedCountry
-import io.github.turskyi.travellingpro.models.VisitedCountryNode
+import io.github.turskyi.travellingpro.entities.City
+import io.github.turskyi.travellingpro.entities.Country
+import io.github.turskyi.travellingpro.entities.VisitedCountry
+import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.*
 import kotlinx.coroutines.launch

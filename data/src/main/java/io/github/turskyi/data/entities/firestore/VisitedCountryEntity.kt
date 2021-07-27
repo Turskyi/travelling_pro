@@ -6,7 +6,6 @@ data class VisitedCountryEntity(
     val flag: String,
     val selfie: String,
     val selfieName: String,
-    val cities: MutableList<CityEntity>,
 ) {
     // required empty constructor for firestore serialization
     constructor() : this(
@@ -15,7 +14,6 @@ data class VisitedCountryEntity(
         flag = "",
         selfie = "",
         selfieName = "",
-        cities = mutableListOf()
     )
 
     constructor(name: String, flag: String) : this(
@@ -24,7 +22,6 @@ data class VisitedCountryEntity(
         flag = flag,
         selfie = "",
         selfieName = "",
-        cities = mutableListOf(),
     )
 
     constructor(id: Int, name: String, flag: String) : this(
@@ -33,6 +30,5 @@ data class VisitedCountryEntity(
         flag,
         "",
         "",
-        mutableListOf(),
     )
 }
