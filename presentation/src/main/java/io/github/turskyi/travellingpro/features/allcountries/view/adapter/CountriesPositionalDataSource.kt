@@ -20,29 +20,32 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
         params: LoadInitialParams,
         callback: LoadInitialCallback<Country>
     ) {
-        interactor.setCountriesByRange(params.requestedLoadSize, params.requestedStartPosition,
+        interactor.setCountriesByRange(
+            params.requestedLoadSize,
+            params.requestedStartPosition,
             { initCountries ->
                 callback.onResult(
                     initCountries.mapModelListToCountryList(),
                     params.requestedStartPosition
                 )
-                /* a little bit delay of stopping animation */
-                Timer().schedule(2000) {
-                    _visibilityLoader.postValue(GONE)
-                }
+                // a little bit delay of stopping animation
+                Timer().schedule(2000) { _visibilityLoader.postValue(GONE) }
             },
             { exception ->
                 exception.printStackTrace()
                 callback.onResult(emptyList(), params.requestedStartPosition)
                 _visibilityLoader.postValue(GONE)
-            })
+            },
+        )
     }
 
     override fun loadRange(
         params: LoadRangeParams,
         callback: LoadRangeCallback<Country>
     ) {
-        interactor.setCountriesByRange(params.startPosition + params.loadSize, params.startPosition,
+        interactor.setCountriesByRange(
+            params.startPosition + params.loadSize,
+            params.startPosition,
             { allCountries ->
                 callback.onResult(allCountries.mapModelListToCountryList())
             },
@@ -50,6 +53,7 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
                 exception.printStackTrace()
                 callback.onResult(emptyList())
                 _visibilityLoader.postValue(GONE)
-            })
+            },
+        )
     }
 }

@@ -4,8 +4,6 @@ package io.github.turskyi.data.constants
  * @Description Constants for the data module of the travelling pro app.
  */
 object Constants {
-    const val IMG_TYPE = "image/jpg"
-
     // constants for firestore
     const val REF_USERS = "users"
     const val REF_COUNTRIES = "countries"
@@ -17,5 +15,4 @@ object Constants {
     const val KEY_SELFIE_NAME = "selfieName"
     const val KEY_ID = "id"
     const val KEY_PARENT_ID = "parentId"
-    const val KEY_CITIES = "cities"
 }

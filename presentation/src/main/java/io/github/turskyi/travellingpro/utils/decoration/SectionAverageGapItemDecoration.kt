@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.decoration
+package io.github.turskyi.travellingpro.utils.decoration
 
 import android.graphics.Rect
 import android.util.DisplayMetrics

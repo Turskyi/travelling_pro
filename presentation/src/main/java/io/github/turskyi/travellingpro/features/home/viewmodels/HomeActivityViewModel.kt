@@ -51,8 +51,6 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
 
             // loading count of not visited countries
             interactor.setNotVisitedCountriesNum({ notVisitedCountriesNum ->
-                notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
-
                 // loading visited countries
                 setVisitedCountries(notVisitedCountriesNum)
             }, { exception ->
@@ -68,13 +66,16 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
 
     private fun setVisitedCountries(notVisitedCountriesNum: Int) {
         viewModelScope.launch {
-            interactor.setVisitedModelCountries({ visitedCountries ->
-              val countries: List<VisitedCountry> = visitedCountries.mapVisitedModelListToVisitedList()
+            interactor.setVisitedModelCountries({ countries ->
+              val visitedCountries: List<VisitedCountry> = countries.mapVisitedModelListToVisitedList()
                 // checking if database of visited and not visited countries is empty
-                if (notVisitedCountriesNum == 0 && countries.isNullOrEmpty()) {
+                if (notVisitedCountriesNum == 0 && visitedCountries.isNullOrEmpty()) {
+                    /* if both lists are empty it means, that countries are not downloaded
+                     * to local database, so we gave to download them first */
                     viewModelScope.launch { downloadCountries() }
                 } else {
-                    addCitiesToVisitedCountriesIfNotEmpty(countries)
+                    notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
+                    addCitiesToVisitedCountriesIfNotEmpty(visitedCountries)
                 }
             }, { exception ->
                 _visibilityLoader.postValue(GONE)

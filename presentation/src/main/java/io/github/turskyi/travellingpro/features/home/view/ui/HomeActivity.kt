@@ -22,7 +22,7 @@ import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
-import io.github.turskyi.travellingpro.decoration.SectionAverageGapItemDecoration
+import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
 import io.github.turskyi.travellingpro.utils.extensions.*
 import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
@@ -151,7 +151,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         homeAdapter.apply {
             onFlagClickListener = { country ->
                 // mis-clicking prevention, using threshold of 1000 ms
-                if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > resources.getInteger(R.integer.click_interval)) {
+                if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > resources.getInteger(
+                        R.integer.click_interval
+                    )
+                ) {
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(EXTRA_POSITION, getItemPosition(country))
                         viewModel.visitedCountries.value?.size?.let { itemCount ->
@@ -174,7 +177,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
             onCountryNameClickListener = { countryNode ->
                 // Creating the new Fragment with the Country id passed in.
-                val fragment: AddCityDialogFragment = AddCityDialogFragment.newInstance(countryNode.id)
+                val fragment: AddCityDialogFragment =
+                    AddCityDialogFragment.newInstance(countryNode.id)
                 fragment.show(supportFragmentManager, null)
             }
             onCityLongClickListener = { city ->
@@ -262,7 +266,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         internetResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { internetResult: ActivityResult ->
-            // User pressed back button on internet settings page
+            // User pressed back button on his phone internet settings page
             if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
                 internetResultLauncher.unregister()
                 initPersonalization()

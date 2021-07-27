@@ -7,13 +7,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import io.github.turskyi.data.entities.network.CountryListResponse
-import io.github.turskyi.data.entities.network.CountryNet
+import io.github.turskyi.data.entities.network.CountryResponse
+import io.github.turskyi.data.util.exceptions.NotFoundException
 import io.github.turskyi.data.util.throwException
 
-class CountriesNetSource(private val countriesApi: CountriesApi) : KoinComponent {
+class NetSource(private val countriesApi: CountriesApi) : KoinComponent {
 
     fun getCountryNetList(
-        onComplete: (List<CountryNet>?) -> Unit,
+        onComplete: (List<CountryResponse>) -> Unit,
         onError: (Exception) -> Unit) {
         countriesApi.getCategoriesFromApi().enqueue(object : Callback<CountryListResponse> {
             override fun onFailure(call: Call<CountryListResponse>, t: Throwable) {
@@ -25,7 +26,11 @@ class CountriesNetSource(private val countriesApi: CountriesApi) : KoinComponent
                 response: Response<CountryListResponse>
             ) {
                 if (response.isSuccessful) {
-                    onComplete(response.body())
+                    if(response.body() != null){
+                        onComplete(response.body()!!)
+                    } else {
+                        onError(NotFoundException())
+                    }
                 } else {
                     onError(response.code().throwException(response.message()))
                 }

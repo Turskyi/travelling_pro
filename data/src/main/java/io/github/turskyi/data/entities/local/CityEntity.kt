@@ -1,4 +1,4 @@
-package io.github.turskyi.data.entities.firestore
+package io.github.turskyi.data.entities.local
 
 data class CityEntity(
     var id: String,

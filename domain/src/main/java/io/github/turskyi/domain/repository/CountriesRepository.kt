@@ -6,10 +6,7 @@ import io.github.turskyi.domain.entities.VisitedCountryModel
 
 interface CountriesRepository {
 
-    suspend fun refreshCountriesInDb(
-        onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)? = null
-    )
+    suspend fun refreshCountriesInDb(onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
     suspend fun updateSelfie(
         name: String,
@@ -35,10 +32,7 @@ interface CountriesRepository {
         onError: (Exception) -> Unit
     )
 
-    suspend fun setCountNotVisitedCountries(
-        onSuccess: (Int) -> Unit,
-        onError: (Exception) -> Unit
-    )
+    suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
     suspend fun getCountNotVisitedAndVisitedCountries(
         onSuccess: (Int, Int) -> Unit,
@@ -63,11 +57,11 @@ interface CountriesRepository {
         onError: (Exception) -> Unit
     )
 
-    fun getCountriesByRange(
+    fun setCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     fun setCountriesByName(

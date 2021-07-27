@@ -33,8 +33,7 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
                 ): Boolean {
                     return oldItem.name == newItem.name &&
                             oldItem.avatar == newItem.avatar &&
-                            oldItem.id == newItem.id &&
-                            oldItem.countryList == newItem.countryList
+                            oldItem.id == newItem.id
                 }
             }
     }

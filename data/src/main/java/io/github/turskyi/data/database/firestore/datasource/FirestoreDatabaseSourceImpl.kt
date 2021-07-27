@@ -1,4 +1,4 @@
-package io.github.turskyi.data.firestore.dataSource
+package io.github.turskyi.data.database.firestore.datasource
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
@@ -9,7 +9,6 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
-import io.github.turskyi.data.constants.Constants.IMG_TYPE
 import io.github.turskyi.data.constants.Constants.KEY_ID
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
 import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
@@ -20,19 +19,19 @@ import io.github.turskyi.data.constants.Constants.REF_COUNTRIES
 import io.github.turskyi.data.constants.Constants.REF_SELFIES
 import io.github.turskyi.data.constants.Constants.REF_USERS
 import io.github.turskyi.data.constants.Constants.REF_VISITED_COUNTRIES
-import io.github.turskyi.data.entities.firestore.CityEntity
-import io.github.turskyi.data.entities.firestore.CountryEntity
-import io.github.turskyi.data.entities.firestore.TravellerEntity
-import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
+import io.github.turskyi.data.entities.local.CityEntity
+import io.github.turskyi.data.entities.local.CountryEntity
+import io.github.turskyi.data.entities.local.TravellerEntity
+import io.github.turskyi.data.entities.local.VisitedCountryEntity
 import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
-import io.github.turskyi.data.firestore.service.FirestoreSource
+import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.util.exceptions.NotFoundException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-class FirestoreSourceImpl : KoinComponent, FirestoreSource {
+class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
     // init Authentication
     private var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -40,6 +39,31 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
 
     private val selfiesStorageRef: StorageReference = firebaseStorage.getReference(REF_SELFIES)
     private val usersRef: CollectionReference = db.collection(REF_USERS)
+
+    override fun setCountNotVisitedCountries(
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val countriesRef: CollectionReference = usersRef
+                .document(currentUser.uid)
+                .collection(REF_COUNTRIES)
+            countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        task.result?.let { notVisitedCountries ->
+                            onSuccess(notVisitedCountries.size())
+                        }
+                    } else {
+                        task.exception?.let { exception -> onError.invoke(exception) }
+                    }
+                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            mFirebaseAuth.signOut()
+        }
+    }
 
     override fun insertAllCountries(
         countries: List<CountryEntity>,
@@ -52,8 +76,9 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
             flag = countryEntity.flag,
             isVisited = false,
         )
-        if (mFirebaseAuth.currentUser != null) {
-            usersRef.document(mFirebaseAuth.currentUser!!.uid)
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            usersRef.document(currentUser.uid)
                 .collection(REF_COUNTRIES).document(countryEntity.name).set(country)
                 .addOnSuccessListener {
                     if (index == countries.size - 1) {
@@ -150,7 +175,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onError: (Exception) -> Unit
     ) {
         val selfieImage: Uri = Uri.parse(selfie)
-        val metadata: StorageMetadata = storageMetadata { contentType = IMG_TYPE }
+        val metadata: StorageMetadata = storageMetadata { contentType = "image/jpg" }
 
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
@@ -338,42 +363,14 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         }
     }
 
-    override fun setCountNotVisitedCountries(
-        onSuccess: (Int) -> Unit,
-        onError: (Exception) -> Unit
-    ) {
-        if (mFirebaseAuth.currentUser != null) {
-            val countriesRef: CollectionReference = usersRef
-                .document(mFirebaseAuth.currentUser!!.uid)
-                .collection(REF_COUNTRIES)
-            countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        task.result?.let { notVisitedCountries ->
-                            onSuccess(notVisitedCountries.size())
-                        }
-                    } else {
-                        task.exception?.let { exception ->
-                            onError.invoke(exception)
-                        }
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    onError.invoke(exception)
-                }
-        } else {
-            mFirebaseAuth.signOut()
-        }
-    }
-
     override fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
             val countriesRef: CollectionReference =
-                usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                    .collection(REF_COUNTRIES)
+                usersRef.document(currentUser.uid).collection(REF_COUNTRIES)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
@@ -430,11 +427,13 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
     }
 
     override fun setCountriesByName(
-        nameQuery: String, onSuccess: (List<CountryEntity>) -> Unit,
+        nameQuery: String,
+        onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
-            val countriesRef: Query = usersRef.document(mFirebaseAuth.currentUser!!.uid)
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val countriesRef: Query = usersRef.document(currentUser.uid)
                 .collection(REF_COUNTRIES).orderBy(KEY_ID)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
@@ -453,6 +452,31 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                 .addOnFailureListener { exception ->
                     onError.invoke(exception)
                 }
+        } else {
+            onError.invoke(NotFoundException())
+        }
+    }
+
+    override fun setTravellersByRange(
+        to: Int,
+        from: Int,
+        onSuccess: (List<TravellerEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val usersRef: Query = usersRef.orderBy(KEY_ID)
+            usersRef.startAt(from).endBefore(to).get()
+                .addOnSuccessListener { queryDocumentSnapshots ->
+                    val countries: MutableList<TravellerEntity> = mutableListOf()
+                    for (documentSnapshot in queryDocumentSnapshots) {
+                        val country: TravellerEntity =
+                            documentSnapshot.toObject(TravellerEntity::class.java)
+                        countries.add(country)
+                    }
+                    onSuccess(countries)
+                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }

@@ -1,4 +1,4 @@
-package io.github.turskyi.data.entities.firestore
+package io.github.turskyi.data.entities.local
 
 /** Object to use for storing all countries in firestore database */
 data class CountryEntity(

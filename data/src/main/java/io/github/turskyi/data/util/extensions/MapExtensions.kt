@@ -1,10 +1,10 @@
 package io.github.turskyi.data.util.extensions
 
-import io.github.turskyi.data.entities.network.CountryNet
-import io.github.turskyi.data.entities.firestore.CityEntity
-import io.github.turskyi.data.entities.firestore.CountryEntity
-import io.github.turskyi.data.entities.firestore.TravellerEntity
-import io.github.turskyi.data.entities.firestore.VisitedCountryEntity
+import io.github.turskyi.data.entities.network.CountryResponse
+import io.github.turskyi.data.entities.local.CityEntity
+import io.github.turskyi.data.entities.local.CountryEntity
+import io.github.turskyi.data.entities.local.TravellerEntity
+import io.github.turskyi.data.entities.local.VisitedCountryEntity
 import io.github.turskyi.domain.entities.CityModel
 import io.github.turskyi.domain.entities.CountryModel
 import io.github.turskyi.domain.entities.TravellerModel
@@ -15,14 +15,14 @@ fun List<CountryModel>.mapModelListToEntityList() =
 
 fun CountryModel.mapModelToEntity() = CountryEntity(id, name, flag, isVisited)
 fun CityModel.mapModelToEntity(): CityEntity {
-    return CityEntity(id = id,name = name, parentId = parentId, month = month)
+    return CityEntity(id = id, name = name, parentId = parentId, month = month)
 }
 
 fun CityEntity.mapEntityToModel(): CityModel {
-    return CityModel(id= id,name = name, parentId = parentId, month = month)
+    return CityModel(id = id, name = name, parentId = parentId, month = month)
 }
 
-fun List<CountryNet>.mapNetListToModelList() = this.mapTo(
+fun List<CountryResponse>.mapNetListToModelList() = this.mapTo(
     mutableListOf(), { countryNet -> countryNet.mapNetToEntity() })
 
 fun CountryEntity.mapEntityToModel() = CountryModel(
@@ -37,14 +37,9 @@ fun VisitedCountryEntity.mapEntityToModel() = VisitedCountryModel(
     selfieName = selfieName,
 )
 
-fun TravellerEntity.mapEntityToModel() = TravellerModel(
-    id, name, avatar, countryList.mapTo(
-        mutableListOf(),
-        { countryEntity -> countryEntity.mapEntityToModel() }
-    )
-)
+fun TravellerEntity.mapEntityToModel(): TravellerModel = TravellerModel(id, name, avatar)
 
-fun CountryNet.mapNetToEntity() = CountryModel(id, name, flag, isVisited)
+fun CountryResponse.mapNetToEntity() = CountryModel(id, name, flag, isVisited)
 fun List<CityEntity>.mapEntitiesToModelList() = mapTo(
     mutableListOf(),
     { cityEntity -> cityEntity.mapEntityToModel() },
@@ -83,6 +78,8 @@ fun List<VisitedCountryEntity>.mapVisitedCountriesToModelList(): MutableList<Cou
 }
 
 fun List<VisitedCountryEntity>.mapVisitedCountriesToVisitedModelList(): MutableList<VisitedCountryModel> {
-    return mapTo(mutableListOf(), { countryEntity -> countryEntity.mapVisitedCountryEntityToVisitedCountry() })
+    return mapTo(
+        mutableListOf(),
+        { countryEntity -> countryEntity.mapVisitedCountryEntityToVisitedCountry() })
 }
 

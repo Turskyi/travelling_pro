@@ -6,7 +6,7 @@ package io.github.turskyi.travellingpro.utils
 open class Event<out T>(private val content: T) {
 
     var hasBeenHandled: Boolean = false
-        /* Allow external read but not write */
+        // Allowing external read but not write
         private set
 
     /**

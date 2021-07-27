@@ -9,10 +9,10 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import io.github.turskyi.data.BuildConfig.HOST_URL
-import io.github.turskyi.data.network.datasource.CountriesNetSource
+import io.github.turskyi.data.network.datasource.NetSource
 import io.github.turskyi.data.network.service.CountriesApi
-import io.github.turskyi.data.firestore.dataSource.FirestoreSourceImpl
-import io.github.turskyi.data.firestore.service.FirestoreSource
+import io.github.turskyi.data.database.firestore.datasource.FirestoreDatabaseSourceImpl
+import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.util.hasNetwork
 import io.github.turskyi.data.repository.CountriesRepositoryImpl
 import io.github.turskyi.data.repository.TravellersRepositoryImpl
@@ -68,6 +68,6 @@ val dataProvidersModule = module {
 
 val sourcesModule = module {
     single { get<Retrofit>().create(CountriesApi::class.java) }
-    single { CountriesNetSource(get()) }
-    factory<FirestoreSource> { FirestoreSourceImpl() }
+    single { NetSource(get()) }
+    factory<FirestoreDatabaseSource> { FirestoreDatabaseSourceImpl() }
 }

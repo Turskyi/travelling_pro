@@ -28,12 +28,12 @@ class CountriesInteractor : KoinComponent {
         limit: Int,
         offset: Int,
         onSuccess: (List<CountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
-    ) = repository.getCountriesByRange(limit, offset, onSuccess, onError)
+        onError: (Exception) -> Unit
+    ) = repository.setCountriesByRange(limit, offset, onSuccess, onError)
 
     suspend fun downloadCountries(
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = repository.refreshCountriesInDb(onSuccess, onError)
 
     suspend fun setNotVisitedCountriesNum(
