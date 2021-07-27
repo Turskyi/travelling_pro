@@ -89,9 +89,9 @@ class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
         onSuccess(countries.mapVisitedCountriesToVisitedModelList())
     }, { exception -> onError.invoke(exception) })
 
-    override suspend fun getCities(
+    override suspend fun setCities(
         onSuccess: (List<CityModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = firestoreSource.setCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
         { exception -> onError?.invoke(exception) })
 

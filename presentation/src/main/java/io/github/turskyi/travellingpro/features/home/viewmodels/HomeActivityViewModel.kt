@@ -98,7 +98,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
             for (country in visitedCountryNodes) {
                 val cityList = mutableListOf<BaseNode>()
                 viewModelScope.launch {
-                    interactor.getCities({ cities ->
+                    interactor.setCities({ cities ->
                         for (city in cities) {
                             if (country.id == city.parentId) {
                                 cityList.add(city.mapModelToBaseNode())

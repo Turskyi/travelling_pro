@@ -17,4 +17,5 @@ object Constants {
     const val KEY_SELFIE_NAME = "selfieName"
     const val KEY_ID = "id"
     const val KEY_PARENT_ID = "parentId"
+    const val KEY_CITIES = "cities"
 }

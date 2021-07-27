@@ -30,9 +30,9 @@ interface CountriesRepository {
         onError: (Exception) -> Unit
     )
 
-    suspend fun getCities(
+    suspend fun setCities(
         onSuccess: (List<CityModel>) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     suspend fun setCountNotVisitedCountries(

@@ -2,6 +2,7 @@ package io.github.turskyi.data.firestore.dataSource
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
@@ -9,6 +10,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
 import io.github.turskyi.data.constants.Constants.IMG_TYPE
+import io.github.turskyi.data.constants.Constants.KEY_CITIES
 import io.github.turskyi.data.constants.Constants.KEY_ID
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
 import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
@@ -30,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import java.util.HashMap
 
 class FirestoreSourceImpl : KoinComponent, FirestoreSource {
     // init Authentication
@@ -71,15 +74,20 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val userId: String = currentUser.uid
+            val userDocRef: DocumentReference = usersRef.document(userId)
             // set mark "isVisited = true" in list of all countries
-            val countryRef: DocumentReference = usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                .collection(REF_COUNTRIES).document(countryEntity.name)
+            val countryRef: DocumentReference = userDocRef
+                .collection(REF_COUNTRIES)
+                .document(countryEntity.name)
             countryRef.update(KEY_IS_VISITED, true)
                 .addOnSuccessListener {
                     // making copy of the country and adding to a new list of visited countries
-                    usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                        .collection(REF_VISITED_COUNTRIES).document(countryEntity.name)
+                    userDocRef
+                        .collection(REF_VISITED_COUNTRIES)
+                        .document(countryEntity.name)
                         .set(countryEntity.mapCountryToVisitedCountry())
                         .addOnSuccessListener { onSuccess.invoke() }
                         .addOnFailureListener { exception -> onError.invoke(exception) }
@@ -185,7 +193,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                                     KEY_SELFIE_NAME to selfieName
                                 )
                             ).addOnSuccessListener {
-                                onSuccess()
+                                onSuccess.invoke()
                             }.addOnFailureListener { exception -> onError.invoke(exception) }
                         },
                         { exception -> onError.invoke(exception) },
@@ -225,17 +233,21 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
-
-            val docRef: DocumentReference = usersRef.document(mFirebaseAuth.currentUser!!.uid)
-            docRef.collection(REF_COUNTRIES).whereEqualTo(KEY_ID, city.parentId).get()
-                .addOnSuccessListener { documents ->
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val userDocRef: DocumentReference = usersRef.document(currentUser.uid)
+            userDocRef.collection(REF_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId).get()
+                .addOnSuccessListener { documents: QuerySnapshot ->
                     for (document in documents) {
-                        val country: CountryEntity = document.toObject(CountryEntity::class.java)
+                        val country: VisitedCountryEntity =
+                            document.toObject(VisitedCountryEntity::class.java)
                         if (country.id == city.parentId) {
-                            docRef
-                                .collection(REF_CITIES).document("${city.name},${country.name}")
-                                .set(city)
+                            country.cities.add(city)
+                            val countryRef: DocumentReference = userDocRef
+                                .collection(REF_VISITED_COUNTRIES)
+                                .document(country.name)
+                            // Update country or creating a new one if it does not already exist.
+                            countryRef.set(country, SetOptions.merge())
                                 .addOnSuccessListener { onSuccess.invoke() }
                                 .addOnFailureListener { exception -> onError.invoke(exception) }
                         }
@@ -299,13 +311,13 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
             val citiesRef: CollectionReference =
-                usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                    .collection(REF_CITIES)
+                usersRef.document(currentUser.uid).collection(REF_CITIES)
             citiesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
-                    if (queryDocumentSnapshots.size() == 0) {
+                    if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
                         val cities: MutableList<CityEntity> = mutableListOf()
@@ -376,17 +388,15 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
                             // check if it is the last document in list, filter and send success
                             if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                                 val notVisitedCount: Int =
-                                    countries.filter { countryEntity -> countryEntity.isVisited == false }.size
+                                    countries.filter { countryEntity -> !countryEntity.isVisited }.size
                                 val visitedCount: Int =
-                                    countries.filter { countryEntity -> countryEntity.isVisited == true }.size
+                                    countries.filter { countryEntity -> countryEntity.isVisited }.size
                                 onSuccess(notVisitedCount, visitedCount)
                             }
                         }
                     }
                 }
-                .addOnFailureListener { exception ->
-                    onError.invoke(exception)
-                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
@@ -454,7 +464,7 @@ class FirestoreSourceImpl : KoinComponent, FirestoreSource {
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-//        TODO: implement query of users
+//        TODO: implement query of users by name
     }
 
     override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {

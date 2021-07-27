@@ -1,9 +1,11 @@
 package io.github.turskyi.data.entities.firestore
 
+/** Object to use for storing all countries in firestore database */
 data class CountryEntity(
         var id: Int,
         val name: String,
         val flag: String,
+        // parameter to use on the "all countries" page, to show if the country was already visited
         @field:JvmField
         var isVisited: Boolean,
 ){

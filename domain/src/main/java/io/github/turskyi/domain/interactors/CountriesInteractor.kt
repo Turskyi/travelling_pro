@@ -24,7 +24,7 @@ class CountriesInteractor : KoinComponent {
         onError: ((Exception) -> Unit?)?
     ) = repository.updateSelfie(name, selfie, selfieName, onSuccess, onError)
 
-    fun getCountriesByRange(
+    fun setCountriesByRange(
         limit: Int,
         offset: Int,
         onSuccess: (List<CountryModel>) -> Unit,
@@ -46,10 +46,10 @@ class CountriesInteractor : KoinComponent {
         onError: (Exception) -> Unit
     ) = repository.setVisitedModelCountries(onSuccess, onError)
 
-    suspend fun getCities(
+    suspend fun setCities(
         onSusses: (List<CityModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
-    ) = repository.getCities(onSusses, onError)
+        onError: (Exception) -> Unit
+    ) = repository.setCities(onSusses, onError)
 
     suspend fun markAsVisitedCountryModel(
         country: CountryModel,

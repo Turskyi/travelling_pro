@@ -20,7 +20,7 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
         params: LoadInitialParams,
         callback: LoadInitialCallback<Country>
     ) {
-        interactor.getCountriesByRange(params.requestedLoadSize, params.requestedStartPosition,
+        interactor.setCountriesByRange(params.requestedLoadSize, params.requestedStartPosition,
             { initCountries ->
                 callback.onResult(
                     initCountries.mapModelListToCountryList(),
@@ -42,7 +42,7 @@ internal class CountriesPositionalDataSource(private val interactor: CountriesIn
         params: LoadRangeParams,
         callback: LoadRangeCallback<Country>
     ) {
-        interactor.getCountriesByRange(params.startPosition + params.loadSize, params.startPosition,
+        interactor.setCountriesByRange(params.startPosition + params.loadSize, params.startPosition,
             { allCountries ->
                 callback.onResult(allCountries.mapModelListToCountryList())
             },
