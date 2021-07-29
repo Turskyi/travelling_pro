@@ -1,4 +1,4 @@
-package io.github.turskyi.data.entities.network
+package io.github.turskyi.data.entities.remote
 
 import com.google.gson.annotations.SerializedName
 

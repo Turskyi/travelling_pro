@@ -2,12 +2,12 @@ package io.github.turskyi.data.repository
 
 import io.github.turskyi.data.util.extensions.mapFirestoreListToModelList
 import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
-import io.github.turskyi.domain.entities.TravellerModel
-import io.github.turskyi.domain.repository.TravellersRepository
+import io.github.turskyi.domain.models.entities.TravellerModel
+import io.github.turskyi.domain.repository.TravellerRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class TravellersRepositoryImpl : TravellersRepository, KoinComponent {
+class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
     private val databaseSource: FirestoreDatabaseSource by inject()
     override fun setTravellersByName(
         name: String,
@@ -26,5 +26,9 @@ class TravellersRepositoryImpl : TravellersRepository, KoinComponent {
             { percent -> onSuccess(percent) },
             { exception -> onError.invoke(exception) },
         )
+    }
+
+    override fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        databaseSource.saveTraveller(onSuccess,onError)
     }
 }

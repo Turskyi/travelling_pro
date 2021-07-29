@@ -19,13 +19,13 @@ import io.github.turskyi.data.constants.Constants.REF_COUNTRIES
 import io.github.turskyi.data.constants.Constants.REF_SELFIES
 import io.github.turskyi.data.constants.Constants.REF_USERS
 import io.github.turskyi.data.constants.Constants.REF_VISITED_COUNTRIES
+import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.entities.local.CityEntity
 import io.github.turskyi.data.entities.local.CountryEntity
 import io.github.turskyi.data.entities.local.TravellerEntity
 import io.github.turskyi.data.entities.local.VisitedCountryEntity
-import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
-import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.util.exceptions.NotFoundException
+import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,12 +33,43 @@ import org.koin.core.component.KoinComponent
 
 class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
     // init Authentication
-    private var mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
 
     private val selfiesStorageRef: StorageReference = firebaseStorage.getReference(REF_SELFIES)
-    private val usersRef: CollectionReference = db.collection(REF_USERS)
+    private val usersRef: CollectionReference = database.collection(REF_USERS)
+
+    override fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val userRef: DocumentReference = usersRef.document(currentUser.uid)
+            val traveller = if (currentUser.displayName != null && currentUser.photoUrl != null) {
+                TravellerEntity(
+                    id = userRef.id,
+                    name = currentUser.displayName!!,
+                    avatar = currentUser.photoUrl.toString(),
+                    isVisible = false,
+                )
+            } else if (currentUser.displayName != null && currentUser.photoUrl == null) {
+                TravellerEntity(
+                    id = userRef.id,
+                    name = currentUser.displayName!!,
+                    avatar = "",
+                    isVisible = false,
+                )
+            } else if (currentUser.photoUrl != null && currentUser.displayName == null) {
+                TravellerEntity(id = userRef.id, avatar = currentUser.photoUrl.toString())
+            } else {
+                TravellerEntity(id = userRef.id)
+            }
+            userRef.set(traveller)
+                .addOnSuccessListener { onSuccess.invoke() }
+                .addOnFailureListener { e -> onError.invoke(e) }
+        } else {
+            mFirebaseAuth.signOut()
+        }
+    }
 
     override fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
@@ -149,7 +180,7 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                                         onSuccess.invoke()
                                     } else {
                                         // Getting a new write batch and commit all write operations
-                                        val batch: WriteBatch = db.batch()
+                                        val batch: WriteBatch = database.batch()
                                         // delete every visited city of deleted visited country
                                         for (documentSnapshot in queryDocumentSnapshots) {
                                             batch.delete(documentSnapshot.reference)

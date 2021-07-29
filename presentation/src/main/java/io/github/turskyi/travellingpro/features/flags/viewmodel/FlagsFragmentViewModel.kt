@@ -29,7 +29,7 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun getVisitedCountries() {
         viewModelScope.launch {
-            interactor.setVisitedModelCountries({ countries ->
+            interactor.setVisitedCountries({ countries ->
                 visitedCount = countries.size
                 _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)

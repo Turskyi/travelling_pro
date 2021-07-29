@@ -10,6 +10,8 @@ import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogVie
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 
 val adaptersModule = module {
@@ -27,7 +29,7 @@ val viewModelsModule = module {
 }
 
 val interactorsModule = module {
-    factory { CountriesInteractor() }
+    factory { CountriesInteractor(CoroutineScope(SupervisorJob())) }
     factory { TravellersInteractor() }
 }
 

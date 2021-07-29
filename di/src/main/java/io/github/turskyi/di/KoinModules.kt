@@ -14,15 +14,15 @@ import io.github.turskyi.data.network.service.CountriesApi
 import io.github.turskyi.data.database.firestore.datasource.FirestoreDatabaseSourceImpl
 import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.util.hasNetwork
-import io.github.turskyi.data.repository.CountriesRepositoryImpl
-import io.github.turskyi.data.repository.TravellersRepositoryImpl
-import io.github.turskyi.domain.repository.CountriesRepository
-import io.github.turskyi.domain.repository.TravellersRepository
+import io.github.turskyi.data.repository.CountryRepositoryImpl
+import io.github.turskyi.data.repository.TravellerRepositoryImpl
+import io.github.turskyi.domain.repository.CountryRepository
+import io.github.turskyi.domain.repository.TravellerRepository
 import okhttp3.Request
 
 val repositoriesModule = module {
-    factory<CountriesRepository> { CountriesRepositoryImpl() }
-    factory<TravellersRepository> { TravellersRepositoryImpl() }
+    factory<CountryRepository> { CountryRepositoryImpl() }
+    factory<TravellerRepository> { TravellerRepositoryImpl() }
 }
 
 val dataProvidersModule = module {

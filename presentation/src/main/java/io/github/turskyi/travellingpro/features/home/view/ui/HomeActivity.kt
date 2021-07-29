@@ -285,7 +285,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     /** must be open to use it in custom "circle pie chart" widget */
-    fun setTitle() = if (viewModel.citiesCount > 0) {
+   fun setTitle() = if (viewModel.citiesCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()

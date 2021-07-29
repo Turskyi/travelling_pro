@@ -1,8 +1,8 @@
 package io.github.turskyi.domain.repository
 
-import io.github.turskyi.domain.entities.TravellerModel
+import io.github.turskyi.domain.models.entities.TravellerModel
 
-interface TravellersRepository {
+interface TravellerRepository {
     fun setTravellersByName(
         name: String,
         onSuccess: (List<TravellerModel>) -> Unit,
@@ -10,4 +10,5 @@ interface TravellersRepository {
     )
 
     fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit)
 }

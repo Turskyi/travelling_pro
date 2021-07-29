@@ -1,8 +1,8 @@
 package io.github.turskyi.travellingpro.utils.extensions
 
-import io.github.turskyi.domain.entities.CityModel
-import io.github.turskyi.domain.entities.CountryModel
-import io.github.turskyi.domain.entities.VisitedCountryModel
+import io.github.turskyi.domain.models.entities.CityModel
+import io.github.turskyi.domain.models.entities.CountryModel
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.entities.VisitedCountry

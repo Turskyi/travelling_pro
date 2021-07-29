@@ -1,14 +1,14 @@
 package io.github.turskyi.data.util.extensions
 
-import io.github.turskyi.data.entities.network.CountryResponse
+import io.github.turskyi.data.entities.remote.CountryResponse
 import io.github.turskyi.data.entities.local.CityEntity
 import io.github.turskyi.data.entities.local.CountryEntity
 import io.github.turskyi.data.entities.local.TravellerEntity
 import io.github.turskyi.data.entities.local.VisitedCountryEntity
-import io.github.turskyi.domain.entities.CityModel
-import io.github.turskyi.domain.entities.CountryModel
-import io.github.turskyi.domain.entities.TravellerModel
-import io.github.turskyi.domain.entities.VisitedCountryModel
+import io.github.turskyi.domain.models.entities.CityModel
+import io.github.turskyi.domain.models.entities.CountryModel
+import io.github.turskyi.domain.models.entities.TravellerModel
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
 
 fun List<CountryModel>.mapModelListToEntityList() =
     mapTo(mutableListOf(), { countryModel -> countryModel.mapModelToEntity() })
@@ -37,7 +37,9 @@ fun VisitedCountryEntity.mapEntityToModel() = VisitedCountryModel(
     selfieName = selfieName,
 )
 
-fun TravellerEntity.mapEntityToModel(): TravellerModel = TravellerModel(id, name, avatar)
+fun TravellerEntity.mapEntityToModel(): TravellerModel {
+    return TravellerModel(id=id,name = name,avatar = avatar,isVisible = isVisible,)
+}
 
 fun CountryResponse.mapNetToEntity() = CountryModel(id, name, flag, isVisited)
 fun List<CityEntity>.mapEntitiesToModelList() = mapTo(

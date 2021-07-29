@@ -1,12 +1,12 @@
-package io.github.turskyi.domain.entities
+package io.github.turskyi.domain.models.entities
 
 data class CountryModel(
-    var id: Int,
+    val id: Int,
     val name: String,
     val flag: String,
     @field:JvmField
-    var isVisited: Boolean,
-    var selfie: String,
+    val isVisited: Boolean,
+    val selfie: String,
     val selfieName: String,
 ) {
     // required empty constructor for firestore serialization

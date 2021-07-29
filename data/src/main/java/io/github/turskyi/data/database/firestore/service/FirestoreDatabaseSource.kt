@@ -81,4 +81,5 @@ interface FirestoreDatabaseSource {
     )
 
     fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit)
 }

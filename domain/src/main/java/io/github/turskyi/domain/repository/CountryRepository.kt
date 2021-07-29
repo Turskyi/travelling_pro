@@ -1,10 +1,10 @@
 package io.github.turskyi.domain.repository
 
-import io.github.turskyi.domain.entities.CityModel
-import io.github.turskyi.domain.entities.CountryModel
-import io.github.turskyi.domain.entities.VisitedCountryModel
+import io.github.turskyi.domain.models.entities.CityModel
+import io.github.turskyi.domain.models.entities.CountryModel
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
 
-interface CountriesRepository {
+interface CountryRepository {
 
     suspend fun refreshCountriesInDb(onSuccess: () -> Unit, onError: (Exception) -> Unit)
 

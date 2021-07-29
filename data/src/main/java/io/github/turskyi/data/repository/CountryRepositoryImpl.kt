@@ -3,14 +3,14 @@ package io.github.turskyi.data.repository
 import io.github.turskyi.data.network.datasource.NetSource
 import io.github.turskyi.data.util.extensions.*
 import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
-import io.github.turskyi.domain.entities.CityModel
-import io.github.turskyi.domain.entities.CountryModel
-import io.github.turskyi.domain.entities.VisitedCountryModel
-import io.github.turskyi.domain.repository.CountriesRepository
+import io.github.turskyi.domain.models.entities.CityModel
+import io.github.turskyi.domain.models.entities.CountryModel
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
+import io.github.turskyi.domain.repository.CountryRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class CountriesRepositoryImpl : CountriesRepository, KoinComponent {
+class CountryRepositoryImpl : CountryRepository, KoinComponent {
 
     private val netSource: NetSource by inject()
     private val databaseSource: FirestoreDatabaseSource by inject()

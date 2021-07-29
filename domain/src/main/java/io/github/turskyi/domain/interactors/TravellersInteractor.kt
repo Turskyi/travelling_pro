@@ -1,12 +1,12 @@
 package io.github.turskyi.domain.interactors
 
-import io.github.turskyi.domain.entities.TravellerModel
-import io.github.turskyi.domain.repository.TravellersRepository
+import io.github.turskyi.domain.models.entities.TravellerModel
+import io.github.turskyi.domain.repository.TravellerRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class TravellersInteractor : KoinComponent {
-    private val repository: TravellersRepository by inject()
+    private val repository: TravellerRepository by inject()
 
     fun setTravellersByName(
         name: String,
