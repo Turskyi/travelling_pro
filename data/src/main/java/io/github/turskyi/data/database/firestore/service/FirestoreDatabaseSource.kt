@@ -18,7 +18,7 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit
     )
 
-    fun removeFromVisited(
+    fun removeCountryFromVisited(
         name: String,
         parentId: Int,
         onSuccess: () -> Unit,

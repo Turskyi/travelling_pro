@@ -57,7 +57,7 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         country: CountryModel,
         onSuccess: () -> Unit,
         onError: ((Exception) -> Unit?)?
-    ) = databaseSource.removeFromVisited(country.name, country.id, { onSuccess() },
+    ) = databaseSource.removeCountryFromVisited(country.name, country.id, { onSuccess() },
         { exception -> onError?.invoke(exception) })
 
     override suspend fun insertCity(

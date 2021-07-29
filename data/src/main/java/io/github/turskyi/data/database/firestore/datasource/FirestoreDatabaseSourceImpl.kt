@@ -9,7 +9,9 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
+import io.github.turskyi.data.constants.Constants.KEY_COUNTER
 import io.github.turskyi.data.constants.Constants.KEY_ID
+import io.github.turskyi.data.constants.Constants.KEY_IS_VISIBLE
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
 import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
 import io.github.turskyi.data.constants.Constants.KEY_SELFIE
@@ -29,9 +31,11 @@ import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 
-class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
+class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) : KoinComponent,
+    FirestoreDatabaseSource {
     // init Authentication
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -49,6 +53,7 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                     id = userRef.id,
                     name = currentUser.displayName!!,
                     avatar = currentUser.photoUrl.toString(),
+                    counter = 0,
                     isVisible = false,
                 )
             } else if (currentUser.displayName != null && currentUser.photoUrl == null) {
@@ -56,6 +61,7 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                     id = userRef.id,
                     name = currentUser.displayName!!,
                     avatar = "",
+                    counter = 0,
                     isVisible = false,
                 )
             } else if (currentUser.photoUrl != null && currentUser.displayName == null) {
@@ -138,64 +144,158 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                 .document(countryEntity.name)
             countryRef.update(KEY_IS_VISITED, true)
                 .addOnSuccessListener {
-                    // making copy of the country and adding to a new list of visited countries
+                    addToListOfVisited(userDocRef, countryEntity, onSuccess, onError)
+                }.addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            onError.invoke(NotFoundException())
+        }
+    }
+
+    /** making copy of the country and adding to a new list of visited countries */
+    private fun addToListOfVisited(
+        userDocRef: DocumentReference,
+        countryEntity: CountryEntity,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        userDocRef
+            .collection(REF_VISITED_COUNTRIES)
+            .document(countryEntity.name)
+            .set(countryEntity.mapCountryToVisitedCountry())
+            .addOnSuccessListener { incrementVisited(userDocRef, onSuccess, onError) }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
+    }
+
+    private fun incrementVisited(
+        userDocRef: DocumentReference,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        userDocRef.get()
+            .addOnSuccessListener { document ->
+                if (document?.toObject(TravellerEntity::class.java) != null) {
+                    val traveller: TravellerEntity =
+                        document.toObject(TravellerEntity::class.java)!!
+                    // getting current number of visited countries by user
+                    var countOfVisitedCountries: Int = traveller.counter
+                    // incrementing this value by one
+                    countOfVisitedCountries += 1
+                    // updating this value in database
                     userDocRef
-                        .collection(REF_VISITED_COUNTRIES)
-                        .document(countryEntity.name)
-                        .set(countryEntity.mapCountryToVisitedCountry())
+                        .update(KEY_COUNTER, countOfVisitedCountries)
                         .addOnSuccessListener { onSuccess.invoke() }
-                        .addOnFailureListener { exception -> onError.invoke(exception) }
+                        .addOnFailureListener { e -> onError.invoke(e) }
+                } else {
+                    onError.invoke(NotFoundException())
                 }
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
+    }
+
+    override fun removeCountryFromVisited(
+        name: String,
+        parentId: Int,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            // deleting from list of visited countries
+            usersRef.document(currentUser.uid)
+                .collection(REF_VISITED_COUNTRIES)
+                .document(name)
+                .delete()
+                .addOnSuccessListener { markAsNotVisited(name, parentId, onSuccess, onError) }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
     }
 
-    override fun removeFromVisited(
+    /** set mark "isVisited = false" in list of all countries */
+    private fun markAsNotVisited(
         name: String,
         parentId: Int,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
-            // deleting from list of visited countries
-            usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                .collection(REF_VISITED_COUNTRIES).document(name)
-                .delete()
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val countryRef: DocumentReference =
+                usersRef.document(currentUser.uid).collection(REF_COUNTRIES).document(name)
+            countryRef.update(KEY_IS_VISITED, false)
                 .addOnSuccessListener {
-                    // set mark "isVisited = false" in list of all countries
-                    val countryRef: DocumentReference =
-                        usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                            .collection(REF_COUNTRIES).document(name)
-                    countryRef.update(KEY_IS_VISITED, false)
-                        .addOnSuccessListener {
-                            val visitedCities: CollectionReference =
-                                usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                                    .collection(REF_CITIES)
-                            // getting visited cities of deleted visited country
-                            visitedCities.whereEqualTo(KEY_PARENT_ID, parentId)
-                                .get().addOnSuccessListener { queryDocumentSnapshots ->
-                                    if (queryDocumentSnapshots.size() == 0) {
-                                        onSuccess.invoke()
-                                    } else {
-                                        // Getting a new write batch and commit all write operations
-                                        val batch: WriteBatch = database.batch()
-                                        // delete every visited city of deleted visited country
-                                        for (documentSnapshot in queryDocumentSnapshots) {
-                                            batch.delete(documentSnapshot.reference)
-                                        }
-                                        batch.commit().addOnSuccessListener { onSuccess.invoke() }
-                                            .addOnFailureListener { exception ->
-                                                onError.invoke(exception)
-                                            }
-                                    }
-                                }.addOnFailureListener { exception -> onError.invoke(exception) }
-                        }.addOnFailureListener { exception -> onError.invoke(exception) }
+                    /*
+                     * The [runBlocking] function blocks the current thread
+                     * until the code it contains has finished running,
+                     * it allows us to launch many coroutines in one thread
+                     */
+                    runBlocking {
+                        applicationScope.launch(Dispatchers.IO) {
+                            decrementVisited(currentUser, onSuccess, onError)
+                        }
+                        deleteCitiesByCountry(currentUser, parentId, onSuccess, onError)
+                    }
                 }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
+    }
+
+    private fun decrementVisited(
+        currentUser: FirebaseUser,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val userId: String = currentUser.uid
+        val userDocRef: DocumentReference = usersRef.document(userId)
+        userDocRef.get()
+            .addOnSuccessListener { document ->
+                if (document?.toObject(TravellerEntity::class.java) != null) {
+                    val traveller: TravellerEntity =
+                        document.toObject(TravellerEntity::class.java)!!
+                    // getting current number of visited countries by user
+                    var countOfVisitedCountries: Int = traveller.counter
+                    // decrement this value by one
+                    countOfVisitedCountries -= 1
+                    // updating this value in database
+                    userDocRef
+                        .update(KEY_COUNTER, countOfVisitedCountries)
+                        .addOnSuccessListener { onSuccess.invoke() }
+                        .addOnFailureListener { e -> onError.invoke(e) }
+                } else {
+                    onError.invoke(NotFoundException())
+                }
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
+    }
+
+    private fun deleteCitiesByCountry(
+        currentUser: FirebaseUser,
+        parentId: Int,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val visitedCities: CollectionReference =
+            usersRef.document(currentUser.uid).collection(REF_CITIES)
+        // getting visited cities of deleted visited country
+        visitedCities.whereEqualTo(KEY_PARENT_ID, parentId)
+            .get().addOnSuccessListener { queryDocumentSnapshots ->
+                if (queryDocumentSnapshots.size() == 0) {
+                    onSuccess.invoke()
+                } else {
+                    // Getting a new write batch and commit all write operations
+                    val batch: WriteBatch = database.batch()
+                    // delete every visited city of deleted visited country
+                    for (documentSnapshot in queryDocumentSnapshots) {
+                        batch.delete(documentSnapshot.reference)
+                    }
+                    batch.commit().addOnSuccessListener { onSuccess.invoke() }
+                        .addOnFailureListener { exception ->
+                            onError.invoke(exception)
+                        }
+                }
+            }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
     override fun updateSelfie(
@@ -216,10 +316,8 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
         val uploadTask: UploadTask = selfieRef.putFile(selfieImage, metadata)
 
         uploadTask.continueWithTask { task ->
-            if (!task.isSuccessful) {
-                if (task.exception != null) {
-                    onError.invoke(task.exception!!)
-                }
+            if (!task.isSuccessful && task.exception != null) {
+                onError.invoke(task.exception!!)
             }
             selfieRef.downloadUrl
         }.addOnCompleteListener { task ->
@@ -228,11 +326,11 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                 val downloadUri: Uri? = task.result
                 // We are using uri as String because our data type in Firestore will be String
                 val uploadedSelfieUrl: String = downloadUri.toString()
-
-                if (mFirebaseAuth.currentUser != null) {
+                val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+                if (currentUser != null) {
                     // Saving the URL to the database
                     val countryRef: DocumentReference = usersRef
-                        .document(mFirebaseAuth.currentUser!!.uid)
+                        .document(currentUser.uid)
                         .collection(REF_VISITED_COUNTRIES)
                         .document(name)
 
@@ -406,6 +504,7 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
                     if (queryDocumentSnapshots.size() == 0) {
+// if there are no countries in local database, than there is no visited countries too
                         onSuccess(0, 0)
                     } else {
                         for (documentSnapshot in queryDocumentSnapshots) {
@@ -435,10 +534,13 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
             val countriesRef: Query =
-                usersRef.document(mFirebaseAuth.currentUser!!.uid)
-                    .collection(REF_COUNTRIES).orderBy(KEY_ID)
+                usersRef
+                    .document(currentUser.uid)
+                    .collection(REF_COUNTRIES)
+                    .orderBy(KEY_ID)
             countriesRef.startAt(from).endBefore(to).get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
@@ -449,9 +551,7 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                     }
                     onSuccess(countries)
                 }
-                .addOnFailureListener { exception ->
-                    onError.invoke(exception)
-                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
@@ -480,9 +580,7 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
                         }
                     }
                 }
-                .addOnFailureListener { exception ->
-                    onError.invoke(exception)
-                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
@@ -494,23 +592,23 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
-        if (currentUser != null) {
-            val usersRef: Query = usersRef.orderBy(KEY_ID)
-            usersRef.startAt(from).endBefore(to).get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
-                    val countries: MutableList<TravellerEntity> = mutableListOf()
-                    for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: TravellerEntity =
-                            documentSnapshot.toObject(TravellerEntity::class.java)
-                        countries.add(country)
-                    }
-                    onSuccess(countries)
+        val usersRef: Query = usersRef
+            // showing only users who allowed to be visible
+            .whereEqualTo(KEY_IS_VISIBLE, true)
+            // sorting them by quantity of visited countries
+            .orderBy(KEY_COUNTER, Query.Direction.DESCENDING)
+        usersRef.startAt(from).endBefore(to).get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+//                FIXME: does not get required information
+                val travellers: MutableList<TravellerEntity> = mutableListOf()
+                for (documentSnapshot in queryDocumentSnapshots) {
+                    val traveller: TravellerEntity =
+                        documentSnapshot.toObject(TravellerEntity::class.java)
+                    travellers.add(traveller)
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
-        } else {
-            onError.invoke(NotFoundException())
-        }
+                onSuccess(travellers)
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
     override fun setTravellersByName(
@@ -518,10 +616,45 @@ class FirestoreDatabaseSourceImpl : KoinComponent, FirestoreDatabaseSource {
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-//        TODO: implement query of users by name
+
+        val usersRef: Query = usersRef.orderBy(KEY_ID)
+        usersRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                val travellers: MutableList<TravellerEntity> = mutableListOf()
+                for (documentSnapshot in queryDocumentSnapshots) {
+                    val traveller: TravellerEntity =
+                        documentSnapshot.toObject(TravellerEntity::class.java)
+                    if (traveller.name.startsWith(nameQuery)) {
+                        travellers.add(traveller)
+                    }
+                    if (documentSnapshot == queryDocumentSnapshots.last()) {
+                        onSuccess(travellers)
+                    }
+                }
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
+
     }
 
     override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
-//        TODO: implement retrieving a percent of top travellers
+        // getting number of visited Countries by current user
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val visitedCountriesRef: CollectionReference =
+                usersRef.document(currentUser.uid).collection(REF_VISITED_COUNTRIES)
+            visitedCountriesRef.get()
+                    .addOnSuccessListener { queryDocumentSnapshots ->
+                    val travellerCounter =    queryDocumentSnapshots.size()
+//                        TODO: get number of users with bigger counter
+                    }
+                    .addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            onError.invoke(NotFoundException())
+        }
+
+
+
+
+        val usersRef: Query = usersRef
     }
 }

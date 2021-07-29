@@ -11,4 +11,10 @@ interface TravellerRepository {
 
     fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
     fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit)
+    fun setTravellersByRange(
+        requestedLoadSize: Int,
+        requestedStartPosition: Int,
+        onSuccess: (List<TravellerModel>) -> Unit,
+        onError: (Exception) -> Unit
+    )
 }

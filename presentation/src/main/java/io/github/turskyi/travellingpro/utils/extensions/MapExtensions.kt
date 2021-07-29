@@ -2,11 +2,9 @@ package io.github.turskyi.travellingpro.utils.extensions
 
 import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
+import io.github.turskyi.domain.models.entities.TravellerModel
 import io.github.turskyi.domain.models.entities.VisitedCountryModel
-import io.github.turskyi.travellingpro.entities.City
-import io.github.turskyi.travellingpro.entities.Country
-import io.github.turskyi.travellingpro.entities.VisitedCountry
-import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.entities.*
 
 fun List<CountryModel>.mapModelListToCountryList(): MutableList<Country> {
     return this.mapTo(
@@ -59,3 +57,14 @@ fun VisitedCountry.mapVisitedCountryToNode() = VisitedCountryNode(
 
 fun CityModel.mapModelToBaseNode() = City(id = id, name = name, parentId = parentId, month = month)
 fun City.mapNodeToModel() = CityModel(id = id, name = name, parentId = parentId, month = month)
+
+fun List<TravellerModel>.mapModelListToTravellerList(): MutableList<Traveller> {
+    return this.mapTo(
+        mutableListOf(),
+        { it.mapModelToTraveller() },
+    )
+}
+
+private fun TravellerModel.mapModelToTraveller(): Traveller {
+    return Traveller(id = id, name = name, avatar = avatar, isVisible = isVisible)
+}

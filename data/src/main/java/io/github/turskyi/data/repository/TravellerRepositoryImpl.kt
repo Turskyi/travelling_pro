@@ -29,6 +29,20 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
     }
 
     override fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-        databaseSource.saveTraveller(onSuccess,onError)
+        databaseSource.saveTraveller(onSuccess, onError)
+    }
+
+    override fun setTravellersByRange(
+        requestedLoadSize: Int,
+        requestedStartPosition: Int,
+        onSuccess: (List<TravellerModel>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        databaseSource.setTravellersByRange(
+            to = requestedLoadSize,
+            from = requestedStartPosition,
+            onSuccess = { list -> onSuccess(list.mapFirestoreListToModelList()) },
+            onError = { onError.invoke(it) },
+        )
     }
 }

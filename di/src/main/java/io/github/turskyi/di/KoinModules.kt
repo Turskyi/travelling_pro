@@ -18,6 +18,8 @@ import io.github.turskyi.data.repository.CountryRepositoryImpl
 import io.github.turskyi.data.repository.TravellerRepositoryImpl
 import io.github.turskyi.domain.repository.CountryRepository
 import io.github.turskyi.domain.repository.TravellerRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.Request
 
 val repositoriesModule = module {
@@ -28,7 +30,7 @@ val repositoriesModule = module {
 val dataProvidersModule = module {
     single {
         OkHttpClient.Builder()
-            .cache(get<Cache>())
+            .cache(get())
             .addInterceptor { chain ->
                 var request: Request = chain.request()
                 request = if (hasNetwork(androidContext())) {
@@ -61,13 +63,13 @@ val dataProvidersModule = module {
     single<Retrofit> {
         Retrofit.Builder()
             .baseUrl(HOST_URL)
-            .client(get<OkHttpClient>())
-            .addConverterFactory(GsonConverterFactory.create(get<Gson>())).build()
+            .client(get())
+            .addConverterFactory(GsonConverterFactory.create(get())).build()
     }
 }
 
 val sourcesModule = module {
     single { get<Retrofit>().create(CountriesApi::class.java) }
     single { NetSource(get()) }
-    factory<FirestoreDatabaseSource> { FirestoreDatabaseSourceImpl() }
+    factory<FirestoreDatabaseSource> { FirestoreDatabaseSourceImpl(CoroutineScope(SupervisorJob())) }
 }

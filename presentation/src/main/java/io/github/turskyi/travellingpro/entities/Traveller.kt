@@ -2,17 +2,18 @@ package io.github.turskyi.travellingpro.entities
 
 import android.os.Parcel
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
 data class Traveller(
     val id: String,
     val name: String,
     val avatar: String,
+    val isVisible: Boolean,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(String::class.java.classLoader) as String,
         parcel.readValue(String::class.java.classLoader) as String,
         parcel.readValue(String::class.java.classLoader) as String,
+        parcel.readValue(Boolean::class.java.classLoader) as Boolean,
     )
 
     companion object CREATOR : Parcelable.Creator<Traveller> {
@@ -31,6 +32,7 @@ data class Traveller(
         parcel.writeString(id)
         parcel.writeString(name)
         parcel.writeString(avatar)
+        parcel.writeValue(isVisible)
     }
 
 }

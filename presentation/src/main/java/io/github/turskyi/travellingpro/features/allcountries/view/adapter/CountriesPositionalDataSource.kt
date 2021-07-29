@@ -12,7 +12,7 @@ import kotlin.concurrent.schedule
 internal class CountriesPositionalDataSource(private val interactor: CountriesInteractor) :
     PositionalDataSource<Country>() {
 
-    private val _visibilityLoader = MutableLiveData<Int>()
+    private val _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
     val visibilityLoader: MutableLiveData<Int>
         get() = _visibilityLoader
 

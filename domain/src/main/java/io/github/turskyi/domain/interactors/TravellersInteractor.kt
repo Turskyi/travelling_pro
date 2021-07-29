@@ -17,4 +17,18 @@ class TravellersInteractor : KoinComponent {
     fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
         repository.setTopTravellersPercent(onSuccess, onError)
     }
+
+    fun setTravellersByRange(
+        requestedLoadSize: Int,
+        requestedStartPosition: Int,
+        onSuccess: (List<TravellerModel>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        repository.setTravellersByRange(
+            requestedLoadSize,
+            requestedStartPosition,
+            onSuccess,
+            onError,
+        )
+    }
 }
