@@ -10,25 +10,31 @@ class TravellersInteractor : KoinComponent {
 
     fun setTravellersByName(
         name: String,
+        requestedLoadSize: Long,
+        requestedStartPosition: Int,
         onSusses: (List<TravellerModel>) -> Unit,
         onError: ((Exception) -> Unit)
-    ): Unit = repository.setTravellersByName(name, onSusses, onError)
+    ): Unit = repository.setTravellersByName(
+        name,
+        requestedLoadSize,
+        requestedStartPosition,
+        onSusses,
+        onError,
+    )
 
     fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
         repository.setTopTravellersPercent(onSuccess, onError)
     }
 
     fun setTravellersByRange(
-        requestedLoadSize: Int,
+        requestedLoadSize: Long,
         requestedStartPosition: Int,
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) {
-        repository.setTravellersByRange(
-            requestedLoadSize,
-            requestedStartPosition,
-            onSuccess,
-            onError,
-        )
-    }
+    ) = repository.setTravellersByRange(
+        requestedLoadSize,
+        requestedStartPosition,
+        onSuccess,
+        onError,
+    )
 }

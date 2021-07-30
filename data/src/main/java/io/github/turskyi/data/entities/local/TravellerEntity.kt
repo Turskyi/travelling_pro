@@ -4,7 +4,7 @@ data class TravellerEntity(
     val id: String,
     val name: String = "",
     val avatar: String,
-    val counter: Int,
+    val counter: Long,
     // using [@field:JvmField] annotation if Boolean field is prefixed with 'is'
     @field:JvmField
     val isVisible: Boolean,

@@ -9,10 +9,12 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
+import io.github.turskyi.data.constants.Constants.KEY_AVATAR
 import io.github.turskyi.data.constants.Constants.KEY_COUNTER
 import io.github.turskyi.data.constants.Constants.KEY_ID
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISIBLE
 import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
+import io.github.turskyi.data.constants.Constants.KEY_NAME
 import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
 import io.github.turskyi.data.constants.Constants.KEY_SELFIE
 import io.github.turskyi.data.constants.Constants.KEY_SELFIE_NAME
@@ -177,7 +179,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     val traveller: TravellerEntity =
                         document.toObject(TravellerEntity::class.java)!!
                     // getting current number of visited countries by user
-                    var countOfVisitedCountries: Int = traveller.counter
+                    var countOfVisitedCountries: Long = traveller.counter
                     // incrementing this value by one
                     countOfVisitedCountries += 1
                     // updating this value in database
@@ -255,7 +257,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     val traveller: TravellerEntity =
                         document.toObject(TravellerEntity::class.java)!!
                     // getting current number of visited countries by user
-                    var countOfVisitedCountries: Int = traveller.counter
+                    var countOfVisitedCountries: Long = traveller.counter
                     // decrement this value by one
                     countOfVisitedCountries -= 1
                     // updating this value in database
@@ -536,11 +538,11 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
-            val countriesRef: Query =
-                usersRef
-                    .document(currentUser.uid)
-                    .collection(REF_COUNTRIES)
-                    .orderBy(KEY_ID)
+            val countriesRef: Query = usersRef
+                .document(currentUser.uid)
+                .collection(REF_COUNTRIES)
+                .orderBy(KEY_ID)
+            // sorting countries by number given in [KEY_ID]
             countriesRef.startAt(from).endBefore(to).get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
@@ -572,68 +574,84 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     for (documentSnapshot in queryDocumentSnapshots) {
                         val country: CountryEntity =
                             documentSnapshot.toObject(CountryEntity::class.java)
-                        if (country.name.startsWith(nameQuery)) {
+                        if (country.name.startsWith(nameQuery, ignoreCase = true)) {
                             countries.add(country)
                         }
                         if (documentSnapshot == queryDocumentSnapshots.last()) {
                             onSuccess(countries)
                         }
                     }
-                }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
     }
 
     override fun setTravellersByRange(
-        to: Int,
+        to: Long,
         from: Int,
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
         val usersRef: Query = usersRef
-            // showing only users who allowed to be visible
-            .whereEqualTo(KEY_IS_VISIBLE, true)
+        // getting only users who allowed to be visible
+        usersRef.whereEqualTo(KEY_IS_VISIBLE, true)
             // sorting them by quantity of visited countries
             .orderBy(KEY_COUNTER, Query.Direction.DESCENDING)
-        usersRef.startAt(from).endBefore(to).get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
-//                FIXME: does not get required information
+            // getting part of the list for pagination
+            .limit(to)
+        usersRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                 val travellers: MutableList<TravellerEntity> = mutableListOf()
-                for (documentSnapshot in queryDocumentSnapshots) {
-                    val traveller: TravellerEntity =
-                        documentSnapshot.toObject(TravellerEntity::class.java)
-                    travellers.add(traveller)
+                for (i in from until queryDocumentSnapshots.size()) {
+                    val snapshot: DocumentSnapshot = queryDocumentSnapshots.documents[i]
+                    travellers.add(
+                        TravellerEntity(
+                            id = snapshot.id,
+                            name = snapshot[KEY_NAME] as String,
+                            avatar = snapshot[KEY_AVATAR] as String,
+                            counter = snapshot[KEY_COUNTER] as Long,
+                            isVisible = snapshot[KEY_IS_VISIBLE] as Boolean,
+                        )
+                    )
                 }
                 onSuccess(travellers)
-            }
-            .addOnFailureListener { exception -> onError.invoke(exception) }
+            }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
     override fun setTravellersByName(
         nameQuery: String,
+        requestedLoadSize: Long,
+        requestedStartPosition: Int,
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-
-        val usersRef: Query = usersRef.orderBy(KEY_ID)
+        val usersRef: Query = usersRef
+        // getting only users who allowed to be visible
+        usersRef.whereEqualTo(KEY_IS_VISIBLE, true)
+            .orderBy(KEY_NAME)
+            // getting part of the list for pagination
+            .limit(requestedLoadSize)
         usersRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 val travellers: MutableList<TravellerEntity> = mutableListOf()
-                for (documentSnapshot in queryDocumentSnapshots) {
-                    val traveller: TravellerEntity =
-                        documentSnapshot.toObject(TravellerEntity::class.java)
-                    if (traveller.name.startsWith(nameQuery)) {
+                for (i in requestedStartPosition until queryDocumentSnapshots.size()) {
+                    val snapshot: DocumentSnapshot = queryDocumentSnapshots.documents[i]
+                    val traveller = TravellerEntity(
+                        id = snapshot.id,
+                        name = snapshot[KEY_NAME] as String,
+                        avatar = snapshot[KEY_AVATAR] as String,
+                        counter = snapshot[KEY_COUNTER] as Long,
+                        isVisible = snapshot[KEY_IS_VISIBLE] as Boolean,
+                    )
+                    if (traveller.name.startsWith(nameQuery, ignoreCase = true)) {
                         travellers.add(traveller)
                     }
-                    if (documentSnapshot == queryDocumentSnapshots.last()) {
+                    if (snapshot == queryDocumentSnapshots.last()) {
                         onSuccess(travellers)
                     }
                 }
-            }
-            .addOnFailureListener { exception -> onError.invoke(exception) }
-
+            }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
     override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
@@ -643,18 +661,24 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             val visitedCountriesRef: CollectionReference =
                 usersRef.document(currentUser.uid).collection(REF_VISITED_COUNTRIES)
             visitedCountriesRef.get()
-                    .addOnSuccessListener { queryDocumentSnapshots ->
-                    val travellerCounter =    queryDocumentSnapshots.size()
-//                        TODO: get number of users with bigger counter
-                    }
-                    .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnSuccessListener { queryDocumentSnapshots ->
+                    val travellerCounter: Int = queryDocumentSnapshots.size()
+                    // getting total number of all users
+                    val usersRef: Query = usersRef
+                    usersRef.get().addOnSuccessListener { snapshots ->
+                        val userCount: Int = snapshots.size()
+                        //   getting number of users with bigger counter
+                        usersRef.whereGreaterThan(KEY_COUNTER, travellerCounter).get()
+                            .addOnSuccessListener { documents ->
+                                val countOfTopTravellers: Int = documents.size()
+                                /* getting percent of travellers who visited more countries
+                                 * than current user */
+                                onSuccess(countOfTopTravellers * 100 / userCount)
+                            }.addOnFailureListener { exception -> onError.invoke(exception) }
+                    }.addOnFailureListener { exception -> onError.invoke(exception) }
+                }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
-
-
-
-
-        val usersRef: Query = usersRef
     }
 }

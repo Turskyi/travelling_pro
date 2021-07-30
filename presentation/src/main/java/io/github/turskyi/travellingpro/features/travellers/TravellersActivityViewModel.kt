@@ -50,8 +50,8 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
             /* If "true", then it should be created another viewType in Adapter "onCreateViewHolder"
                while uploading */
             .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(20)
-            .setPageSize(20)
+            .setInitialLoadSizeHint(1)
+            .setPageSize(10)
             .build()
         // DataSource
         val dataSource = TravellersPositionalDataSource(interactor)

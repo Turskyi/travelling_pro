@@ -11,11 +11,15 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
     private val databaseSource: FirestoreDatabaseSource by inject()
     override fun setTravellersByName(
         name: String,
+        requestedLoadSize: Long,
+        requestedStartPosition: Int,
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
     ) {
         databaseSource.setTravellersByName(
             name,
+            requestedLoadSize,
+            requestedStartPosition,
             { list -> onSuccess(list.mapFirestoreListToModelList()) },
             { onError.invoke(it) },
         )
@@ -33,16 +37,14 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
     }
 
     override fun setTravellersByRange(
-        requestedLoadSize: Int,
+        requestedLoadSize: Long,
         requestedStartPosition: Int,
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) {
-        databaseSource.setTravellersByRange(
-            to = requestedLoadSize,
-            from = requestedStartPosition,
-            onSuccess = { list -> onSuccess(list.mapFirestoreListToModelList()) },
-            onError = { onError.invoke(it) },
-        )
-    }
+    ) = databaseSource.setTravellersByRange(
+        to = requestedLoadSize,
+        from = requestedStartPosition,
+        onSuccess = { list -> onSuccess(list.mapFirestoreListToModelList()) },
+        onError = { onError.invoke(it) },
+    )
 }

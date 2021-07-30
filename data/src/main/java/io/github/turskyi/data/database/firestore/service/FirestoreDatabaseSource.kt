@@ -68,7 +68,7 @@ interface FirestoreDatabaseSource {
     )
 
     fun setTravellersByRange(
-        to: Int,
+        to: Long,
         from: Int,
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
@@ -76,6 +76,8 @@ interface FirestoreDatabaseSource {
 
     fun setTravellersByName(
         nameQuery: String,
+        requestedLoadSize: Long,
+        requestedStartPosition: Int,
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     )

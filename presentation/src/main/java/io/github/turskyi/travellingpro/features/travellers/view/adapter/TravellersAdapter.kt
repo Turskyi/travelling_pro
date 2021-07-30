@@ -60,19 +60,15 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
         fun bind(traveller: Traveller) {
             setSelectableItemBackground(this)
             binding.apply {
-                Glide.with(itemView)
-                    .load(traveller.avatar)
-                    .into(ivAvatar)
-
+                Glide.with(itemView).load(traveller.avatar).into(ivAvatar)
                 tvName.text = traveller.name
             }
         }
 
         private fun setSelectableItemBackground(holderTraveller: TravellerViewHolder) {
-            val outValue = TypedValue()
             holderTraveller.itemView.context.theme.resolveAttribute(
                 R.attr.selectableItemBackground,
-                outValue,
+                TypedValue(),
                 true
             )
         }

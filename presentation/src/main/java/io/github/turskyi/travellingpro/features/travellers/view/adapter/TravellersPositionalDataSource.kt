@@ -21,7 +21,7 @@ internal class TravellersPositionalDataSource(private val interactor: Travellers
         callback: LoadInitialCallback<Traveller>
     ) {
         interactor.setTravellersByRange(
-            params.requestedLoadSize,
+            params.requestedLoadSize.toLong(),
             params.requestedStartPosition,
             { initTravellers ->
                 callback.onResult(
@@ -44,7 +44,7 @@ internal class TravellersPositionalDataSource(private val interactor: Travellers
         callback: LoadRangeCallback<Traveller>
     ) {
         interactor.setTravellersByRange(
-            params.startPosition + params.loadSize,
+            (params.startPosition + params.loadSize).toLong(),
             params.startPosition,
             { travellers ->
                 callback.onResult(travellers.mapModelListToTravellerList())
