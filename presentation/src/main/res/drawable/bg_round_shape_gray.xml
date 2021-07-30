@@ -9,8 +9,8 @@
         android:top="@dimen/offset_2" />
 
     <corners
-        android:bottomLeftRadius="@dimen/radius_cardview"
-        android:bottomRightRadius="@dimen/radius_cardview"
-        android:topLeftRadius="@dimen/radius_cardview"
-        android:topRightRadius="@dimen/radius_cardview" />
+        android:bottomLeftRadius="@dimen/radius_card_view"
+        android:bottomRightRadius="@dimen/radius_card_view"
+        android:topLeftRadius="@dimen/radius_card_view"
+        android:topRightRadius="@dimen/radius_card_view" />
 </shape>

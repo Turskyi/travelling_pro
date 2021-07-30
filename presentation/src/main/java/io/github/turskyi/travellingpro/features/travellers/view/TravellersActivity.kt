@@ -1,10 +1,13 @@
 package io.github.turskyi.travellingpro.features.travellers.view
 
 import android.animation.ValueAnimator
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +21,7 @@ import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
 
-class TravellersActivity : AppCompatActivity() {
+class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListener {
     companion object {
         const val EXTRA_TRAVELLER = "io.github.turskyi.travellingpro.TRAVELLER"
     }
@@ -33,6 +36,13 @@ class TravellersActivity : AppCompatActivity() {
         initView()
         initListeners()
         initObservers()
+    }
+
+    /**
+     * Calling when user clicks "[R.string.dialog_btn_ok_ready]" button in [VisibilityDialog].
+     */
+    override fun becomeVisible() {
+        viewModel.onBecomingVisibleTriggered()
     }
 
     private fun initView() {
@@ -64,12 +74,26 @@ class TravellersActivity : AppCompatActivity() {
         binding.rvTravellers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 when {
-                    dy > 0 -> binding.floatBtnInfo.show()
-                    dy < 0 -> binding.floatBtnInfo.hide()
+                    dy > 0 -> binding.floatBtnVisibility.show()
+                    dy < 0 -> binding.floatBtnVisibility.hide()
                 }
             }
         })
-        binding.floatBtnInfo.setOnClickListener { openInfoDialog(getString(R.string.txt_info_all_travellers)) }
+        binding.floatBtnVisibility.apply {
+            setOnClickListener {
+                val eyeImage: Drawable? =
+                    ResourcesCompat.getDrawable(resources, R.drawable.btn_eye_ripple, theme)
+                val isUserVisible: Boolean =  eyeImage != null && drawable.constantState == eyeImage.constantState
+                if (isUserVisible) {
+                    viewModel.onVisibilityFabClicked()
+                } else {
+                    val infoDialog: VisibilityDialog = VisibilityDialog.newInstance(
+                        getString(R.string.txt_info_all_travellers)
+                    )
+                    infoDialog.show(supportFragmentManager, "visibility dialog")
+                }
+            }
+        }
     }
 
     private fun initObservers() {
@@ -81,6 +105,13 @@ class TravellersActivity : AppCompatActivity() {
         viewModel.visibilityLoader.observe(this, { currentVisibility ->
             binding.pb.visibility = currentVisibility
         })
+        viewModel.visibilityUser.observe(this, { currentVisibility ->
+            if (currentVisibility == VISIBLE) {
+                binding.floatBtnVisibility.setImageResource(R.drawable.btn_eye_ripple)
+            } else {
+                binding.floatBtnVisibility.setImageResource(R.drawable.btn_hide_ripple)
+            }
+        })
         viewModel.errorMessage.observe(this, { event ->
             event.getMessageIfNotHandled()?.let { message ->
                 toastLong(message)
@@ -90,9 +121,11 @@ class TravellersActivity : AppCompatActivity() {
 
     private fun showTraveller(traveller: Traveller) {
         hideKeyboard()
-        openActivityWithArgs(HomeActivity::class.java) {
-            putString(EXTRA_TRAVELLER, traveller.id)
-        }
+//TODO: implement opening activity with clicked traveller information
+
+//        openActivityWithArgs(HomeActivity::class.java) {
+//            putString(EXTRA_TRAVELLER, traveller.id)
+//        }
     }
 
     private fun updateTitle(percent: Int) {

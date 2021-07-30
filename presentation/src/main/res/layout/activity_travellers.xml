@@ -19,7 +19,7 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/offset8"
+            android:paddingBottom="@dimen/offset_8"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|snap|enterAlways"
             app:toolbarId="@+id/toolbar">
@@ -53,9 +53,9 @@
                 android:orientation="horizontal"
                 app:containerElevation="@dimen/elevation_1"
                 app:scaleViewOnElevationChange="true"
-                app:shadowMarginStart="@dimen/offset8"
-                app:shadowMarginTop="@dimen/offset8"
-                app:shadowRadius="@dimen/offset8">
+                app:shadowMarginStart="@dimen/offset_8"
+                app:shadowMarginTop="@dimen/offset_8"
+                app:shadowRadius="@dimen/offset_8">
 
                 <ImageButton
                     android:id="@+id/ib_search"
@@ -63,7 +63,9 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/content_description.icon_search"
-                    android:padding="@dimen/offset8"
+                    android:minWidth="@dimen/size_min"
+                    android:minHeight="@dimen/size_min"
+                    android:padding="@dimen/offset_8"
                     android:src="@drawable/ic_search" />
 
                 <EditText
@@ -76,8 +78,8 @@
                     android:inputType="textPersonName"
                     android:labelFor="@+id/ib_search"
                     android:maxLength="100"
-                    android:paddingStart="@dimen/offset8"
-                    android:paddingEnd="@dimen/offset8"
+                    android:paddingStart="@dimen/offset_8"
+                    android:paddingEnd="@dimen/offset_8"
                     android:singleLine="true" />
             </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
 
@@ -112,7 +114,7 @@
         app:lottie_rawRes="@raw/anim_flight" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/float_btn_info"
+        android:id="@+id/float_btn_visibility"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -120,15 +122,14 @@
         android:drawingCacheQuality="auto"
         android:fadeScrollbars="true"
         android:focusable="true"
-        android:visibility="gone"
+        android:visibility="visible"
         app:elevation="@dimen/elevation_4"
         app:fabCustomSize="@dimen/size_all_countries_fab_custom"
         app:fabSize="auto"
         app:layout_anchor="@id/rv_travellers"
         app:layout_anchorGravity="bottom|end"
         app:maxImageSize="@dimen/size_all_countries_fab_max_image"
-        app:srcCompat="@drawable/btn_info_ripple"
-        app:useCompatPadding="true"
-        tools:visibility="visible"/>
+        app:srcCompat="@drawable/btn_hide_ripple"
+        app:useCompatPadding="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -101,7 +101,7 @@
         the geographical location of it
     </string>
     <string name="txt_info_all_travellers">• If you click on a traveller, you will be able to see
-         his visited countries
+         his visited countries.\n• Would you like also to become visible to others?
     </string>
 
     <plurals name="numberOfCountriesRemain">

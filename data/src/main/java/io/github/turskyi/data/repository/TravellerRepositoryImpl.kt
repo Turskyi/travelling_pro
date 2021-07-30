@@ -47,4 +47,12 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
         onSuccess = { list -> onSuccess(list.mapFirestoreListToModelList()) },
         onError = { onError.invoke(it) },
     )
+
+    override fun setUserVisibility(
+        visible: Boolean,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        databaseSource.setUserVisibility(visible,onSuccess,onError)
+    }
 }

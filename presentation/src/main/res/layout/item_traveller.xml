@@ -5,30 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginStart="@dimen/offset8"
-    android:layout_marginEnd="@dimen/offset8"
     android:animateLayoutChanges="true"
+    android:id="@+id/cv_traveller"
     android:animationCache="true"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardCornerRadius="@dimen/radius_cardview"
+    card_view:cardCornerRadius="@dimen/radius_card_view"
     card_view:cardElevation="@dimen/elevation_2"
     card_view:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="@dimen/offset_8"
+        android:layout_marginHorizontal="@dimen/offset_8"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            card_view:cardCornerRadius="250dp">
+            card_view:cardCornerRadius="@dimen/radius_circle">
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="@dimen/size_avatar"
+                android:layout_height="@dimen/size_avatar"
                 android:contentDescription="@string/content_description.image"
                 android:scaleType="centerCrop"
                 tools:src="@tools:sample/backgrounds/scenic" />
@@ -40,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="@dimen/offset8"
+            android:padding="@dimen/offset_8"
             tools:text="Dmytro Turskyi" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

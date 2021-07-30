@@ -38,7 +38,7 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
             }
     }
 
-    var onTravellerClickListener: ((country: Traveller) -> Unit)? = null
+    var onTravellerClickListener: ((traveller: Traveller) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TravellerViewHolder {
         val binding: ItemTravellerBinding = ItemTravellerBinding.inflate(
@@ -57,6 +57,13 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
     }
 
     inner class TravellerViewHolder(private val binding: ItemTravellerBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.cvTraveller.setOnClickListener {
+                onTravellerClickListener?.invoke(getItem(layoutPosition) as Traveller)
+            }
+        }
+
         fun bind(traveller: Traveller) {
             setSelectableItemBackground(this)
             binding.apply {

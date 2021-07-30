@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginStart="@dimen/offset8"
-    android:layout_marginEnd="@dimen/offset8"
+    android:layout_marginStart="@dimen/offset_8"
+    android:layout_marginEnd="@dimen/offset_8"
     android:animateLayoutChanges="true"
     android:animationCache="true"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardBackgroundColor="@color/colorBgCity"
-    card_view:cardCornerRadius="@dimen/radius_cardview"
+    card_view:cardCornerRadius="@dimen/radius_card_view"
     card_view:cardElevation="@dimen/elevation_2"
     card_view:cardUseCompatPadding="true">
 

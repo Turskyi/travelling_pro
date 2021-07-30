@@ -79,6 +79,22 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
+    override fun setUserVisibility(
+        visible: Boolean,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val userRef: DocumentReference = usersRef.document(currentUser.uid)
+            userRef.update(KEY_IS_VISIBLE, visible)
+                .addOnSuccessListener { onSuccess.invoke() }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            onError.invoke(NotFoundException())
+        }
+    }
+
     override fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit

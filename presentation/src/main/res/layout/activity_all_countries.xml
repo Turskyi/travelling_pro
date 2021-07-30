@@ -17,7 +17,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/offset8"
+            android:paddingBottom="@dimen/offset_8"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|snap|enterAlways"
             app:toolbarId="@+id/toolbar">
@@ -51,9 +51,9 @@
                 android:orientation="horizontal"
                 app:containerElevation="@dimen/elevation_1"
                 app:scaleViewOnElevationChange="true"
-                app:shadowMarginStart="@dimen/offset8"
-                app:shadowMarginTop="@dimen/offset8"
-                app:shadowRadius="@dimen/offset8">
+                app:shadowMarginStart="@dimen/offset_8"
+                app:shadowMarginTop="@dimen/offset_8"
+                app:shadowRadius="@dimen/offset_8">
 
                 <ImageButton
                     android:id="@+id/ib_search"
@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/content_description.icon_search"
-                    android:padding="@dimen/offset8"
+                    android:padding="@dimen/offset_8"
                     android:src="@drawable/ic_search" />
 
                 <EditText
@@ -74,8 +74,8 @@
                     android:inputType="textCapSentences"
                     android:labelFor="@+id/ib_search"
                     android:maxLength="100"
-                    android:paddingStart="@dimen/offset8"
-                    android:paddingEnd="@dimen/offset8"
+                    android:paddingStart="@dimen/offset_8"
+                    android:paddingEnd="@dimen/offset_8"
                     android:singleLine="true" />
             </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>

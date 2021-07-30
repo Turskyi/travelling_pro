@@ -4,7 +4,7 @@
     <dimen name="offset_1">1dp</dimen>
     <dimen name="offset_2">2dp</dimen>
     <dimen name="offset_4">4dp</dimen>
-    <dimen name="offset8">8dp</dimen>
+    <dimen name="offset_8">8dp</dimen>
     <dimen name="offset_10">10dp</dimen>
     <dimen name="offset_12">12dp</dimen>
     <dimen name="offset_16">16dp</dimen>
@@ -44,7 +44,7 @@
     <dimen name="width_facebook_icon">390dp</dimen>
 
     <!-- radii -->
-    <dimen name="radius_cardview">4dp</dimen>
+    <dimen name="radius_card_view">4dp</dimen>
     <dimen name="radius_dialogue_corners">12dp</dimen>
 
     <!-- sizes -->
@@ -53,8 +53,8 @@
     <dimen name="size_home_fab_max_image">192dp</dimen>
     <dimen name="size_all_countries_fab_max_image">34dp</dimen>
     <dimen name="size_max_float_btn">60dp</dimen>
-    <dimen name="app_bar_height">180dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+    <dimen name="size_avatar">150dp</dimen>
+    <dimen name="size_min">48dp</dimen>
+    <dimen name="radius_circle">250dp</dimen>
 
 </resources>

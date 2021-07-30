@@ -19,4 +19,6 @@ interface TravellerRepository {
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
     )
+
+    fun setUserVisibility(visible: Boolean, onSuccess: () -> Unit, onError: (Exception) -> Unit)
 }

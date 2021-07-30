@@ -1,6 +1,7 @@
 package io.github.turskyi.travellingpro.features.travellers
 
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,6 +27,10 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
     val visibilityLoader: LiveData<Int>
         get() = _visibilityLoader
 
+    private var _visibilityUser: MutableLiveData<Int> = MutableLiveData<Int>()
+    val visibilityUser: LiveData<Int>
+        get() = _visibilityUser
+
     var pagedList: PagedList<Traveller>
 
     var searchQuery = ""
@@ -40,8 +45,28 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
 
     init {
         _visibilityLoader.postValue(VISIBLE)
-        setTopTravellersPercent()
+        viewModelScope.launch {
+            setTopTravellersPercent()
+        }
         pagedList = getUserList(searchQuery)
+        interactor.setUserVisibility(
+            onSuccess = { isVisible ->
+                if (isVisible) {
+                    _visibilityUser.postValue(VISIBLE)
+                } else {
+                    _visibilityUser.postValue(INVISIBLE)
+                }
+            },
+            onError = { exception ->
+                _visibilityLoader.postValue(View.GONE)
+                _errorMessage.run {
+                    exception.message?.let { message ->
+                        // Trigger the event by setting a new Event as a new value
+                        postValue(Event(message))
+                    }
+                }
+            },
+        )
     }
 
     private fun getUserList(searchQuery: String): PagedList<Traveller> = if (searchQuery == "") {
@@ -75,16 +100,58 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
     }
 
     private fun setTopTravellersPercent() = viewModelScope.launch {
-        interactor.setTopTravellersPercent({ percent ->
-            _topTravellersPercentLiveData.postValue(percent)
-        }, { exception ->
-            _visibilityLoader.postValue(View.GONE)
-            _errorMessage.run {
-                exception.message?.let { message ->
-                    // Trigger the event by setting a new Event as a new value
-                    postValue(Event(message))
+        interactor.setTopTravellersPercent(
+            { percent ->
+                _topTravellersPercentLiveData.postValue(percent)
+            },
+            { exception ->
+                _visibilityLoader.postValue(View.GONE)
+                _errorMessage.run {
+                    exception.message?.let { message ->
+                        // Trigger the event by setting a new Event as a new value
+                        postValue(Event(message))
+                    }
                 }
-            }
-        })
+            },
+        )
+    }
+
+    fun onBecomingVisibleTriggered() {
+        _visibilityLoader.postValue(VISIBLE)
+        interactor.setUserVisibility(
+            isVisible = true,
+            onSuccess = {
+                _visibilityUser.postValue(VISIBLE)
+                _visibilityLoader.postValue(View.GONE)
+            },
+            onError = { exception ->
+                _visibilityLoader.postValue(View.GONE)
+                _errorMessage.run {
+                    exception.message?.let { message ->
+                        // Trigger the event by setting a new Event as a new value
+                        postValue(Event(message))
+                    }
+                }
+            },
+        )
+    }
+
+    fun onVisibilityFabClicked() {
+        _visibilityLoader.postValue(VISIBLE)
+        interactor.setUserVisibility(
+            isVisible = false,
+            onSuccess = {
+                _visibilityUser.postValue(INVISIBLE)
+                _visibilityLoader.postValue(View.GONE)
+            },
+            onError = { exception ->
+                _visibilityLoader.postValue(View.GONE)
+                _errorMessage.run {
+                    exception.message?.let { message ->
+                        // Trigger the event by setting a new Event as a new value
+                        postValue(Event(message))
+                    }
+                }
+            })
     }
 }
