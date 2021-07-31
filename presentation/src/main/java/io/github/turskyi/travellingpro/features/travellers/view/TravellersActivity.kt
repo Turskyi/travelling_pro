@@ -81,9 +81,7 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
         })
         binding.floatBtnVisibility.apply {
             setOnClickListener {
-                val eyeImage: Drawable? =
-                    ResourcesCompat.getDrawable(resources, R.drawable.btn_eye_ripple, theme)
-                val isUserVisible: Boolean =  eyeImage != null && drawable.constantState == eyeImage.constantState
+                val isUserVisible: Boolean = tag is Int && (tag as Int) == R.drawable.btn_eye_ripple
                 if (isUserVisible) {
                     viewModel.onVisibilityFabClicked()
                 } else {
@@ -108,8 +106,10 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
         viewModel.visibilityUser.observe(this, { currentVisibility ->
             if (currentVisibility == VISIBLE) {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_eye_ripple)
+                binding.floatBtnVisibility.tag = R.drawable.btn_eye_ripple;
             } else {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_hide_ripple)
+                binding.floatBtnVisibility.tag = R.drawable.btn_hide_ripple;
             }
         })
         viewModel.errorMessage.observe(this, { event ->

@@ -46,6 +46,6 @@ class TravellersInteractor : KoinComponent {
         )
     }
     fun setUserVisibility( onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit) {
-//       TODO: implement setting current user visibility
+        repository.setUserVisibility(onSuccess, onError)
     }
 }

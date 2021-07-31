@@ -42,6 +42,7 @@
     <string name="content_description.icon_search">search image</string>
     <string name="tap_back_button_in_order_to_exit">Click again to exit.</string>
     <string name="content_description.image">image</string>
+    <string name="content_description.button">button</string>
     <string name="dialog_btn_ok">OK</string>
     <string name="dialog_btn_ok_ready">OK ?</string>
     <string name="dialog_btn_not_ok">not OK</string>

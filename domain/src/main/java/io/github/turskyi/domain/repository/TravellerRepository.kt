@@ -21,4 +21,5 @@ interface TravellerRepository {
     )
 
     fun setUserVisibility(visible: Boolean, onSuccess: () -> Unit, onError: (Exception) -> Unit)
+    fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit)
 }

@@ -89,6 +89,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_travellers"
         style="@style/RecyclerViewStyle"
+        tools:listitem="@layout/item_traveller"
+        tools:itemCount="4"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <TextView
@@ -118,7 +120,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:contentDescription="@string/content_description.image"
+        android:contentDescription="@string/content_description.button"
         android:drawingCacheQuality="auto"
         android:fadeScrollbars="true"
         android:focusable="true"
@@ -130,6 +132,7 @@
         app:layout_anchorGravity="bottom|end"
         app:maxImageSize="@dimen/size_all_countries_fab_max_image"
         app:srcCompat="@drawable/btn_hide_ripple"
+        android:tag="@drawable/btn_hide_ripple"
         app:useCompatPadding="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

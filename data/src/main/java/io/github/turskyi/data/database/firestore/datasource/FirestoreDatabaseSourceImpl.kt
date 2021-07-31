@@ -76,6 +76,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .addOnFailureListener { e -> onError.invoke(e) }
         } else {
             mFirebaseAuth.signOut()
+            onError.invoke(NotFoundException())
         }
     }
 
@@ -91,6 +92,26 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .addOnSuccessListener { onSuccess.invoke() }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
+            onError.invoke(NotFoundException())
+        }
+    }
+
+    override fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val userRef: DocumentReference = usersRef.document(currentUser.uid)
+            userRef.get()
+                .addOnSuccessListener { document ->
+                    if (document?.getBoolean(KEY_IS_VISIBLE) != null) {
+                        val isVisible: Boolean = document.getBoolean(KEY_IS_VISIBLE)!!
+                        onSuccess(isVisible)
+                    } else {
+                        onError.invoke(NotFoundException())
+                    }
+                }.addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -117,6 +138,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
+            onError.invoke(NotFoundException())
         }
     }
 
@@ -143,6 +165,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     onError.invoke(exception)
                 }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -165,6 +188,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     addToListOfVisited(userDocRef, countryEntity, onSuccess, onError)
                 }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -204,6 +228,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         .addOnSuccessListener { onSuccess.invoke() }
                         .addOnFailureListener { e -> onError.invoke(e) }
                 } else {
+                    mFirebaseAuth.signOut()
                     onError.invoke(NotFoundException())
                 }
             }
@@ -226,6 +251,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .addOnSuccessListener { markAsNotVisited(name, parentId, onSuccess, onError) }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -256,6 +282,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     }
                 }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -282,6 +309,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         .addOnSuccessListener { onSuccess.invoke() }
                         .addOnFailureListener { e -> onError.invoke(e) }
                 } else {
+                    mFirebaseAuth.signOut()
                     onError.invoke(NotFoundException())
                 }
             }
@@ -308,10 +336,10 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     for (documentSnapshot in queryDocumentSnapshots) {
                         batch.delete(documentSnapshot.reference)
                     }
-                    batch.commit().addOnSuccessListener { onSuccess.invoke() }
-                        .addOnFailureListener { exception ->
-                            onError.invoke(exception)
-                        }
+                    batch
+                        .commit()
+                        .addOnSuccessListener { onSuccess.invoke() }
+                        .addOnFailureListener { exception -> onError.invoke(exception) }
                 }
             }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
@@ -330,7 +358,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
 
         /* In the putFile method,
-         there is a TaskSnapshot which contains the details of uploaded file */
+         * there is a TaskSnapshot which contains the details of uploaded file */
         val uploadTask: UploadTask = selfieRef.putFile(selfieImage, metadata)
 
         uploadTask.continueWithTask { task ->
@@ -369,6 +397,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         { exception -> onError.invoke(exception) },
                     )
                 } else {
+                    mFirebaseAuth.signOut()
                     onError.invoke(NotFoundException())
                 }
             } else {
@@ -427,6 +456,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     onError.invoke(exception)
                 }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -444,6 +474,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -506,6 +537,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     onError.invoke(exception)
                 }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -531,10 +563,12 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                             countries.add(country)
                             // check if it is the last document in list, filter and send success
                             if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
-                                val notVisitedCount: Int =
-                                    countries.filter { countryEntity -> !countryEntity.isVisited }.size
-                                val visitedCount: Int =
-                                    countries.filter { countryEntity -> countryEntity.isVisited }.size
+                                val notVisitedCount: Int = countries.filter { countryEntity ->
+                                    !countryEntity.isVisited
+                                }.size
+                                val visitedCount: Int = countries.filter { countryEntity ->
+                                    countryEntity.isVisited
+                                }.size
                                 onSuccess(notVisitedCount, visitedCount)
                             }
                         }
@@ -542,6 +576,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -563,14 +598,16 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: CountryEntity =
-                            documentSnapshot.toObject(CountryEntity::class.java)
+                        val country: CountryEntity = documentSnapshot.toObject(
+                            CountryEntity::class.java,
+                        )
                         countries.add(country)
                     }
                     onSuccess(countries)
                 }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -599,6 +636,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     }
                 }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }
@@ -694,6 +732,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     }.addOnFailureListener { exception -> onError.invoke(exception) }
                 }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
+            mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
     }

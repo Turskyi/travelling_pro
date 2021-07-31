@@ -45,10 +45,11 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
 
     init {
         _visibilityLoader.postValue(VISIBLE)
+
         viewModelScope.launch {
             setTopTravellersPercent()
         }
-        pagedList = getUserList(searchQuery)
+
         interactor.setUserVisibility(
             onSuccess = { isVisible ->
                 if (isVisible) {
@@ -67,6 +68,8 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
                 }
             },
         )
+
+        pagedList = getUserList(searchQuery)
     }
 
     private fun getUserList(searchQuery: String): PagedList<Traveller> = if (searchQuery == "") {

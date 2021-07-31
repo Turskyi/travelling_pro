@@ -55,4 +55,8 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
     ) {
         databaseSource.setUserVisibility(visible,onSuccess,onError)
     }
+
+    override fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit) {
+        databaseSource.setUserVisibility(onSuccess,onError)
+    }
 }
