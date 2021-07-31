@@ -67,14 +67,14 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
     }
 
     private fun initAdapter() {
-        /* flagsAdapter cannot by implemented in koin modules
+        /* flagsAdapter cannot by implemented in dependency injection module
          since "view pager 2" required exact context */
         flagsAdapter = FlagsAdapter(this)
         binding.pager.apply {
             adapter = flagsAdapter
             offscreenPageLimit = 4
             setPageTransformer(ZoomOutPageTransformer())
-            val startPosition = getBundle?.getInt(EXTRA_POSITION)
+            val startPosition: Int? = getBundle?.getInt(EXTRA_POSITION)
             startPosition?.let { position -> post { setCurrentItem(position, true) } }
         }
     }

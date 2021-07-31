@@ -458,7 +458,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         })
     }
 
-    /** must be open to use it in custom "circle pie chart" widget */
+    /** [showTitleWithOnlyCountries] function must be open
+     *  to use it in custom "circle pie chart" widget */
     fun showTitleWithOnlyCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { countryList ->
             binding.toolbarLayout.title = resources.getQuantityString(

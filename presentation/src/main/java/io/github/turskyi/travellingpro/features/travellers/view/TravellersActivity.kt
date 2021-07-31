@@ -106,10 +106,10 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
         viewModel.visibilityUser.observe(this, { currentVisibility ->
             if (currentVisibility == VISIBLE) {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_eye_ripple)
-                binding.floatBtnVisibility.tag = R.drawable.btn_eye_ripple;
+                binding.floatBtnVisibility.tag = R.drawable.btn_eye_ripple
             } else {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_hide_ripple)
-                binding.floatBtnVisibility.tag = R.drawable.btn_hide_ripple;
+                binding.floatBtnVisibility.tag = R.drawable.btn_hide_ripple
             }
         })
         viewModel.errorMessage.observe(this, { event ->
@@ -121,11 +121,9 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
 
     private fun showTraveller(traveller: Traveller) {
         hideKeyboard()
-//TODO: implement opening activity with clicked traveller information
-
-//        openActivityWithArgs(HomeActivity::class.java) {
-//            putString(EXTRA_TRAVELLER, traveller.id)
-//        }
+        openActivityWithArgs(HomeActivity::class.java) {
+            putString(EXTRA_TRAVELLER, traveller.id)
+        }
     }
 
     private fun updateTitle(percent: Int) {

@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -72,6 +73,7 @@ inline fun View.showSnackWithAction(
 ) = longSnackWithAction(message, length, function)
 
 fun View.toast(@StringRes msgResId: Int) = context.toast(msgResId)
+fun View.toastLong(msg: String) = Toast.makeText(this.context, msg, Toast.LENGTH_LONG).show()
 
 fun View.shareImageViaChooser() {
     val fileName: String = resources.getString(

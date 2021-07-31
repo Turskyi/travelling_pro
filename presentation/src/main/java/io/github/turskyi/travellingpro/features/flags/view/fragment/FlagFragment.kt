@@ -59,7 +59,7 @@ class FlagFragment : Fragment() {
             flagsActivityViewListener = context as FlagsActivityView?
         } catch (castException: ClassCastException) {
             // in this case the activity does not implement the listener.
-            toast(castException.localizedMessage)
+            toast(castException.localizedMessage ?: castException.stackTraceToString())
         }
     }
 

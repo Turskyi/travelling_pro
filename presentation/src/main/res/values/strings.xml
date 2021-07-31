@@ -15,6 +15,8 @@
     <string name="image_type" translatable="false">image/*</string>
     <string name="encoding_utf_8" translatable="false">UTF-8</string>
     <string name="mime_type_txt_html" translatable="false">text/html</string>
+    <string name="scheme_mailto" translatable="false">mailto</string>
+    <string name="email" translatable="false">dmitriy.turskiy@gmail.com</string>
     <string name="html_data_flag" translatable="false"><![CDATA[
     <html>
     <head>
@@ -142,6 +144,13 @@
     <string name="msg.home_country_did_not_added">did not added anything</string>
     <string name="msg.exception_flag_listener">%1$s must implement OnFlagFragmentListener</string>
     <string name="msg.home_signed_in">Signed in</string>
+    <string name="error_message_try_tomorrow">Then try tomorrow ;)</string>
     <!-- END of strings for toasts messages -->
 
+    <!-- START of strings for alert dialog content -->
+    <string name="alert_error_title">Something terrible has happened!</string>
+    <string name="alert_error_message">Would you like to write to the developer?</string>
+    <string name="error_message_intro">A scary story that happened to</string>
+    <string name="no">Nah</string>
+    <!-- END of strings for alert dialog content -->
 </resources>

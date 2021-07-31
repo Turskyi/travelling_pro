@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import com.chad.library.adapter.base.entity.node.BaseNode
 import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.travellingpro.entities.City
@@ -46,6 +47,8 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
     val navigateToAllCountries: LiveData<Boolean>
         get() = _navigateToAllCountries
 
+    /** [showListOfVisitedCountries] is the first function in [HomeActivity],
+     *  which is triggered when permission and authorization is completed */
     fun showListOfVisitedCountries() {
         _visibilityLoader.postValue(VISIBLE)
         viewModelScope.launch {

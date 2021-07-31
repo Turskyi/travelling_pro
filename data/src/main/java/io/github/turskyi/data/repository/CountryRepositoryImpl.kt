@@ -15,6 +15,14 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
     private val netSource: NetSource by inject()
     private val databaseSource: FirestoreDatabaseSource by inject()
 
+    override suspend fun setCountNotVisitedCountries(
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) = databaseSource.setCountNotVisitedCountries(
+        { count -> onSuccess(count) },
+        { exception -> onError.invoke(exception) },
+    )
+
     override suspend fun refreshCountriesInDb(
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -102,14 +110,6 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         onError: (Exception) -> Unit
     ) = databaseSource.setCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
         { exception -> onError.invoke(exception) })
-
-    override suspend fun setCountNotVisitedCountries(
-        onSuccess: (Int) -> Unit,
-        onError: (Exception) -> Unit
-    ) = databaseSource.setCountNotVisitedCountries(
-        { count -> onSuccess(count) },
-        { exception -> onError.invoke(exception) },
-    )
 
     override suspend fun getCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,

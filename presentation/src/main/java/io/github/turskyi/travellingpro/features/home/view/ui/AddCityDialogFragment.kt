@@ -116,7 +116,10 @@ class AddCityDialogFragment : DialogFragment() {
                                 this, {
                                     alertDialog.dismiss()
                                 }, { exception ->
-                                    toast(exception.message)
+                                    toast(
+                                        exception.localizedMessage
+                                            ?: exception.stackTraceToString()
+                                    )
                                 }
                             )
                         }
@@ -184,7 +187,8 @@ class AddCityDialogFragment : DialogFragment() {
     }
 
     private fun initLocationServices() {
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
