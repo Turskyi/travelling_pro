@@ -23,8 +23,8 @@ import kotlinx.coroutines.SupervisorJob
 import okhttp3.Request
 
 val repositoriesModule = module {
-    factory<CountryRepository> { CountryRepositoryImpl() }
-    factory<TravellerRepository> { TravellerRepositoryImpl() }
+    factory<CountryRepository> { CountryRepositoryImpl(CoroutineScope(SupervisorJob())) }
+    factory<TravellerRepository> { TravellerRepositoryImpl(CoroutineScope(SupervisorJob())) }
 }
 
 val dataProvidersModule = module {

@@ -7,10 +7,14 @@ import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
 import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.domain.repository.CountryRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class CountryRepositoryImpl : CountryRepository, KoinComponent {
+class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : CountryRepository,
+    KoinComponent {
 
     private val netSource: NetSource by inject()
     private val databaseSource: FirestoreDatabaseSource by inject()
@@ -28,10 +32,10 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         onError: (Exception) -> Unit
     ) = netSource.getCountryNetList(
         { countryNetList ->
-                addResponseListToDb(
-                    countryNetList.mapNetListToModelList(),
-                    { onSuccess() },
-                    { exception -> onError.invoke(exception) })
+            addResponseListToDb(
+                countryNetList.mapNetListToModelList(),
+                { onSuccess() },
+                { exception -> onError.invoke(exception) })
         },
         { exception -> onError.invoke(exception) },
     )
@@ -41,17 +45,19 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         selfie: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = databaseSource.updateSelfie(
         name = name,
         selfie = selfie,
         previousSelfieName = selfieName,
         {
-            databaseSource.setVisitedCountries(
-                { countries -> onSuccess(countries.mapVisitedCountriesToVisitedModelList()) },
-                { exception -> onError?.invoke(exception) })
+            applicationScope.launch(Dispatchers.IO) {
+                databaseSource.setVisitedCountries(
+                    { countries -> onSuccess(countries.mapVisitedCountriesToVisitedModelList()) },
+                    { exception -> onError.invoke(exception) })
+            }
         },
-        { exception -> onError?.invoke(exception) },
+        { exception -> onError.invoke(exception) },
     )
 
     override suspend fun markAsVisited(
@@ -92,11 +98,15 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         countries: MutableList<CountryModel>,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.insertAllCountries(
-        countries.mapModelListToEntityList(),
-        { onSuccess() },
-        { exception -> onError.invoke(exception) },
-    )
+    ) {
+        applicationScope.launch(Dispatchers.IO) {
+            databaseSource.insertAllCountries(
+                countries.mapModelListToEntityList(),
+                { onSuccess() },
+                { exception -> onError.invoke(exception) },
+            )
+        }
+    }
 
     override suspend fun setVisitedModelCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
@@ -108,8 +118,20 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
     override suspend fun setCities(
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.setCities({ cities -> onSuccess(cities.mapEntitiesToModelList()) },
-        { exception -> onError.invoke(exception) })
+    ) = databaseSource.setCities(
+        onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
+        onError = { exception -> onError.invoke(exception) },
+    )
+
+    override suspend fun setCitiesById(
+        parentId: Int,
+        onSuccess: (List<CityModel>) -> Unit,
+        onError: (Exception) -> Unit
+    ) = databaseSource.setCitiesById(
+        parentId = parentId,
+        onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
+        onError = { exception -> onError.invoke(exception) },
+    )
 
     override suspend fun getCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
@@ -118,7 +140,7 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         onSuccess(notVisitedCount, visitedCount)
     }, { exception -> onError?.invoke(exception) })
 
-    override fun setCountriesByRange(
+    override suspend fun setCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
@@ -130,7 +152,7 @@ class CountryRepositoryImpl : CountryRepository, KoinComponent {
         { onError.invoke(it) },
     )
 
-    override fun setCountriesByName(
+    override suspend fun setCountriesByName(
         name: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit)

@@ -13,7 +13,7 @@ interface CountryRepository {
         selfie: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     suspend fun markAsVisited(
@@ -24,11 +24,6 @@ interface CountryRepository {
 
     suspend fun setVisitedModelCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
-        onError: (Exception) -> Unit
-    )
-
-    suspend fun setCities(
-        onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
     )
 
@@ -57,16 +52,24 @@ interface CountryRepository {
         onError: (Exception) -> Unit
     )
 
-    fun setCountriesByRange(
+  suspend  fun setCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun setCountriesByName(
+   suspend fun setCountriesByName(
         name: String,
         onSuccess: (List<CountryModel>) -> Unit,
+        onError: (Exception) -> Unit
+    )
+
+    suspend fun setCities(onSuccess: (List<CityModel>) -> Unit, onError: (Exception) -> Unit)
+
+    suspend  fun setCitiesById(
+        parentId: Int,
+        onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
     )
 }

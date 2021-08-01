@@ -15,7 +15,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     private val countryRepository: CountryRepository by inject()
     private val travellerRepository: TravellerRepository by inject()
 
-    fun setCountriesByName(
+   suspend fun setCountriesByName(
         name: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit)
@@ -26,10 +26,10 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         selfie: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = countryRepository.updateSelfie(name, selfie, selfieName, onSuccess, onError)
 
-    fun setCountriesByRange(
+   suspend fun setCountriesByRange(
         limit: Int,
         offset: Int,
         onSuccess: (List<CountryModel>) -> Unit,
@@ -58,9 +58,15 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     ) = countryRepository.setVisitedModelCountries(onSuccess, onError)
 
     suspend fun setCities(
-        onSusses: (List<CityModel>) -> Unit,
+        onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.setCities(onSusses, onError)
+    ): Unit = countryRepository.setCities(onSuccess, onError)
+
+    suspend fun setCitiesById(
+        parentId: Int,
+        onSuccess: (List<CityModel>) -> Unit,
+        onError: (Exception) -> Unit
+    ) = countryRepository.setCitiesById(parentId,onSuccess, onError)
 
     suspend fun markAsVisitedCountryModel(
         country: CountryModel,
@@ -71,7 +77,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     suspend fun removeCountryModelFromVisitedList(
         country: CountryModel,
         onSuccess: () -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     ) = countryRepository.removeFromVisited(country, onSuccess = onSuccess, onError = onError)
 
     suspend fun removeCity(

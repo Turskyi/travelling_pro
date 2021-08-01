@@ -46,7 +46,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     private val selfiesStorageRef: StorageReference = firebaseStorage.getReference(REF_SELFIES)
     private val usersRef: CollectionReference = database.collection(REF_USERS)
 
-    override fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+    override suspend fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
         val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
@@ -80,7 +80,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setUserVisibility(
+    override suspend fun setUserVisibility(
         visible: Boolean,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -97,7 +97,10 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit) {
+    override suspend fun setUserVisibility(
+        onSuccess: (Boolean) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
         val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
@@ -116,7 +119,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setCountNotVisitedCountries(
+    override suspend fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -142,7 +145,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun insertAllCountries(
+    override suspend fun insertAllCountries(
         countries: List<CountryEntity>,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -170,7 +173,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun markAsVisited(
+    override suspend fun markAsVisited(
         countryEntity: CountryEntity,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -235,7 +238,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    override fun removeCountryFromVisited(
+    override suspend fun removeCountryFromVisited(
         name: String,
         parentId: Int,
         onSuccess: () -> Unit,
@@ -344,7 +347,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    override fun updateSelfie(
+    override suspend fun updateSelfie(
         name: String,
         selfie: String,
         previousSelfieName: String,
@@ -413,7 +416,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         selfieName: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
-    ) = CoroutineScope(Dispatchers.IO).launch {
+    ) = applicationScope.launch(Dispatchers.IO) {
         try {
             if (selfieName != "") {
                 selfiesStorageRef.child(selfieName).delete()
@@ -427,7 +430,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun insertCity(
+    override suspend fun insertCity(
         city: CityEntity,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -461,7 +464,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun removeCityById(
+    override suspend fun removeCityById(
         id: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -479,7 +482,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setVisitedCountries(
+    override suspend fun setVisitedCountries(
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -509,7 +512,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setCities(
+    override suspend fun setCities(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -542,7 +545,41 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setCountNotVisitedAndVisitedCountries(
+    override suspend fun setCitiesById(
+        parentId: Int,
+        onSuccess: (List<CityEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
+        if (currentUser != null) {
+            val citiesRef: Query =
+                usersRef.document(currentUser.uid).collection(REF_CITIES)
+                    .whereEqualTo(KEY_PARENT_ID, parentId)
+            citiesRef.get()
+                .addOnSuccessListener { queryDocumentSnapshots ->
+                    if (queryDocumentSnapshots.isEmpty) {
+                        onSuccess(emptyList())
+                    } else {
+                        val cities: MutableList<CityEntity> = mutableListOf()
+                        for (documentSnapshot in queryDocumentSnapshots) {
+                            val cityEntity: CityEntity = documentSnapshot.toObject(
+                                CityEntity::class.java,
+                            )
+                            cities.add(cityEntity)
+                        }
+                        onSuccess(cities.sortedBy { city -> city.name })
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onError.invoke(exception)
+                }
+        } else {
+            mFirebaseAuth.signOut()
+            onError.invoke(NotFoundException())
+        }
+    }
+
+    override suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -581,7 +618,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setCountriesByRange(
+    override suspend fun setCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryEntity>) -> Unit,
@@ -612,7 +649,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setCountriesByName(
+    override suspend fun setCountriesByName(
         nameQuery: String,
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
@@ -641,7 +678,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override fun setTravellersByRange(
+    override suspend fun setTravellersByRange(
         to: Long,
         from: Int,
         onSuccess: (List<TravellerEntity>) -> Unit,
@@ -673,7 +710,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    override fun setTravellersByName(
+    override suspend fun setTravellersByName(
         nameQuery: String,
         requestedLoadSize: Long,
         requestedStartPosition: Int,
@@ -708,7 +745,10 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+    override suspend fun setTopTravellersPercent(
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
         // getting number of visited Countries by current user
         val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {

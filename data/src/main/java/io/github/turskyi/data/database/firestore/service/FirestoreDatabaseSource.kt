@@ -6,26 +6,26 @@ import io.github.turskyi.data.entities.local.TravellerEntity
 import io.github.turskyi.data.entities.local.VisitedCountryEntity
 
 interface FirestoreDatabaseSource {
-    fun insertAllCountries(
+    suspend fun insertAllCountries(
         countries: List<CountryEntity>,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun markAsVisited(
+    suspend fun markAsVisited(
         countryEntity: CountryEntity,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun removeCountryFromVisited(
+    suspend fun removeCountryFromVisited(
         name: String,
         parentId: Int,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun updateSelfie(
+    suspend fun updateSelfie(
         name: String,
         selfie: String,
         previousSelfieName: String,
@@ -33,48 +33,51 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit
     )
 
-    fun insertCity(city: CityEntity, onSuccess: () -> Unit, onError: (Exception) -> Unit)
+    suspend fun insertCity(city: CityEntity, onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
-    fun removeCityById(id: String, onSuccess: () -> Unit, onError: (Exception) -> Unit)
+    suspend fun removeCityById(id: String, onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
-    fun setVisitedCountries(
+    suspend fun setVisitedCountries(
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun setCities(
+    suspend fun setCities(onSuccess: (List<CityEntity>) -> Unit, onError: (Exception) -> Unit)
+
+    suspend fun setCitiesById(
+        parentId: Int,
         onSuccess: (List<CityEntity>) -> Unit,
-        onError: (Exception) -> Unit
+        onError: (Exception) -> Unit,
     )
 
-    fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
-    fun setCountNotVisitedAndVisitedCountries(
+    suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun setCountriesByRange(
+    suspend fun setCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun setCountriesByName(
+    suspend fun setCountriesByName(
         nameQuery: String,
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun setTravellersByRange(
+    suspend fun setTravellersByRange(
         to: Long,
         from: Int,
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-    fun setTravellersByName(
+    suspend fun setTravellersByName(
         nameQuery: String,
         requestedLoadSize: Long,
         requestedStartPosition: Int,
@@ -82,8 +85,13 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit
     )
 
-    fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
-    fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit)
-    fun setUserVisibility(visible: Boolean, onSuccess: () -> Unit, onError: (Exception) -> Unit)
-    fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    suspend fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit)
+    suspend fun setUserVisibility(
+        visible: Boolean,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    )
+
+    suspend fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit)
 }

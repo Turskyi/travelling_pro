@@ -4,10 +4,13 @@ import io.github.turskyi.data.util.extensions.mapFirestoreListToModelList
 import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.domain.models.entities.TravellerModel
 import io.github.turskyi.domain.repository.TravellerRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
+class TravellerRepositoryImpl(private val applicationScope: CoroutineScope) : TravellerRepository,
+    KoinComponent {
     private val databaseSource: FirestoreDatabaseSource by inject()
     override fun setTravellersByName(
         name: String,
@@ -16,24 +19,28 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        databaseSource.setTravellersByName(
-            name,
-            requestedLoadSize,
-            requestedStartPosition,
-            { list -> onSuccess(list.mapFirestoreListToModelList()) },
-            { onError.invoke(it) },
-        )
+        applicationScope.launch {
+            databaseSource.setTravellersByName(
+                name,
+                requestedLoadSize,
+                requestedStartPosition,
+                { list -> onSuccess(list.mapFirestoreListToModelList()) },
+                { onError.invoke(it) },
+            )
+        }
     }
 
     override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
-        databaseSource.setTopTravellersPercent(
-            { percent -> onSuccess(percent) },
-            { exception -> onError.invoke(exception) },
-        )
+        applicationScope.launch {
+            databaseSource.setTopTravellersPercent(
+                { percent -> onSuccess(percent) },
+                { exception -> onError.invoke(exception) },
+            )
+        }
     }
 
     override fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-        databaseSource.saveTraveller(onSuccess, onError)
+        applicationScope.launch { databaseSource.saveTraveller(onSuccess, onError) }
     }
 
     override fun setTravellersByRange(
@@ -41,22 +48,26 @@ class TravellerRepositoryImpl : TravellerRepository, KoinComponent {
         requestedStartPosition: Int,
         onSuccess: (List<TravellerModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.setTravellersByRange(
-        to = requestedLoadSize,
-        from = requestedStartPosition,
-        onSuccess = { list -> onSuccess(list.mapFirestoreListToModelList()) },
-        onError = { onError.invoke(it) },
-    )
+    ) {
+        applicationScope.launch {
+            databaseSource.setTravellersByRange(
+                to = requestedLoadSize,
+                from = requestedStartPosition,
+                onSuccess = { list -> onSuccess(list.mapFirestoreListToModelList()) },
+                onError = { onError.invoke(it) },
+            )
+        }
+    }
 
     override fun setUserVisibility(
         visible: Boolean,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        databaseSource.setUserVisibility(visible,onSuccess,onError)
+        applicationScope.launch { databaseSource.setUserVisibility(visible, onSuccess, onError) }
     }
 
     override fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit) {
-        databaseSource.setUserVisibility(onSuccess,onError)
+        applicationScope.launch { databaseSource.setUserVisibility(onSuccess, onError) }
     }
 }

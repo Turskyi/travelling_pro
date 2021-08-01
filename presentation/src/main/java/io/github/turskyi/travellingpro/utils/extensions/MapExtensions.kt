@@ -7,17 +7,11 @@ import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.travellingpro.entities.*
 
 fun List<CountryModel>.mapModelListToCountryList(): MutableList<Country> {
-    return this.mapTo(
-        mutableListOf(),
-        { it.mapModelToCountry() },
-    )
+    return this.mapTo(mutableListOf(), { it.mapModelToCountry() })
 }
 
 fun List<VisitedCountryModel>.mapVisitedModelListToVisitedList(): MutableList<VisitedCountry> {
-    return this.mapTo(
-        mutableListOf(),
-        { it.mapModelToCountry() },
-    )
+    return this.mapTo(mutableListOf(), { it.mapModelToCountry() })
 }
 
 fun VisitedCountryModel.mapModelToCountry() = VisitedCountry(id, title, flag, selfie, selfieName)
@@ -56,13 +50,13 @@ fun VisitedCountry.mapVisitedCountryToNode() = VisitedCountryNode(
 )
 
 fun CityModel.mapModelToBaseNode() = City(id = id, name = name, parentId = parentId, month = month)
+fun List<CityModel>.mapModelListToBaseNodeList(): MutableList<City> {
+    return this.mapTo(mutableListOf(), { it.mapModelToBaseNode() })
+}
 fun City.mapNodeToModel() = CityModel(id = id, name = name, parentId = parentId, month = month)
 
 fun List<TravellerModel>.mapModelListToTravellerList(): MutableList<Traveller> {
-    return this.mapTo(
-        mutableListOf(),
-        { it.mapModelToTraveller() },
-    )
+    return this.mapTo(mutableListOf(), { it.mapModelToTraveller() })
 }
 
 private fun TravellerModel.mapModelToTraveller(): Traveller {

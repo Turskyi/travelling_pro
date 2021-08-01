@@ -76,37 +76,13 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
                         viewModelScope.launch { downloadCountries() }
                     } else {
                         notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
-                        val visitedCountryNodes: MutableList<VisitedCountryNode> =
+                        val visitedCountryWithCityNodes: MutableList<VisitedCountryNode> =
                             visitedCountries.mapVisitedListToVisitedNodeList()
-                        if (visitedCountryNodes.isEmpty()) {
-                            showVisitedCountryNodes(visitedCountryNodes, visitedCountries)
+                        if (visitedCountryWithCityNodes.isEmpty()) {
+                            // if there are no countries there are no cities, show empty list
+                            showVisitedCountryNodes(mutableListOf(), emptyList())
                         } else {
-                            for (country in visitedCountryNodes) {
-                                val cityList: MutableList<BaseNode> = mutableListOf()
-                                viewModelScope.launch {
-                                    interactor.setCities(
-                                        { cities ->
-                                            for (city in cities) {
-                                                if (country.id == city.parentId) {
-                                                    cityList.add(city.mapModelToBaseNode())
-                                                }
-                                            }
-                                            citiesCount = cities.size
-                                            country.childNode = cityList
-                                            if (country.id == visitedCountryNodes.last().id) {
-                                                // showing countries with included cities
-                                                showVisitedCountryNodes(
-                                                    visitedCountryNodes,
-                                                    visitedCountries
-                                                )
-                                            }
-                                        },
-                                        { exception ->
-                                            showError(exception)
-                                        },
-                                    )
-                                }
-                            }
+                            fillCountriesWithCities(visitedCountryWithCityNodes, visitedCountries)
                             /* do not write any logic after  countries loop (here),
                              * rest of the logic must be in "get cities" success method ,
                              * since it started later then here */
@@ -115,6 +91,36 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
                 },
                 { exception -> showError(exception) },
             )
+        }
+    }
+
+    /** filling country nodes with cities */
+    private fun fillCountriesWithCities(
+        visitedCountryWithCityNodes: MutableList<VisitedCountryNode>,
+        visitedCountries: List<VisitedCountry>
+    ) {
+        for (country in visitedCountryWithCityNodes) {
+            val cityList: MutableList<BaseNode> = mutableListOf()
+            viewModelScope.launch {
+                interactor.setCitiesById(
+                    country.id,
+                    { cities ->
+                        cityList.addAll(cities.mapModelListToBaseNodeList())
+                        citiesCount = cities.size
+                        country.childNode = cityList
+                        /* since [setCitiesById] function is launched inside a separate thread,
+                        * [showVisitedCountryNodes] function must be in the same thread */
+                        if (country.id == visitedCountryWithCityNodes.last().id) {
+                            // showing countries with included cities
+                            showVisitedCountryNodes(
+                                visitedCountryWithCityNodes,
+                                visitedCountries
+                            )
+                        }
+                    },
+                    { exception -> showError(exception) },
+                )
+            }
         }
     }
 

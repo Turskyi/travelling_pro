@@ -57,7 +57,7 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
             .setPageSize(20)
             .build()
         // DataSource
-        val dataSource = CountriesPositionalDataSource(interactor)
+        val dataSource = CountriesPositionalDataSource(interactor, viewModelScope)
         _visibilityLoader = dataSource.visibilityLoader
         PagedList.Builder(dataSource, config)
             .setFetchExecutor(Executors.newSingleThreadExecutor())
@@ -70,7 +70,11 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
             .setPageSize(1)
             .build()
         val filteredDataSource =
-            FilteredCountriesPositionalDataSource(countryName = searchQuery, interactor = interactor)
+            FilteredCountriesPositionalDataSource(
+                countryName = searchQuery,
+                interactor = interactor,
+                viewModelScope = viewModelScope,
+            )
         PagedList.Builder(filteredDataSource, config)
             .setFetchExecutor(Executors.newSingleThreadExecutor())
             .setNotifyExecutor(MainThreadExecutor())
