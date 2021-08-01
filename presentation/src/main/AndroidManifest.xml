@@ -60,7 +60,7 @@
             android:parentActivityName=".features.home.view.ui.HomeActivity" />
 
         <activity
-            android:name=".features.traveller.TravellerActivity"
+            android:name=".features.traveller.view.TravellerActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar" />
 

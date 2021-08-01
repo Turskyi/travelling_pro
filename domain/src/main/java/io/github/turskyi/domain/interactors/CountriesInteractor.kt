@@ -15,7 +15,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     private val countryRepository: CountryRepository by inject()
     private val travellerRepository: TravellerRepository by inject()
 
-   suspend fun setCountriesByName(
+    suspend fun setCountriesByName(
         name: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit)
@@ -29,7 +29,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         onError: (Exception) -> Unit
     ) = countryRepository.updateSelfie(name, selfie, selfieName, onSuccess, onError)
 
-   suspend fun setCountriesByRange(
+    suspend fun setCountriesByRange(
         limit: Int,
         offset: Int,
         onSuccess: (List<CountryModel>) -> Unit,
@@ -52,6 +52,14 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         onError: (Exception) -> Unit
     ) = countryRepository.setCountNotVisitedCountries(onSuccess, onError)
 
+    suspend fun setNotVisitedCountriesNumById(
+        id: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit,
+    ) {
+        countryRepository.setCountNotVisitedCountriesById(id, onSuccess, onError)
+    }
+
     suspend fun setVisitedCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
@@ -66,7 +74,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         parentId: Int,
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.setCitiesById(parentId,onSuccess, onError)
+    ) = countryRepository.setCitiesById(parentId, onSuccess, onError)
 
     suspend fun markAsVisitedCountryModel(
         country: CountryModel,

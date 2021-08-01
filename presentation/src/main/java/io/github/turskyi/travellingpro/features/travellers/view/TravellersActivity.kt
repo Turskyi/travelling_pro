@@ -1,30 +1,27 @@
 package io.github.turskyi.travellingpro.features.travellers.view
 
 import android.animation.ValueAnimator
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityTravellersBinding
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
-import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
 import io.github.turskyi.travellingpro.entities.Traveller
-import io.github.turskyi.travellingpro.features.traveller.TravellerActivity
+import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
 import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
 
 class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListener {
     companion object {
-        const val EXTRA_TRAVELLER = "io.github.turskyi.travellingpro.TRAVELLER"
+        const val EXTRA_TRAVELLER_ID = "io.github.turskyi.travellingpro.TRAVELLER_ID"
     }
 
     private val viewModel: TravellersActivityViewModel by inject()
@@ -123,7 +120,7 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private fun showTraveller(traveller: Traveller) {
         hideKeyboard()
         openActivityWithArgs(TravellerActivity::class.java) {
-            putString(EXTRA_TRAVELLER, traveller.id)
+            putString(EXTRA_TRAVELLER_ID, traveller.id)
         }
     }
 

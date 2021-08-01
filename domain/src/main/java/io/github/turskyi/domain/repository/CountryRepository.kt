@@ -52,14 +52,14 @@ interface CountryRepository {
         onError: (Exception) -> Unit
     )
 
-  suspend  fun setCountriesByRange(
+    suspend fun setCountriesByRange(
         to: Int,
         from: Int,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: (Exception) -> Unit
     )
 
-   suspend fun setCountriesByName(
+    suspend fun setCountriesByName(
         name: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: (Exception) -> Unit
@@ -67,9 +67,15 @@ interface CountryRepository {
 
     suspend fun setCities(onSuccess: (List<CityModel>) -> Unit, onError: (Exception) -> Unit)
 
-    suspend  fun setCitiesById(
+    suspend fun setCitiesById(
         parentId: Int,
         onSuccess: (List<CityModel>) -> Unit,
+        onError: (Exception) -> Unit
+    )
+
+    suspend fun setCountNotVisitedCountriesById(
+        id: String,
+        onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
     )
 }

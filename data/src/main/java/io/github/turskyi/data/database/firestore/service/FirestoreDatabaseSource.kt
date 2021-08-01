@@ -94,4 +94,9 @@ interface FirestoreDatabaseSource {
     )
 
     suspend fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setCountNotVisitedCountriesById(
+        id: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit,
+    )
 }

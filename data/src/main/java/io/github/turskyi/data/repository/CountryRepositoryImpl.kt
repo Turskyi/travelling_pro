@@ -27,6 +27,17 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         { exception -> onError.invoke(exception) },
     )
 
+    override suspend fun setCountNotVisitedCountriesById(
+        id: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    )  = databaseSource.setCountNotVisitedCountriesById(
+        id,
+        { count -> onSuccess(count) },
+        { exception -> onError.invoke(exception) },
+    )
+
+
     override suspend fun refreshCountriesInDb(
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit

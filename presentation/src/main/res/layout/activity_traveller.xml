@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/CoordinatorLayoutStyle"
-    tools:context=".features.traveller.TravellerActivity">
+    tools:context=".features.traveller.view.TravellerActivity">
 
     <include
         android:id="@+id/include_app_bar"

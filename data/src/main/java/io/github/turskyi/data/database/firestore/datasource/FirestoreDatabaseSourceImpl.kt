@@ -116,6 +116,27 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
+    override suspend fun setCountNotVisitedCountriesById(
+        id: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val countriesRef: CollectionReference = usersRef
+            .document(id)
+            .collection(REF_COUNTRIES)
+        countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    task.result?.let { notVisitedCountries ->
+                        onSuccess(notVisitedCountries.size())
+                    }
+                } else {
+                    task.exception?.let { exception -> onError.invoke(exception) }
+                }
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
+    }
+
     override suspend fun setCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit

@@ -8,6 +8,7 @@ import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentVie
 import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
+import io.github.turskyi.travellingpro.features.traveller.TravellerActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +23,7 @@ val adaptersModule = module {
 
 val viewModelsModule = module {
     factory { HomeActivityViewModel(get()) }
+    factory { TravellerActivityViewModel(get()) }
     factory { AllCountriesActivityViewModel(get()) }
     factory { FlagsFragmentViewModel(get()) }
     factory { AddCityDialogViewModel(get()) }
