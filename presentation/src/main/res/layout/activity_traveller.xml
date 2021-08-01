@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CoordinatorLayoutStyle"
+    tools:context=".features.traveller.TravellerActivity">
+
+    <include
+        android:id="@+id/include_app_bar"
+        layout="@layout/layout_app_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvVisitedCountries"
+        style="@style/RecyclerViewStyle"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- loading progress bar -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/pb"
+        style="@style/ProgressBarStyle" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

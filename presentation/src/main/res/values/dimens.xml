@@ -48,11 +48,12 @@
     <dimen name="radius_dialogue_corners">12dp</dimen>
 
     <!-- sizes -->
-    <dimen name="size_home_fab_custom">224dp</dimen>
-    <dimen name="size_all_countries_fab_custom">30dp</dimen>
-    <dimen name="size_home_fab_max_image">192dp</dimen>
-    <dimen name="size_all_countries_fab_max_image">34dp</dimen>
+    <dimen name="size_search_fab_custom">30dp</dimen>
+    <dimen name="size_search_fab_max_image">34dp</dimen>
+    <dimen name="size_fab_custom">57dp</dimen>
     <dimen name="size_max_float_btn">60dp</dimen>
+    <dimen name="size_home_fab_custom">224dp</dimen>
+    <dimen name="size_home_fab_max_image">192dp</dimen>
     <dimen name="size_avatar">150dp</dimen>
     <dimen name="size_min">48dp</dimen>
     <dimen name="radius_circle">250dp</dimen>

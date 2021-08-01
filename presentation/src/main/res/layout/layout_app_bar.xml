@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appBar"
+    style="@style/AppTheme.AppBarOverlay"
+    tools:showIn="@layout/activity_home">
+
+    <io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar.CollapsingToolbarLayoutExtension
+        android:id="@+id/toolbar_layout"
+        style="@style/MultilineCollapsingToolbarStyle">
+
+        <FrameLayout style="@style/FrameLayoutStyle">
+
+            <io.github.turskyi.travellingpro.widgets.CirclePieChart
+                android:id="@+id/circle_pie_chart"
+                style="@style/CirclePieChartStyle" />
+        </FrameLayout>
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/ToolbarStyle" />
+
+    </io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar.CollapsingToolbarLayoutExtension>
+
+</com.google.android.material.appbar.AppBarLayout>

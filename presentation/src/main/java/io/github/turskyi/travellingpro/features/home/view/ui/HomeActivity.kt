@@ -62,6 +62,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         super.onResume()
         // makes info icon visible
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // makes [R.menu.menu_travellers] icon visible
+        invalidateOptionsMenu()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -127,8 +129,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
-        setSupportActionBar(binding.toolbar)
-        // set drawable icon
+        binding.includeAppBar.toolbarLayout.title = getString(
+            R.string.home_onboarding_title_authorization,
+        )
+        setSupportActionBar(binding.includeAppBar.toolbar)
+        // set drawable icon "info"
         supportActionBar?.setHomeAsUpIndicator(R.drawable.btn_info_ripple)
 
         val linearLayoutManager = LinearLayoutManager(this)
@@ -198,10 +203,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
             updateAdapterWith(visitedCountries)
         })
         viewModel.visitedCountries.observe(this, { visitedCountries ->
-            binding.circlePieChart.apply {
+            binding.includeAppBar.circlePieChart.apply {
                 initPieChart()
                 createPieChartWith(visitedCountries, viewModel.notVisitedCountriesCount)
-                binding.circlePieChart.animatePieChart()
+                binding.includeAppBar.circlePieChart.animatePieChart()
             }
             showFloatBtn(visitedCountries)
         })
@@ -285,7 +290,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     /** must be open to use it in custom "circle pie chart" widget */
-   fun setTitle() = if (viewModel.citiesCount > 0) {
+    fun setTitle() = if (viewModel.citiesCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()
@@ -339,7 +344,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         toast(R.string.msg_home_signed_in)
         authorizationResultLauncher.unregister()
         // Successfully signed in
-        binding.toolbarLayout.title = getString(R.string.home_onboarding_title_loading)
+        binding.includeAppBar.toolbarLayout.title =
+            getString(R.string.home_onboarding_title_loading)
         viewModel.showListOfVisitedCountries()
     }
 
@@ -365,7 +371,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     private fun initGravityForTitle() {
-        if (getScreenWidth() < 1082) binding.toolbarLayout.expandedTitleGravity = Gravity.BOTTOM
+        if (getScreenWidth() < 1082) binding.includeAppBar.toolbarLayout.expandedTitleGravity =
+            Gravity.BOTTOM
     }
 
     private fun removeCityOnLongClick(city: City) = viewModel.removeCity(city)
@@ -390,14 +397,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private fun initTitleWithNumberOf(visitedCountryNodes: List<VisitedCountryNode>) {
         if (viewModel.citiesCount == 0) {
-            binding.toolbarLayout.title = resources.getQuantityString(
+            binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
                 visitedCountryNodes.size,
                 visitedCountryNodes.size
             )
         } else {
             if (viewModel.citiesCount > visitedCountryNodes.size) {
-                binding.toolbarLayout.title = "${
+                binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
                         viewModel.citiesCount,
@@ -410,7 +417,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     )
                 }"
             } else {
-                binding.toolbarLayout.title = "${
+                binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
                         visitedCountryNodes.size,
@@ -429,7 +436,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     private fun showTitleWithCitiesAndCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { countries ->
             if (viewModel.citiesCount > countries.size) {
-                binding.toolbarLayout.title = "${
+                binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
                         viewModel.citiesCount,
@@ -442,7 +449,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     )
                 }"
             } else {
-                binding.toolbarLayout.title = "${
+                binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
                         countries.size,
@@ -462,7 +469,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
      *  to use it in custom "circle pie chart" widget */
     fun showTitleWithOnlyCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { countryList ->
-            binding.toolbarLayout.title = resources.getQuantityString(
+            binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
                 countryList.size,
                 countryList.size

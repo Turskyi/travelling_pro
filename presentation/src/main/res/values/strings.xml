@@ -41,7 +41,7 @@
     <string name="app_name">Travelling Pro</string>
     <string name="content_description.flag">flag</string>
     <string name="content_description.item_arrow">arrow</string>
-    <string name="content_description.icon_search">search image</string>
+    <string name="content_description.icon_search">search icon</string>
     <string name="tap_back_button_in_order_to_exit">Click again to exit.</string>
     <string name="content_description.image">image</string>
     <string name="content_description.button">button</string>
@@ -65,8 +65,7 @@
     <string name="dialog_hold_on">Hold on a moment, trying to find your location.</string>
     <string name="dialog.no_internet">TURN ON INTERNET</string>
     <string name="home_dialog_btn_cancel">Cancel</string>
-    <string name="txt_info_billing">Please care to buy the full version of an app,
-        in order to sync your data with server.</string>
+
     <string name="share_title">Share How Many Countries You Have Visited</string>
     <string name="txt_info_home">• Click on \"+\" to add a country.\n• Click on a country to add a
         city and a month.\n• Click on the pie chart to change the view of it.\n• If you press on the pie chart,
@@ -99,7 +98,7 @@
     <!-- START screen with all countries -->
     <string name="hint.search_country">country</string>
     <string name="hint.search_traveller">name</string>
-    <string name="all_countries_no_results">no results</string>
+    <string name="no_results">no results</string>
     <string name="txt_info_all_countries">• If you press on a country, you will be able to see
         the geographical location of it
     </string>
@@ -153,4 +152,12 @@
     <string name="error_message_intro">A scary story that happened to</string>
     <string name="no">Nah</string>
     <!-- END of strings for alert dialog content -->
+
+    <!-- START: text resources for Visible Traveller Page -->
+    <plurals name="travellerCounter">
+        <item quantity="one">%1$s has been to %d country</item>
+        <item quantity="few">%1$s has been to %d countries</item>
+        <item quantity="other">%1$s has been to %d countries</item>
+    </plurals>
+    <!-- END: text resources for Visible Traveller Page -->
 </resources>

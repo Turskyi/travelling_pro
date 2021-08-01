@@ -33,29 +33,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".features.travellers.view.TravellersActivity"
-            android:label="@string/title_activity_travellers"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <!-- [START fcm_default_icon] -->
-        <!--  Default icon. This is used when no icon is set for incoming notification messages. -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/pic_logo" />
-        <!--
- This color used with incoming notification messages.
-         This is used when no color is set for the incoming
-             notification message.
-        -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorLightGrey" /> <!-- [END fcm_default_icon] -->
-        <!-- [START fcm_default_channel] -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" /> <!-- [END fcm_default_channel] -->
+        <!-- android:exported should be set true for main activity, or it won't launch -->
         <activity
             android:name=".features.home.view.ui.HomeActivity"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.Launcher"
@@ -67,14 +48,42 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".features.allcountries.view.ui.AllCountriesActivity"
             android:parentActivityName=".features.home.view.ui.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".features.flags.view.FlagsActivity"
             android:parentActivityName=".features.home.view.ui.HomeActivity" />
+
+        <activity
+            android:name=".features.traveller.TravellerActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".features.travellers.view.TravellersActivity"
+            android:label="@string/title_activity_travellers"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- [START fcm_default_icon] -->
+        <!-- Default icon. This is used when no icon is set for incoming notification messages. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/pic_logo" />
+        <!--
+ This color used with incoming notification messages.
+   This is used when no color is set for the incoming notification message.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorLightGrey" /> <!-- [END fcm_default_icon] -->
+        <!-- [START fcm_default_channel] -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" /> <!-- [END fcm_default_channel] -->
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -99,6 +108,8 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
+
+        <!-- Login via facebook redirects here. -->
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">

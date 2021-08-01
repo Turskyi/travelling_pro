@@ -18,6 +18,7 @@ import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
 import io.github.turskyi.travellingpro.entities.Traveller
+import io.github.turskyi.travellingpro.features.traveller.TravellerActivity
 import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
 
@@ -69,7 +70,7 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
             adapter.submitList(viewModel.pagedList)
         }
 
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.includeToolbar.toolbar.setNavigationOnClickListener { onBackPressed() }
         adapter.onTravellerClickListener = ::showTraveller
         binding.rvTravellers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -121,23 +122,23 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
 
     private fun showTraveller(traveller: Traveller) {
         hideKeyboard()
-        openActivityWithArgs(HomeActivity::class.java) {
+        openActivityWithArgs(TravellerActivity::class.java) {
             putString(EXTRA_TRAVELLER, traveller.id)
         }
     }
 
     private fun updateTitle(percent: Int) {
-        binding.tvToolbarTitle.text = getString(R.string.title_activity_travellers, percent)
+        binding.includeToolbar.tvToolbarTitle.text = getString(R.string.title_activity_travellers, percent)
     }
 
     private fun collapseSearch() {
         binding.rvTravellers.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
-        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         hideKeyboard()
         binding.etSearch.setText("")
-        binding.tvToolbarTitle.animate().alpha(1f).duration = 200
+        binding.includeToolbar.tvToolbarTitle.animate().alpha(1f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_8),
             resources.getDimension(R.dimen.elevation_1),
@@ -159,8 +160,8 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private fun expandSearch() {
         binding.rvTravellers.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
-        binding.tvToolbarTitle.animate().alpha(0f).duration = 200
+        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        binding.includeToolbar.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),
             resources.getDimension(R.dimen.elevation_8),

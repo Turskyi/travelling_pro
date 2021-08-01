@@ -2,12 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:animationCache="true"
-    android:background="@android:color/black"
-    android:persistentDrawingCache="animation"
+    style="@style/CoordinatorLayoutStyle"
     tool:context=".features.allcountries.view.ui.AllCountriesActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -15,117 +10,51 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/offset_8"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|snap|enterAlways"
-            app:toolbarId="@+id/toolbar">
+            style="@style/CoordinatorLayoutStyle"
+            app:layout_scrollFlags="scroll|snap|enterAlways">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:gravity="top"
-                app:contentInsetStartWithNavigation="0dp"
-                app:navigationIcon="?attr/homeAsUpIndicator"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:theme="@style/ToolbarTitleStyle">
-
-                <TextView
-                    android:id="@+id/tvToolbarTitle"
-                    style="@style/ToolbarTitleStyle"
-                    android:layout_marginEnd="@dimen/offset_29"
-                    android:fontFamily="casual"
-                    tool:text="250 visitedCountryNodes remain to visit" />
-            </androidx.appcompat.widget.Toolbar>
+            <include
+                android:id="@+id/include_toolbar"
+                layout="@layout/layout_toolbar" />
 
             <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
                 android:id="@+id/sllSearch"
-                style="@style/ShadowLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:animateLayoutChanges="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                app:containerElevation="@dimen/elevation_1"
-                app:scaleViewOnElevationChange="true"
-                app:shadowMarginStart="@dimen/offset_8"
-                app:shadowMarginTop="@dimen/offset_8"
-                app:shadowRadius="@dimen/offset_8">
+                style="@style/ShadowLayout">
 
                 <ImageButton
                     android:id="@+id/ib_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/content_description.icon_search"
-                    android:padding="@dimen/offset_8"
-                    android:src="@drawable/ic_search" />
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/content_description.icon_search" />
 
                 <EditText
                     android:id="@+id/et_search"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="country"
-                    android:background="@android:color/transparent"
+                    style="@style/EditTextStyle"
+                    android:autofillHints="@string/hint.search_country"
                     android:hint="@string/hint.search_country"
-                    android:inputType="textCapSentences"
-                    android:labelFor="@+id/ib_search"
-                    android:maxLength="100"
-                    android:paddingStart="@dimen/offset_8"
-                    android:paddingEnd="@dimen/offset_8"
-                    android:singleLine="true" />
+                    android:inputType="textCapSentences" />
             </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_all_countries"
-        style="@style/RecyclerViewStyle"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        style="@style/RecyclerViewStyle" />
 
     <TextView
         android:id="@+id/tv_no_results"
-        style="@style/TextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fontFamily="casual"
-        android:gravity="center"
-        android:text="@string/all_countries_no_results"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/headline6"
-        android:textStyle="bold" />
+        style="@style/NoResultsTextViewStyle" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/pb"
-        style="@style/ProgressBarStyle"
-        android:layout_marginTop="@dimen/offset_64"
-        android:padding="@dimen/offset_4"
-        android:scaleType="centerInside"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/anim_flight" />
+        style="@style/ProgressBarStyle" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/float_btn_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:contentDescription="@string/content_description.image"
-        android:drawingCacheQuality="auto"
-        android:fadeScrollbars="true"
-        android:focusable="true"
+        style="@style/FloatingActionButtonStyle"
+        android:contentDescription="@string/content_description.button"
         android:visibility="gone"
-        app:elevation="@dimen/elevation_4"
-        app:fabCustomSize="@dimen/size_all_countries_fab_custom"
-        app:fabSize="auto"
         app:layout_anchor="@id/rv_all_countries"
-        app:layout_anchorGravity="bottom|end"
-        app:maxImageSize="@dimen/size_all_countries_fab_max_image"
         app:srcCompat="@drawable/btn_info_ripple"
-        app:useCompatPadding="true"
         tool:visibility="visible" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

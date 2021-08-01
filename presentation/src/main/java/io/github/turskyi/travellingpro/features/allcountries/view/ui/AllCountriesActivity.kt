@@ -64,7 +64,7 @@ class AllCountriesActivity : AppCompatActivity() {
             adapter.submitList(viewModel.pagedList)
         }
 
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.includeToolbar.toolbar.setNavigationOnClickListener { onBackPressed() }
         adapter.onCountryClickListener = ::addToVisited
         adapter.onCountryLongClickListener = ::sendToGoogleMapToShowGeographicalLocation
         binding.rvAllCountries.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -79,8 +79,8 @@ class AllCountriesActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
-        val observer = EmptyListObserver(binding.rvAllCountries, binding.tvNoResults)
-        adapter.registerAdapterDataObserver(observer)
+        val emptyListObserver = EmptyListObserver(binding.rvAllCountries, binding.tvNoResults)
+        adapter.registerAdapterDataObserver(emptyListObserver)
         viewModel.notVisitedCountriesNumLiveData.observe(this, { notVisitedNum ->
             updateTitle(notVisitedNum)
         })
@@ -112,7 +112,7 @@ class AllCountriesActivity : AppCompatActivity() {
     }
 
     private fun updateTitle(num: Int) {
-        binding.tvToolbarTitle.text =
+        binding.includeToolbar.tvToolbarTitle.text =
             resources.getQuantityString(R.plurals.numberOfCountriesRemain, num, num)
     }
 
@@ -120,10 +120,10 @@ class AllCountriesActivity : AppCompatActivity() {
         binding.rvAllCountries.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
-        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         hideKeyboard()
         binding.etSearch.setText("")
-        binding.tvToolbarTitle.animate().alpha(1f).duration = 200
+        binding.includeToolbar.tvToolbarTitle.animate().alpha(1f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_8),
             resources.getDimension(R.dimen.elevation_1),
@@ -145,8 +145,8 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun expandSearch() {
         binding.rvAllCountries.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width: Int = binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
-        binding.tvToolbarTitle.animate().alpha(0f).duration = 200
+        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        binding.includeToolbar.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),
             resources.getDimension(R.dimen.elevation_8),

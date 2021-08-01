@@ -2,85 +2,37 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:animationCache="true"
-    android:background="@android:color/black"
-    android:persistentDrawingCache="animation"
+    style="@style/CoordinatorLayoutStyle"
     tools:context=".features.travellers.view.TravellersActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- layout_scrollFlags cannot be added to style, because it will not work from there -->
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/offset_8"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|snap|enterAlways"
-            app:toolbarId="@+id/toolbar">
+            style="@style/CollapsingToolbarLayoutStyle"
+            app:layout_scrollFlags="scroll|snap|enterAlways">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:gravity="top"
-                app:contentInsetStartWithNavigation="0dp"
-                app:navigationIcon="?attr/homeAsUpIndicator"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:theme="@style/ToolbarTitleStyle">
-
-                <TextView
-                    android:id="@+id/tvToolbarTitle"
-                    style="@style/ToolbarTitleStyle"
-                    android:layout_marginEnd="@dimen/offset_29"
-                    android:fontFamily="casual"
-                    tools:text="250 travellers visited more countries than you" />
-            </androidx.appcompat.widget.Toolbar>
+            <include
+                android:id="@+id/include_toolbar"
+                layout="@layout/layout_toolbar" />
 
             <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
                 android:id="@+id/sllSearch"
-                style="@style/ShadowLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:animateLayoutChanges="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                app:containerElevation="@dimen/elevation_1"
-                app:scaleViewOnElevationChange="true"
-                app:shadowMarginStart="@dimen/offset_8"
-                app:shadowMarginTop="@dimen/offset_8"
-                app:shadowRadius="@dimen/offset_8">
+                style="@style/ShadowLayout">
 
                 <ImageButton
                     android:id="@+id/ib_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/content_description.icon_search"
-                    android:minWidth="@dimen/size_min"
-                    android:minHeight="@dimen/size_min"
-                    android:padding="@dimen/offset_8"
-                    android:src="@drawable/ic_search" />
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/content_description.icon_search" />
 
                 <EditText
                     android:id="@+id/et_search"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="country"
-                    android:background="@android:color/transparent"
+                    style="@style/EditTextStyle"
+                    android:autofillHints="@string/hint.search_traveller"
                     android:hint="@string/hint.search_traveller"
-                    android:inputType="textPersonName"
-                    android:labelFor="@+id/ib_search"
-                    android:maxLength="100"
-                    android:paddingStart="@dimen/offset_8"
-                    android:paddingEnd="@dimen/offset_8"
-                    android:singleLine="true" />
+                    android:inputType="textPersonName" />
             </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -88,51 +40,23 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_travellers"
-        style="@style/RecyclerViewStyle"
-        tools:listitem="@layout/item_traveller"
-        tools:itemCount="4"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        style="@style/RecyclerViewStyle" />
 
     <TextView
         android:id="@+id/tv_no_results"
-        style="@style/TextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fontFamily="casual"
-        android:gravity="center"
-        android:text="@string/all_countries_no_results"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/headline6"
-        android:textStyle="bold" />
+        style="@style/NoResultsTextViewStyle" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/pb"
-        style="@style/ProgressBarStyle"
-        android:layout_marginTop="@dimen/offset_64"
-        android:padding="@dimen/offset_4"
-        android:scaleType="centerInside"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/anim_flight" />
+        style="@style/ProgressBarStyle" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/float_btn_visibility"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
+        style="@style/FloatingActionButtonStyle"
         android:contentDescription="@string/content_description.button"
-        android:drawingCacheQuality="auto"
-        android:fadeScrollbars="true"
-        android:focusable="true"
-        android:visibility="visible"
-        app:elevation="@dimen/elevation_4"
-        app:fabCustomSize="@dimen/size_all_countries_fab_custom"
-        app:fabSize="auto"
-        app:layout_anchor="@id/rv_travellers"
-        app:layout_anchorGravity="bottom|end"
-        app:maxImageSize="@dimen/size_all_countries_fab_max_image"
-        app:srcCompat="@drawable/btn_hide_ripple"
         android:tag="@drawable/btn_hide_ripple"
-        app:useCompatPadding="true" />
+        android:visibility="visible"
+        app:layout_anchor="@id/rv_travellers"
+        app:srcCompat="@drawable/btn_hide_ripple" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
