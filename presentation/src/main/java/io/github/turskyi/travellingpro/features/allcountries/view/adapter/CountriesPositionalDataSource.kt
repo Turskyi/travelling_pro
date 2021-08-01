@@ -34,7 +34,7 @@ internal class CountriesPositionalDataSource(
                         params.requestedStartPosition
                     )
                     // a little bit delay of stopping animation
-                    Timer().schedule(2000) { _visibilityLoader.postValue(GONE) }
+                    Timer().schedule(1000) { _visibilityLoader.postValue(GONE) }
                 },
                 { exception ->
                     exception.printStackTrace()

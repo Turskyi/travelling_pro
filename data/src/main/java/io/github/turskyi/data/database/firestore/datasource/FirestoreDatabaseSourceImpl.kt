@@ -42,12 +42,11 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
-
+    private val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
     private val selfiesStorageRef: StorageReference = firebaseStorage.getReference(REF_SELFIES)
     private val usersRef: CollectionReference = database.collection(REF_USERS)
 
     override suspend fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
             val traveller = if (currentUser.displayName != null && currentUser.photoUrl != null) {
@@ -85,7 +84,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
             userRef.update(KEY_IS_VISIBLE, visible)
@@ -101,7 +99,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (Boolean) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
             userRef.get()
@@ -123,7 +120,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val countriesRef: CollectionReference = usersRef
                 .document(currentUser.uid)
@@ -156,7 +152,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             flag = countryEntity.flag,
             isVisited = false,
         )
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             usersRef.document(currentUser.uid)
                 .collection(REF_COUNTRIES).document(countryEntity.name).set(country)
@@ -178,7 +173,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userId: String = currentUser.uid
             val userDocRef: DocumentReference = usersRef.document(userId)
@@ -244,7 +238,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             // deleting from list of visited countries
             usersRef.document(currentUser.uid)
@@ -266,7 +259,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val countryRef: DocumentReference =
                 usersRef.document(currentUser.uid).collection(REF_COUNTRIES).document(name)
@@ -375,7 +367,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 val downloadUri: Uri? = task.result
                 // We are using uri as String because our data type in Firestore will be String
                 val uploadedSelfieUrl: String = downloadUri.toString()
-                val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
                 if (currentUser != null) {
                     // Saving the URL to the database
                     val countryRef: DocumentReference = usersRef
@@ -405,9 +396,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 }
             } else {
                 // Handle failures
-                task.exception?.let { exception ->
-                    onError.invoke(exception)
-                }
+                task.exception?.let { exception -> onError.invoke(exception) }
             }
         }
     }
@@ -435,7 +424,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val userDocRef: DocumentReference = usersRef.document(currentUser.uid)
             userDocRef.collection(REF_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId).get()
@@ -469,7 +457,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             usersRef.document(currentUser.uid)
                 .collection(REF_CITIES).document(id)
@@ -486,9 +473,9 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (List<VisitedCountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        if (mFirebaseAuth.currentUser != null) {
+        if (currentUser != null) {
             val countriesRef: CollectionReference = usersRef
-                .document(mFirebaseAuth.currentUser!!.uid)
+                .document(currentUser.uid)
                 .collection(REF_VISITED_COUNTRIES)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
@@ -516,7 +503,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val citiesRef: CollectionReference =
                 usersRef.document(currentUser.uid).collection(REF_CITIES)
@@ -550,7 +536,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val citiesRef: Query =
                 usersRef.document(currentUser.uid).collection(REF_CITIES)
@@ -583,7 +568,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val countriesRef: CollectionReference =
                 usersRef.document(currentUser.uid).collection(REF_COUNTRIES)
@@ -624,7 +608,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val countriesRef: Query = usersRef
                 .document(currentUser.uid)
@@ -654,7 +637,6 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
             val countriesRef: Query = usersRef.document(currentUser.uid)
                 .collection(REF_COUNTRIES).orderBy(KEY_ID)
@@ -749,9 +731,8 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        // getting number of visited Countries by current user
-        val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
         if (currentUser != null) {
+            // getting number of visited Countries by current user
             val visitedCountriesRef: CollectionReference =
                 usersRef.document(currentUser.uid).collection(REF_VISITED_COUNTRIES)
             visitedCountriesRef.get()
