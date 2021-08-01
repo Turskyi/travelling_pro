@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.home.view.adapter.providers
+package io.github.turskyi.travellingpro.common.view.providers
 
 import android.content.Intent
 import android.net.Uri

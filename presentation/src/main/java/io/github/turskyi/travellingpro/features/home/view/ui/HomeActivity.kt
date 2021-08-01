@@ -28,7 +28,7 @@ import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountrie
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
-import io.github.turskyi.travellingpro.features.home.view.adapter.HomeAdapter
+import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
 import io.github.turskyi.travellingpro.entities.City
@@ -41,7 +41,7 @@ import java.util.*
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private val viewModel: HomeActivityViewModel by inject()
-    private val homeAdapter: HomeAdapter by inject()
+    private val listAdapter: HomeAdapter by inject()
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
@@ -129,16 +129,16 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
+        setSupportActionBar(binding.includeAppBar.toolbar)
         binding.includeAppBar.toolbarLayout.title = getString(
             R.string.home_onboarding_title_authorization,
         )
-        setSupportActionBar(binding.includeAppBar.toolbar)
         // set drawable icon "info"
         supportActionBar?.setHomeAsUpIndicator(R.drawable.btn_info_ripple)
 
         val linearLayoutManager = LinearLayoutManager(this)
         binding.rvVisitedCountries.apply {
-            adapter = homeAdapter
+            adapter = listAdapter
             layoutManager = linearLayoutManager
             addItemDecoration(
                 SectionAverageGapItemDecoration(
@@ -153,7 +153,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     private fun initListeners() {
-        homeAdapter.apply {
+        listAdapter.apply {
             onFlagClickListener = { country ->
                 // mis-clicking prevention, using threshold of 1000 ms
                 if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > resources.getInteger(
@@ -392,7 +392,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         for (countryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
         }
-        homeAdapter.setList(visitedCountryNodes)
+        listAdapter.setList(visitedCountryNodes)
     }
 
     private fun initTitleWithNumberOf(visitedCountryNodes: List<VisitedCountryNode>) {

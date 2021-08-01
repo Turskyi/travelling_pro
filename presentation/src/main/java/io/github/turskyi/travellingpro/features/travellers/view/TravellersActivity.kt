@@ -11,21 +11,24 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityTravellersBinding
+import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
+import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
-import io.github.turskyi.travellingpro.entities.Traveller
-import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
-import io.github.turskyi.travellingpro.utils.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.openActivityWithObject
+import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import org.koin.android.ext.android.inject
 
 class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListener {
     companion object {
-        const val EXTRA_TRAVELLER_ID = "io.github.turskyi.travellingpro.TRAVELLER_ID"
+        const val EXTRA_TRAVELLER = "io.github.turskyi.travellingpro.TRAVELLER"
     }
 
     private val viewModel: TravellersActivityViewModel by inject()
-    private val adapter: TravellersAdapter by inject()
+    private val listAdapter: TravellersAdapter by inject()
 
     private lateinit var binding: ActivityTravellersBinding
 
@@ -48,8 +51,8 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
         setContentView(binding.root)
         binding.etSearch.isFocusableInTouchMode = true
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
-        adapter.submitList(viewModel.pagedList)
-        binding.rvTravellers.adapter = adapter
+        listAdapter.submitList(viewModel.pagedList)
+        binding.rvTravellers.adapter = listAdapter
         val layoutManager = GridLayoutManager(this, 2)
         binding.rvTravellers.layoutManager = layoutManager
     }
@@ -64,11 +67,11 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
         }
         binding.etSearch.addTextChangedListener { inputText ->
             viewModel.searchQuery = inputText.toString()
-            adapter.submitList(viewModel.pagedList)
+            listAdapter.submitList(viewModel.pagedList)
         }
 
         binding.includeToolbar.toolbar.setNavigationOnClickListener { onBackPressed() }
-        adapter.onTravellerClickListener = ::showTraveller
+        listAdapter.onTravellerClickListener = ::showTraveller
         binding.rvTravellers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 when {
@@ -94,7 +97,7 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
 
     private fun initObservers() {
         val observer = EmptyListObserver(binding.rvTravellers, binding.tvNoResults)
-        adapter.registerAdapterDataObserver(observer)
+        listAdapter.registerAdapterDataObserver(observer)
         viewModel.topTravellersPercentLiveData.observe(this, { topPercent ->
             updateTitle(topPercent)
         })
@@ -119,20 +122,20 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
 
     private fun showTraveller(traveller: Traveller) {
         hideKeyboard()
-        openActivityWithArgs(TravellerActivity::class.java) {
-            putString(EXTRA_TRAVELLER_ID, traveller.id)
-        }
+        openActivityWithObject(TravellerActivity::class.java, EXTRA_TRAVELLER, traveller)
     }
 
     private fun updateTitle(percent: Int) {
-        binding.includeToolbar.tvToolbarTitle.text = getString(R.string.title_activity_travellers, percent)
+        binding.includeToolbar.tvToolbarTitle.text =
+            getString(R.string.title_activity_travellers, percent)
     }
 
     private fun collapseSearch() {
         binding.rvTravellers.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
-        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int =
+            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         hideKeyboard()
         binding.etSearch.setText("")
         binding.includeToolbar.tvToolbarTitle.animate().alpha(1f).duration = 200
@@ -157,7 +160,8 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private fun expandSearch() {
         binding.rvTravellers.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int =
+            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         binding.includeToolbar.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),

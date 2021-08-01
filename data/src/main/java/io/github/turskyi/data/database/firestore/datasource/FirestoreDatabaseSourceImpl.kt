@@ -547,7 +547,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    override suspend fun setCities(
+    override suspend fun setAllVisitedCities(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {

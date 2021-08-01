@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.widget.Toast
@@ -70,6 +71,12 @@ fun Context.convertPictureToSpannableString(imgRes: Int): SpannableString {
     val spannableString = SpannableString(" ")
     spannableString.setSpan(imageSpan, " ".length - 1, " ".length, 0)
     return spannableString
+}
+
+fun <T> Context.openActivityWithObject(destination: Class<T>, argId: String, extra: Parcelable) {
+    val intent = Intent(this, destination)
+    intent.putExtra(argId, extra)
+    startActivity(intent)
 }
 
 fun <T> Context.openActivityWithArgs(destination: Class<T>, extras: Bundle.() -> Unit = {}) {

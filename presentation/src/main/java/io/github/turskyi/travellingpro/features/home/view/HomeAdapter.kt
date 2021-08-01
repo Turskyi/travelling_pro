@@ -1,9 +1,9 @@
-package io.github.turskyi.travellingpro.features.home.view.adapter
+package io.github.turskyi.travellingpro.features.home.view
 
 import com.chad.library.adapter.base.BaseNodeAdapter
 import com.chad.library.adapter.base.entity.node.BaseNode
-import io.github.turskyi.travellingpro.features.home.view.adapter.providers.CityProvider
-import io.github.turskyi.travellingpro.features.home.view.adapter.providers.CountryNodeProvider
+import io.github.turskyi.travellingpro.common.view.providers.CityProvider
+import io.github.turskyi.travellingpro.common.view.providers.CountryNodeProvider
 import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 

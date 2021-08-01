@@ -48,7 +48,7 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit,
     )
 
-    suspend fun setCities(onSuccess: (List<CityEntity>) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setAllVisitedCities(onSuccess: (List<CityEntity>) -> Unit, onError: (Exception) -> Unit)
     suspend fun setCities(
         userId: String,
         countryId: Int,

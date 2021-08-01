@@ -144,7 +144,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     override suspend fun setCities(
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.setCities(
+    ) = databaseSource.setAllVisitedCities(
         onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
         onError = { exception -> onError.invoke(exception) },
     )

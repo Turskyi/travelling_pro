@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.home.view.adapter.providers
+package io.github.turskyi.travellingpro.common.view.providers
 
 import android.graphics.Color
 import android.net.Uri

@@ -156,9 +156,15 @@
 
     <!-- START: text resources for Visible Traveller Page -->
     <plurals name="travellerCounter">
-        <item quantity="one">%1$s has been to %d country</item>
-        <item quantity="few">%1$s has been to %d countries</item>
-        <item quantity="other">%1$s has been to %d countries</item>
+        <item quantity="one">has been to %d country</item>
+        <item quantity="few">has been to %d countries</item>
+        <item quantity="other">has been to %d countries</item>
+    </plurals>
+
+    <plurals name="travellerCitiesVisited">
+        <item quantity="one">has been to %d city</item>
+        <item quantity="few">has been to %d cities</item>
+        <item quantity="other">has been to %d cities</item>
     </plurals>
     <!-- END: text resources for Visible Traveller Page -->
 </resources>
