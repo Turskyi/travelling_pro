@@ -25,7 +25,7 @@ internal class CountriesPositionalDataSource(
         callback: LoadInitialCallback<Country>
     ) {
         viewModelScope.launch {
-            interactor.setCountriesByRange(
+            interactor.setCountries(
                 params.requestedLoadSize,
                 params.requestedStartPosition,
                 { initCountries ->
@@ -50,7 +50,7 @@ internal class CountriesPositionalDataSource(
         callback: LoadRangeCallback<Country>
     ) {
         viewModelScope.launch {
-            interactor.setCountriesByRange(
+            interactor.setCountries(
                 params.startPosition + params.loadSize,
                 params.startPosition,
                 { allCountries ->

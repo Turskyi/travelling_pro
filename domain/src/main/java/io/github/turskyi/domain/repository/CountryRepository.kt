@@ -22,16 +22,22 @@ interface CountryRepository {
         onError: (Exception) -> Unit
     )
 
-    suspend fun setVisitedModelCountries(
+    suspend fun setVisitedCountries(
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
+        onError: (Exception) -> Unit
+    )
+
+    suspend fun setVisitedCountries(
+        id: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
     )
 
     suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
-    suspend fun getCountNotVisitedAndVisitedCountries(
+    suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (Int, Int) -> Unit,
-        onError: ((Exception) -> Unit?)? = null
+        onError: (Exception) -> Unit
     )
 
     suspend fun removeFromVisited(
@@ -66,6 +72,12 @@ interface CountryRepository {
     )
 
     suspend fun setCities(onSuccess: (List<CityModel>) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setCities(
+        userId: String,
+        countryId: Int,
+        onSuccess: (List<CityModel>) -> Unit,
+        onError: (Exception) -> Unit
+    )
 
     suspend fun setCitiesById(
         parentId: Int,

@@ -42,9 +42,21 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit
     )
 
-    suspend fun setCities(onSuccess: (List<CityEntity>) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setVisitedCountriesById(
+        id: String,
+        onSuccess: (List<VisitedCountryEntity>) -> Unit,
+        onError: (Exception) -> Unit,
+    )
 
-    suspend fun setCitiesById(
+    suspend fun setCities(onSuccess: (List<CityEntity>) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setCities(
+        userId: String,
+        countryId: Int,
+        onSuccess: (List<CityEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    )
+
+    suspend fun setCitiesByParentId(
         parentId: Int,
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit,

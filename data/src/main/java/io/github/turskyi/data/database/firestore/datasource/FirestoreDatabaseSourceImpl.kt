@@ -520,6 +520,33 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
+    override suspend fun setVisitedCountriesById(
+        id: String,
+        onSuccess: (List<VisitedCountryEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val countriesRef: CollectionReference = usersRef
+            .document(id)
+            .collection(REF_VISITED_COUNTRIES)
+        countriesRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                if (queryDocumentSnapshots.size() == 0) {
+                    onSuccess(emptyList())
+                } else {
+                    val countries: MutableList<VisitedCountryEntity> = mutableListOf()
+                    for (documentSnapshot in queryDocumentSnapshots) {
+                        val country: VisitedCountryEntity =
+                            documentSnapshot.toObject(VisitedCountryEntity::class.java)
+                        countries.add(country)
+                        if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
+                            onSuccess(countries.sortedBy { listItem -> listItem.name })
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
+    }
+
     override suspend fun setCities(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
@@ -552,7 +579,34 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    override suspend fun setCitiesById(
+    override suspend fun setCities(
+        userId: String,
+        countryId: Int,
+        onSuccess: (List<CityEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val citiesRef: Query =
+            usersRef.document(userId).collection(REF_CITIES).whereEqualTo(KEY_PARENT_ID, countryId)
+        citiesRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                if (queryDocumentSnapshots.isEmpty) {
+                    onSuccess(emptyList())
+                } else {
+                    val cities: MutableList<CityEntity> = mutableListOf()
+                    for (documentSnapshot in queryDocumentSnapshots) {
+                        val cityEntity: CityEntity =
+                            documentSnapshot.toObject(CityEntity::class.java)
+                        cities.add(cityEntity)
+                    }
+                    onSuccess(cities.sortedBy { city -> city.name })
+                }
+            }
+            .addOnFailureListener { exception ->
+                onError.invoke(exception)
+            }
+    }
+
+    override suspend fun setCitiesByParentId(
         parentId: Int,
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
@@ -576,9 +630,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         onSuccess(cities.sortedBy { city -> city.name })
                     }
                 }
-                .addOnFailureListener { exception ->
-                    onError.invoke(exception)
-                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())

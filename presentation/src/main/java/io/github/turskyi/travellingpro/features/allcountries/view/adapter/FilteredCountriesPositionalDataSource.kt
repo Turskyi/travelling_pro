@@ -18,7 +18,7 @@ internal class FilteredCountriesPositionalDataSource(
         callback: LoadInitialCallback<Country>
     ) {
         viewModelScope.launch {
-            interactor.setCountriesByName(
+            interactor.searchCountries(
                 countryName,
                 { allCountries ->
                     callback.onResult(
@@ -39,7 +39,7 @@ internal class FilteredCountriesPositionalDataSource(
         callback: LoadRangeCallback<Country>
     ) {
         viewModelScope.launch {
-            interactor.setCountriesByName(
+            interactor.searchCountries(
                 countryName,
                 {
                     // on next call result returns nothing since only one page of countries required

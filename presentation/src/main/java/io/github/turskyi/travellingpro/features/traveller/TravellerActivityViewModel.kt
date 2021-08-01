@@ -16,6 +16,7 @@ import io.github.turskyi.travellingpro.utils.extensions.mapModelListToBaseNodeLi
 import io.github.turskyi.travellingpro.utils.extensions.mapVisitedListToVisitedNodeList
 import io.github.turskyi.travellingpro.utils.extensions.mapVisitedModelListToVisitedList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class TravellerActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
 
@@ -46,58 +47,68 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
     /** [showListOfVisitedCountriesById] is the first function in [TravellerActivity] */
     fun showListOfVisitedCountriesById(id: String) {
         _visibilityLoader.postValue(VISIBLE)
+        runBlocking {
+            viewModelScope.launch {
+                // loading count of not visited countries
+                interactor.setNotVisitedCountriesNum(
+                    id = id,
+                    onSuccess = { notVisitedCountriesNum ->
+                        // loading visited countries
+                        notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
+                    },
+                    onError = { exception -> showError(exception) },
+                )
+            }
+            setVisitedCountries(id)
+        }
+    }
+
+    private fun setVisitedCountries(userId: String) {
         viewModelScope.launch {
-            // loading count of not visited countries
-            interactor.setNotVisitedCountriesNumById(
-                id = id,
-                onSuccess = { notVisitedCountriesNum ->
-                    // loading visited countries
-                    setVisitedCountries(notVisitedCountriesNum)
+            interactor.setVisitedCountries(
+                id = userId,
+                onSuccess = { countries ->
+                    val visitedCountries: List<VisitedCountry> =
+                        countries.mapVisitedModelListToVisitedList()
+
+                    val visitedCountryWithCityNodes: MutableList<VisitedCountryNode> =
+                        visitedCountries.mapVisitedListToVisitedNodeList()
+                    if (visitedCountryWithCityNodes.isEmpty()) {
+                        // if there are no countries there are no cities, show empty list
+                        showVisitedCountryNodes(mutableListOf(), emptyList())
+                    } else {
+                        fillCountriesWithCities(
+                            userId,
+                            visitedCountryWithCityNodes,
+                            visitedCountries
+                        )
+                        /* do not write any logic after  countries loop (here),
+                         * rest of the logic must be in "get cities" success method ,
+                         * since it started later then here */
+                    }
                 },
                 onError = { exception -> showError(exception) },
             )
         }
     }
 
-    private fun setVisitedCountries(notVisitedCountriesNum: Int) {
-        viewModelScope.launch {
-            interactor.setVisitedCountries(
-                { countries ->
-                    val visitedCountries: List<VisitedCountry> =
-                        countries.mapVisitedModelListToVisitedList()
-                        notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
-                        val visitedCountryWithCityNodes: MutableList<VisitedCountryNode> =
-                            visitedCountries.mapVisitedListToVisitedNodeList()
-                        if (visitedCountryWithCityNodes.isEmpty()) {
-                            // if there are no countries there are no cities, show empty list
-                            showVisitedCountryNodes(mutableListOf(), emptyList())
-                        } else {
-                            fillCountriesWithCities(visitedCountryWithCityNodes, visitedCountries)
-                            /* do not write any logic after  countries loop (here),
-                             * rest of the logic must be in "get cities" success method ,
-                             * since it started later then here */
-                        }
-                },
-                { exception -> showError(exception) },
-            )
-        }
-    }
-
     /** filling country nodes with cities */
     private fun fillCountriesWithCities(
+        userId: String,
         visitedCountryWithCityNodes: MutableList<VisitedCountryNode>,
         visitedCountries: List<VisitedCountry>
     ) {
         for (country in visitedCountryWithCityNodes) {
             val cityList: MutableList<BaseNode> = mutableListOf()
             viewModelScope.launch {
-                interactor.setCitiesById(
-                    country.id,
-                    { cities ->
+                interactor.setCities(
+                    userId = userId,
+                    countryId = country.id,
+                    onSuccess = { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
                         citiesCount = cities.size
                         country.childNode = cityList
-                        /* since [setCitiesById] function is launched inside a separate thread,
+                        /* since [setCities] function is launched inside a separate thread,
                         * [showVisitedCountryNodes] function must be in the same thread,
                         * otherwise result of this function will never get to the screen */
                         if (country.id == visitedCountryWithCityNodes.last().id) {
@@ -108,7 +119,7 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
                             )
                         }
                     },
-                    { exception -> showError(exception) },
+                    onError = { exception -> showError(exception) },
                 )
             }
         }

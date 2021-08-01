@@ -31,7 +31,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         id: String,
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
-    )  = databaseSource.setCountNotVisitedCountriesById(
+    ) = databaseSource.setCountNotVisitedCountriesById(
         id,
         { count -> onSuccess(count) },
         { exception -> onError.invoke(exception) },
@@ -119,12 +119,27 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         }
     }
 
-    override suspend fun setVisitedModelCountries(
+    override suspend fun setVisitedCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.setVisitedCountries({ countries ->
-        onSuccess(countries.mapVisitedCountriesToVisitedModelList())
-    }, { exception -> onError.invoke(exception) })
+    ) = databaseSource.setVisitedCountries(
+        onSuccess = { countries ->
+            onSuccess(countries.mapVisitedCountriesToVisitedModelList())
+        },
+        onError = { exception -> onError.invoke(exception) },
+    )
+
+    override suspend fun setVisitedCountries(
+        id: String,
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
+        onError: (Exception) -> Unit
+    )  = databaseSource.setVisitedCountriesById(
+        id = id,
+        onSuccess = { countries ->
+            onSuccess(countries.mapVisitedCountriesToVisitedModelList())
+        },
+        onError = { exception -> onError.invoke(exception) },
+    )
 
     override suspend fun setCities(
         onSuccess: (List<CityModel>) -> Unit,
@@ -134,22 +149,34 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onError = { exception -> onError.invoke(exception) },
     )
 
+    override suspend fun setCities(
+        userId: String,
+        countryId: Int,
+        onSuccess: (List<CityModel>) -> Unit,
+        onError: (Exception) -> Unit
+    ) = databaseSource.setCities(
+        userId = userId,
+        countryId = countryId,
+        onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
+        onError = { exception -> onError.invoke(exception) },
+    )
+
     override suspend fun setCitiesById(
         parentId: Int,
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.setCitiesById(
+    ) = databaseSource.setCitiesByParentId(
         parentId = parentId,
         onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
         onError = { exception -> onError.invoke(exception) },
     )
 
-    override suspend fun getCountNotVisitedAndVisitedCountries(
+    override suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
-        onError: ((Exception) -> Unit?)?
+        onError: (Exception) -> Unit
     ) = databaseSource.setCountNotVisitedAndVisitedCountries({ notVisitedCount, visitedCount ->
         onSuccess(notVisitedCount, visitedCount)
-    }, { exception -> onError?.invoke(exception) })
+    }, { exception -> onError.invoke(exception) })
 
     override suspend fun setCountriesByRange(
         to: Int,

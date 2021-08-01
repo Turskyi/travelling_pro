@@ -102,7 +102,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
         for (country in visitedCountryWithCityNodes) {
             val cityList: MutableList<BaseNode> = mutableListOf()
             viewModelScope.launch {
-                interactor.setCitiesById(
+                interactor.setCities(
                     country.id,
                     { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())

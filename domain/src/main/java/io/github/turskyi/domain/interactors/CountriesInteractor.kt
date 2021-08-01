@@ -15,7 +15,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     private val countryRepository: CountryRepository by inject()
     private val travellerRepository: TravellerRepository by inject()
 
-    suspend fun setCountriesByName(
+    suspend fun searchCountries(
         name: String,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit)
@@ -29,7 +29,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         onError: (Exception) -> Unit
     ) = countryRepository.updateSelfie(name, selfie, selfieName, onSuccess, onError)
 
-    suspend fun setCountriesByRange(
+    suspend fun setCountries(
         limit: Int,
         offset: Int,
         onSuccess: (List<CountryModel>) -> Unit,
@@ -52,7 +52,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         onError: (Exception) -> Unit
     ) = countryRepository.setCountNotVisitedCountries(onSuccess, onError)
 
-    suspend fun setNotVisitedCountriesNumById(
+    suspend fun setNotVisitedCountriesNum(
         id: String,
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit,
@@ -63,14 +63,27 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     suspend fun setVisitedCountries(
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.setVisitedModelCountries(onSuccess, onError)
+    ) = countryRepository.setVisitedCountries(onSuccess, onError)
+
+    suspend fun setVisitedCountries(
+        id: String,
+        onSuccess: (List<VisitedCountryModel>) -> Unit,
+        onError: (Exception) -> Unit,
+    ) = countryRepository.setVisitedCountries(id, onSuccess, onError)
 
     suspend fun setCities(
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
     ): Unit = countryRepository.setCities(onSuccess, onError)
 
-    suspend fun setCitiesById(
+    suspend fun setCities(
+        userId: String,
+        countryId: Int,
+        onSuccess: (List<CityModel>) -> Unit,
+        onError: (Exception) -> Unit
+    ): Unit = countryRepository.setCities(userId,countryId,onSuccess, onError)
+
+    suspend fun setCities(
         parentId: Int,
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
