@@ -12,23 +12,32 @@ import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityVie
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.adapter.FlagsAdapter
 import io.github.turskyi.travellingpro.features.flags.view.adapter.ZoomOutPageTransformer
+import io.github.turskyi.travellingpro.utils.extensions.toast
 
 class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFragmentListener,
     FlagsActivityView {
 
     companion object {
         const val EXTRA_POSITION = "io.github.turskyi.travellingpro.POSITION"
+        const val EXTRA_USER_ID = "io.github.turskyi.travellingpro.USER_ID"
         const val EXTRA_ITEM_COUNT = "io.github.turskyi.travellingpro.ITEM_COUNT"
     }
+
     private var getBundle: Bundle? = null
     private lateinit var binding: ActivityFlagsBinding
     private lateinit var flagsAdapter: FlagsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initView()
-        initListener()
-        initObserver()
+        getBundle = this@FlagsActivity.intent.extras
+        if (getBundle != null) {
+            initView()
+            initListener()
+            initObserver()
+        } else {
+            toast(R.string.msg_not_found)
+            finish()
+        }
     }
 
     override fun onChangeToolbarTitle(title: String?) {
@@ -42,13 +51,16 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        openInfoDialog(R.string.txt_info_flags)
+        if (getBundle!!.getString(EXTRA_USER_ID) != null) {
+            //        TODO: open info without replacing flag with photo
+        } else {
+            openInfoDialog(R.string.txt_info_flags)
+        }
         return true
     }
 
     override fun getItemCount(): Int {
-        val itemCount: Int? = getBundle?.getInt(EXTRA_ITEM_COUNT)
-        return itemCount ?: 0
+        return getBundle!!.getInt(EXTRA_ITEM_COUNT)
     }
 
     override fun setLoaderVisibility(currentVisibility: Int) {
@@ -56,7 +68,6 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
     }
 
     private fun initView() {
-        getBundle = this@FlagsActivity.intent.extras
         binding = ActivityFlagsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
@@ -68,14 +79,14 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
 
     private fun initAdapter() {
         /* flagsAdapter cannot by implemented in dependency injection module
-         since "view pager 2" required exact context */
+         * since "view pager 2" required exact context */
         flagsAdapter = FlagsAdapter(this)
         binding.pager.apply {
             adapter = flagsAdapter
             offscreenPageLimit = 4
             setPageTransformer(ZoomOutPageTransformer())
-            val startPosition: Int? = getBundle?.getInt(EXTRA_POSITION)
-            startPosition?.let { position -> post { setCurrentItem(position, true) } }
+            val startPosition: Int = getBundle!!.getInt(EXTRA_POSITION)
+            post { setCurrentItem(startPosition, true) }
         }
     }
 

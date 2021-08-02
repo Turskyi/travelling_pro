@@ -141,6 +141,7 @@
     <string name="msg.no_internet">no internet connection</string>
     <string name="msg.bad_internet">bad internet connection</string>
     <string name="msg.user_not_found">User not found</string>
+    <string name="msg.not_found">not found</string>
     <string name="msg.home_country_did_not_added">did not added anything</string>
     <string name="msg.exception_flag_listener">%1$s must implement OnFlagFragmentListener</string>
     <string name="msg.home_signed_in">Signed in</string>

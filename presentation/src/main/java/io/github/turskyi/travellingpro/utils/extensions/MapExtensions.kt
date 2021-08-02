@@ -53,6 +53,7 @@ fun CityModel.mapModelToBaseNode() = City(id = id, name = name, parentId = paren
 fun List<CityModel>.mapModelListToBaseNodeList(): MutableList<City> {
     return this.mapTo(mutableListOf(), { it.mapModelToBaseNode() })
 }
+
 fun City.mapNodeToModel() = CityModel(id = id, name = name, parentId = parentId, month = month)
 
 fun List<TravellerModel>.mapModelListToTravellerList(): MutableList<Traveller> {
@@ -60,5 +61,11 @@ fun List<TravellerModel>.mapModelListToTravellerList(): MutableList<Traveller> {
 }
 
 private fun TravellerModel.mapModelToTraveller(): Traveller {
-    return Traveller(id = id, name = name, avatar = avatar, isVisible = isVisible)
+    return Traveller(
+        id = id,
+        name = name,
+        avatar = avatar,
+        counter = counter,
+        isVisible = isVisible,
+    )
 }

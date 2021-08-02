@@ -9,13 +9,11 @@ import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityTravellerBinding
 import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
 import io.github.turskyi.travellingpro.features.traveller.TravellerActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity.Companion.EXTRA_TRAVELLER
 import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
-import io.github.turskyi.travellingpro.utils.extensions.getScreenWidth
-import io.github.turskyi.travellingpro.utils.extensions.showSnackBar
-import io.github.turskyi.travellingpro.utils.extensions.toast
-import io.github.turskyi.travellingpro.utils.extensions.toastLong
+import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
 
 class TravellerActivity : AppCompatActivity() {
@@ -39,18 +37,8 @@ class TravellerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // makes info icon visible
+        // makes back icon visible
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onBackPressed() {
-        if (viewModel.backPressedTiming + resources.getInteger(R.integer.desired_time_interval) > System.currentTimeMillis()) {
-            super.onBackPressed()
-            return
-        } else {
-            binding.root.showSnackBar(R.string.tap_back_button_in_order_to_exit)
-        }
-        viewModel.backPressedTiming = System.currentTimeMillis()
     }
 
     private fun initView() {
@@ -84,7 +72,15 @@ class TravellerActivity : AppCompatActivity() {
                         R.integer.click_interval
                     )
                 ) {
-//              TODO: open Activity with flags of given user
+                    openActivityWithArgs(FlagsActivity::class.java) {
+                        putInt(FlagsActivity.EXTRA_POSITION, getItemPosition(country))
+                        putString(FlagsActivity.EXTRA_USER_ID, traveller!!.id)
+                        if (viewModel.visitedCountries.value != null) {
+                            putInt(FlagsActivity.EXTRA_ITEM_COUNT, viewModel.visitedCountries.value!!.size)
+                        } else {
+                            putInt(FlagsActivity.EXTRA_ITEM_COUNT, traveller!!.counter)
+                        }
+                    }
                 }
                 viewModel.mLastClickTime = SystemClock.elapsedRealtime()
             }

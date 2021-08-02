@@ -38,7 +38,13 @@ fun VisitedCountryEntity.mapEntityToModel() = VisitedCountryModel(
 )
 
 fun TravellerEntity.mapEntityToModel(): TravellerModel {
-    return TravellerModel(id=id,name = name,avatar = avatar,isVisible = isVisible,)
+    return TravellerModel(
+        id = id,
+        name = name,
+        avatar = avatar,
+        isVisible = isVisible,
+        counter = counter.toInt()
+    )
 }
 
 fun CountryResponse.mapNetToEntity() = CountryModel(id, name, flag, isVisited)

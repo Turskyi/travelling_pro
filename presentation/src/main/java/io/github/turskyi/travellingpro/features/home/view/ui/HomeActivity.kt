@@ -162,8 +162,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                 ) {
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(EXTRA_POSITION, getItemPosition(country))
-                        viewModel.visitedCountries.value?.size?.let { itemCount ->
-                            putInt(EXTRA_ITEM_COUNT, itemCount)
+                        if (viewModel.visitedCountries.value != null) {
+                            putInt(EXTRA_ITEM_COUNT, viewModel.visitedCountries.value!!.size)
                         }
                     }
                 }
