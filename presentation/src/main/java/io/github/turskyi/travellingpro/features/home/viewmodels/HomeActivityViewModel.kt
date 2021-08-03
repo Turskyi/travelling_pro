@@ -103,24 +103,24 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
             val cityList: MutableList<BaseNode> = mutableListOf()
             viewModelScope.launch {
                 interactor.setCities(
-                    country.id,
-                    { cities ->
+                    parentId = country.id,
+                    onSuccess = { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
                         citiesCount += cities.size
                         country.childNode = cityList
+                        /* since [setCitiesById] function is launched inside a separate thread,
+                         * [showVisitedCountryNodes] function must be in the same thread,
+                         * otherwise result of this function will never get to the screen */
+                        if (country.id == visitedCountryWithCityNodes.last().id) {
+                            // showing countries with included cities
+                            showVisitedCountryNodes(
+                                visitedCountryWithCityNodes,
+                                visitedCountries
+                            )
+                        }
                     },
-                    { exception -> showError(exception) },
+                    onError = { exception -> showError(exception) },
                 )
-                /* since [setCitiesById] function is launched inside a separate thread,
-                 * [showVisitedCountryNodes] function must be in the same thread,
-                 * otherwise result of this function will never get to the screen */
-                if (country.id == visitedCountryWithCityNodes.last().id) {
-                    // showing countries with included cities
-                    showVisitedCountryNodes(
-                        visitedCountryWithCityNodes,
-                        visitedCountries
-                    )
-                }
             }
         }
     }

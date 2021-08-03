@@ -118,6 +118,9 @@
         \n• Click on a photo to change it back to flag and vise versa.\n• Swipe
         left or right to see flags or photos from countries you have visited.
     </string>
+    <string name="txt_info_user_flags">• Click on a photo to change it back to flag and vise versa.\n• Swipe
+        left or right to see flags or photos from countries %1$s has visited.
+    </string>
     <string name="flag_chooser_title_complete_using">Complete action using</string>
     <!-- END of strings for the screen of flags -->
 
@@ -156,6 +159,7 @@
     <!-- END of strings for alert dialog content -->
 
     <!-- START: text resources for Visible Traveller Page -->
+    <string name="name_and_counter">%1$s %2$s</string>
     <plurals name="travellerCounter">
         <item quantity="one">has been to %d country</item>
         <item quantity="few">has been to %d countries</item>

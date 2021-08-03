@@ -54,8 +54,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         registerActivitiesForResult()
         checkPermissionAndInitAuthentication(this@HomeActivity)
         initView()
-        initListeners()
         initObservers()
+        initListeners()
     }
 
     override fun onResume() {
@@ -199,7 +199,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private fun initObservers() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
-            initTitleWithNumberOf(visitedCountries)
+            initTitle()
             updateAdapterWith(visitedCountries)
         })
         viewModel.visitedCountries.observe(this, { visitedCountries ->
@@ -395,14 +395,16 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         listAdapter.setList(visitedCountryNodes)
     }
 
-    private fun initTitleWithNumberOf(visitedCountryNodes: List<VisitedCountryNode>) {
+    private fun initTitle() {
         if (viewModel.citiesCount == 0) {
-            binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
-                R.plurals.numberOfCountriesVisited,
-                visitedCountryNodes.size,
-                visitedCountryNodes.size
-            )
+            showTitleWithOnlyCountries()
         } else {
+            showTitleWithCitiesAndCountries()
+        }
+    }
+
+    private fun showTitleWithCitiesAndCountries() {
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
             if (viewModel.citiesCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
@@ -430,49 +432,17 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
                     )
                 }"
             }
-        }
-    }
-
-    private fun showTitleWithCitiesAndCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { countries ->
-            if (viewModel.citiesCount > countries.size) {
-                binding.includeAppBar.toolbarLayout.title = "${
-                    resources.getQuantityString(
-                        R.plurals.numberOfCitiesVisited,
-                        viewModel.citiesCount,
-                        viewModel.citiesCount
-                    )
-                } ${
-                    resources.getQuantityString(
-                        R.plurals.numberOfCountriesOfCitiesVisited, countries.size,
-                        countries.size
-                    )
-                }"
-            } else {
-                binding.includeAppBar.toolbarLayout.title = "${
-                    resources.getQuantityString(
-                        R.plurals.numberOfCitiesVisited,
-                        countries.size,
-                        countries.size
-                    )
-                } ${
-                    resources.getQuantityString(
-                        R.plurals.numberOfCountriesOfCitiesVisited, countries.size,
-                        countries.size
-                    )
-                }"
-            }
         })
     }
 
     /** [showTitleWithOnlyCountries] function must be open
      *  to use it in custom "circle pie chart" widget */
     fun showTitleWithOnlyCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { countryList ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
             binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
-                countryList.size,
-                countryList.size
+                visitedCountryNodes.size,
+                visitedCountryNodes.size
             )
         })
     }

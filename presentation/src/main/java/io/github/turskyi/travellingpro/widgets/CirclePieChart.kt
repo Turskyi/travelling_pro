@@ -62,22 +62,25 @@ class CirclePieChart @JvmOverloads constructor(
         // nothing has to be here
     }
 
-    override fun onChartSingleTapped(me: MotionEvent?) {
-        when (isDrawHoleEnabled) {
-            false -> {
-                isDrawHoleEnabled = true
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    centerText =
-                        context.convertPictureToSpannableString(R.drawable.pic_pie_chart_center)
-                    isCenterPieChartEnabled = true
+    override fun onChartSingleTapped(me: MotionEvent) {
+        if (context.getHomeActivity() != null) {
+            when (isDrawHoleEnabled) {
+                false -> {
+                    isDrawHoleEnabled = true
+                    context.getHomeActivity()!!.showTitleWithOnlyCountries()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        centerText = context.convertPictureToSpannableString(
+                            R.drawable.pic_pie_chart_center,
+                        )
+                        isCenterPieChartEnabled = true
+                    }
                 }
-                context.getHomeActivity()?.showTitleWithOnlyCountries()
-            }
-            true -> {
-                centerText = ""
-                isDrawHoleEnabled = false
-                isCenterPieChartEnabled = false
-                context.getHomeActivity()?.setTitle()
+                true -> {
+                    centerText = ""
+                    isDrawHoleEnabled = false
+                    isCenterPieChartEnabled = false
+                    context.getHomeActivity()!!.setTitle()
+                }
             }
         }
     }
@@ -132,6 +135,14 @@ class CirclePieChart @JvmOverloads constructor(
             setTransparentCircleColor(Color.BLACK)
             transparentCircleRadius = 24F
             setHoleColor(Color.BLACK)
+        }
+        if (context.getTravellerActivity() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            isDrawHoleEnabled = true
+            context.getTravellerActivity()!!.showTitleWithOnlyCountries()
+                centerText = context.convertPictureToSpannableString(
+                    R.drawable.pic_pie_chart_center,
+                )
+                isCenterPieChartEnabled = true
         }
     }
 

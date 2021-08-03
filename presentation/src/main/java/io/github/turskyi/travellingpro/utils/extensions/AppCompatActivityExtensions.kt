@@ -13,7 +13,12 @@ fun AppCompatActivity.openInfoDialog(info: String) {
 }
 
 fun AppCompatActivity.openInfoDialog(@StringRes info: Int) {
-    val infoDialog = InfoDialog.newInstance(getString(info))
+    val infoDialog: InfoDialog = InfoDialog.newInstance(getString(info,))
+    infoDialog.show(this.supportFragmentManager, "info dialog")
+}
+
+fun AppCompatActivity.openInfoDialog(@StringRes info: Int, textArg: String) {
+    val infoDialog: InfoDialog = InfoDialog.newInstance(getString(info, textArg))
     infoDialog.show(this.supportFragmentManager, "info dialog")
 }
 

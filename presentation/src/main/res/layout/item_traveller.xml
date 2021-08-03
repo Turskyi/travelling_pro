@@ -21,14 +21,14 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             card_view:cardCornerRadius="@dimen/radius_circle">
 
             <ImageView
                 android:id="@+id/iv_avatar"
-                android:layout_width="@dimen/size_avatar"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/size_avatar"
                 android:contentDescription="@string/content_description.image"
                 android:scaleType="centerCrop"

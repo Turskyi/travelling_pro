@@ -3,8 +3,10 @@ package io.github.turskyi.travellingpro.features.traveller.view
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.Gravity
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityTravellerBinding
 import io.github.turskyi.travellingpro.entities.Traveller
@@ -27,8 +29,8 @@ class TravellerActivity : AppCompatActivity() {
         traveller = intent.getParcelableExtra(EXTRA_TRAVELLER)
         if (traveller != null) {
             initView()
-            initListeners()
             initObservers()
+            initListeners()
         } else {
             toast(R.string.msg_user_not_found)
             finish()
@@ -49,7 +51,7 @@ class TravellerActivity : AppCompatActivity() {
 
         val linearLayoutManager = LinearLayoutManager(this)
         binding.rvVisitedCountries.apply {
-            adapter = adapter
+            adapter = listAdapter
             layoutManager = linearLayoutManager
             addItemDecoration(
                 SectionAverageGapItemDecoration(
@@ -61,6 +63,8 @@ class TravellerActivity : AppCompatActivity() {
             )
         }
         initGravityForTitle()
+        binding.includeAppBar.cvAvatar.visibility = VISIBLE
+        Glide.with(this).load(traveller!!.avatar).into(binding.includeAppBar.ivAvatar)
         viewModel.showListOfVisitedCountriesById(traveller!!.id)
     }
 
@@ -74,9 +78,12 @@ class TravellerActivity : AppCompatActivity() {
                 ) {
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(FlagsActivity.EXTRA_POSITION, getItemPosition(country))
-                        putString(FlagsActivity.EXTRA_USER_ID, traveller!!.id)
+                        putParcelable(FlagsActivity.EXTRA_USER, traveller)
                         if (viewModel.visitedCountries.value != null) {
-                            putInt(FlagsActivity.EXTRA_ITEM_COUNT, viewModel.visitedCountries.value!!.size)
+                            putInt(
+                                FlagsActivity.EXTRA_ITEM_COUNT,
+                                viewModel.visitedCountries.value!!.size
+                            )
                         } else {
                             putInt(FlagsActivity.EXTRA_ITEM_COUNT, traveller!!.counter)
                         }
@@ -89,8 +96,8 @@ class TravellerActivity : AppCompatActivity() {
 
     private fun initObservers() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
-            initTitleWithNumberOf(visitedCountries)
-//           TODO: update adapter
+            initTitle()
+            updateAdapterWith(visitedCountries)
         })
         viewModel.visitedCountries.observe(this, { visitedCountries ->
             binding.includeAppBar.circlePieChart.apply {
@@ -115,7 +122,76 @@ class TravellerActivity : AppCompatActivity() {
             Gravity.BOTTOM
     }
 
-    private fun initTitleWithNumberOf(visitedCountryNodes: List<VisitedCountryNode>) {
-//TODO: init title
+    /** [showTitleWithOnlyCountries] function must be open
+     *  to use it in custom "circle pie chart" widget */
+    fun showTitleWithOnlyCountries() {
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+            binding.includeAppBar.toolbarLayout.title = resources.getString(
+                R.string.name_and_counter, traveller!!.name, resources.getQuantityString(
+                    R.plurals.travellerCounter,
+                    visitedCountryNodes.size,
+                    visitedCountryNodes.size
+                )
+            )
+        })
+    }
+
+    fun setTitle() = if (viewModel.citiesCount > 0) {
+        showTitleWithCitiesAndCountries()
+    } else {
+        showTitleWithOnlyCountries()
+    }
+
+    private fun showTitleWithCitiesAndCountries() {
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+            if (viewModel.citiesCount > visitedCountryNodes.size) {
+                binding.includeAppBar.toolbarLayout.title = resources.getString(
+                    R.string.name_and_counter, traveller!!.name, "${
+                        resources.getQuantityString(
+                            R.plurals.travellerCitiesVisited,
+                            viewModel.citiesCount,
+                            viewModel.citiesCount
+                        )
+                    } ${
+                        resources.getQuantityString(
+                            R.plurals.numberOfCountriesOfCitiesVisited, visitedCountryNodes.size,
+                            visitedCountryNodes.size
+                        )
+                    }"
+                )
+            } else {
+                binding.includeAppBar.toolbarLayout.title = resources.getString(
+                    R.string.name_and_counter, traveller!!.name, "${
+                        resources.getQuantityString(
+                            R.plurals.travellerCitiesVisited,
+                            visitedCountryNodes.size,
+                            visitedCountryNodes.size
+                        )
+                    } ${
+                        resources.getQuantityString(
+                            R.plurals.numberOfCountriesOfCitiesVisited,
+                            visitedCountryNodes.size,
+                            visitedCountryNodes.size
+                        )
+                    }"
+                )
+            }
+        })
+    }
+
+    private fun initTitle() {
+        if (viewModel.citiesCount == 0) {
+            showTitleWithOnlyCountries()
+        } else {
+            showTitleWithCitiesAndCountries()
+        }
+    }
+
+    private fun updateAdapterWith(visitedCountryNodes: List<VisitedCountryNode>) {
+        // makes all list items collapsed
+        for (countryNode in visitedCountryNodes) {
+            countryNode.isExpanded = false
+        }
+        listAdapter.setList(visitedCountryNodes)
     }
 }

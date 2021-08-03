@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -19,6 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
+import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
+import android.graphics.BitmapFactory
+
+import android.graphics.Bitmap
+import java.io.IOException
+import java.net.URL
+
 
 fun Context.isFacebookInstalled() = try {
     packageManager.getPackageInfo(
@@ -37,6 +45,17 @@ fun Context.getHomeActivity(): HomeActivity? {
     var context = this
     while (context is ContextWrapper) {
         if (context is HomeActivity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
+}
+
+fun Context.getTravellerActivity(): TravellerActivity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is TravellerActivity) {
             return context
         }
         context = context.baseContext

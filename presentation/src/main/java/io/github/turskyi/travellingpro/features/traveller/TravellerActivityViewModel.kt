@@ -20,7 +20,6 @@ import kotlinx.coroutines.runBlocking
 
 class TravellerActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
 
-    var backPressedTiming: Long = 0
     var notVisitedCountriesCount: Float = 0F
     var citiesCount: Int = 0
     var mLastClickTime: Long = 0
@@ -106,11 +105,12 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
                     countryId = country.id,
                     onSuccess = { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
-                        citiesCount = cities.size
+                        citiesCount += cities.size
                         country.childNode = cityList
                         /* since [setCities] function is launched inside a separate thread,
                         * [showVisitedCountryNodes] function must be in the same thread,
-                        * otherwise result of this function will never get to the screen */
+                        * otherwise result of this function will never get to the screen.
+                        * */
                         if (country.id == visitedCountryWithCityNodes.last().id) {
                             // showing countries with included cities
                             showVisitedCountryNodes(

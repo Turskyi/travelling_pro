@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityFlagsBinding
+import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
@@ -19,7 +20,7 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
 
     companion object {
         const val EXTRA_POSITION = "io.github.turskyi.travellingpro.POSITION"
-        const val EXTRA_USER_ID = "io.github.turskyi.travellingpro.USER_ID"
+        const val EXTRA_USER = "io.github.turskyi.travellingpro.USER_ID"
         const val EXTRA_ITEM_COUNT = "io.github.turskyi.travellingpro.ITEM_COUNT"
     }
 
@@ -32,8 +33,8 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
         getBundle = this@FlagsActivity.intent.extras
         if (getBundle != null) {
             initView()
-            initListener()
             initObserver()
+            initListener()
         } else {
             toast(R.string.msg_not_found)
             finish()
@@ -51,8 +52,9 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (getBundle!!.getString(EXTRA_USER_ID) != null) {
-            //        TODO: open info without replacing flag with photo
+        if (getBundle!!.getParcelable<Traveller>(EXTRA_USER) != null) {
+            val traveller: Traveller = getBundle!!.getParcelable(EXTRA_USER)!!
+            openInfoDialog(R.string.txt_info_user_flags, traveller.name)
         } else {
             openInfoDialog(R.string.txt_info_flags)
         }
