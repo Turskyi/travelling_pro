@@ -108,9 +108,11 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
             if (currentVisibility == VISIBLE) {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_eye_ripple)
                 binding.floatBtnVisibility.tag = R.drawable.btn_eye_ripple
+                listAdapter.submitList(viewModel.pagedList)
             } else {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_hide_ripple)
                 binding.floatBtnVisibility.tag = R.drawable.btn_hide_ripple
+                listAdapter.submitList(viewModel.pagedList)
             }
         })
         viewModel.errorMessage.observe(this, { event ->

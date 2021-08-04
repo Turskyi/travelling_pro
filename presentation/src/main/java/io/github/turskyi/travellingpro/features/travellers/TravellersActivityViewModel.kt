@@ -72,34 +72,39 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
         pagedList = getUserList(searchQuery)
     }
 
-    private fun getUserList(searchQuery: String): PagedList<Traveller> = if (searchQuery == "") {
-        // PagedList
-        val config: PagedList.Config = PagedList.Config.Builder()
-            /* If "true", then it should be created another viewType in Adapter "onCreateViewHolder"
-               while uploading */
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(1)
-            .setPageSize(10)
-            .build()
-        // DataSource
-        val dataSource = TravellersPositionalDataSource(interactor)
-        _visibilityLoader = dataSource.visibilityLoader
-        PagedList.Builder(dataSource, config)
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .setNotifyExecutor(MainThreadExecutor())
-            .build()
-    } else {
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(1)
-            .setPageSize(1)
-            .build()
-        val filteredDataSource =
-            FilteredTravellersPositionalDataSource(userName = searchQuery, interactor = interactor)
-        PagedList.Builder(filteredDataSource, config)
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .setNotifyExecutor(MainThreadExecutor())
-            .build()
+    private fun getUserList(searchQuery: String): PagedList<Traveller> {
+        return if (searchQuery == "") {
+            // PagedList
+            val config: PagedList.Config = PagedList.Config.Builder()
+                /* If "true", then it should be created another viewType in Adapter "onCreateViewHolder"
+                   while uploading */
+                .setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(1)
+                .setPageSize(10)
+                .build()
+            // DataSource
+            val dataSource = TravellersPositionalDataSource(interactor)
+            _visibilityLoader = dataSource.visibilityLoader
+            PagedList.Builder(dataSource, config)
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .setNotifyExecutor(MainThreadExecutor())
+                .build()
+        } else {
+            val config: PagedList.Config = PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(1)
+                .setPageSize(1)
+                .build()
+            val filteredDataSource =
+                FilteredTravellersPositionalDataSource(
+                    userName = searchQuery,
+                    interactor = interactor
+                )
+            PagedList.Builder(filteredDataSource, config)
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .setNotifyExecutor(MainThreadExecutor())
+                .build()
+        }
     }
 
     private fun setTopTravellersPercent() = viewModelScope.launch {
@@ -120,12 +125,11 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
     }
 
     fun onBecomingVisibleTriggered() {
-        _visibilityLoader.postValue(VISIBLE)
         interactor.setUserVisibility(
             isVisible = true,
             onSuccess = {
+                pagedList = getUserList(searchQuery)
                 _visibilityUser.postValue(VISIBLE)
-                _visibilityLoader.postValue(View.GONE)
             },
             onError = { exception ->
                 _visibilityLoader.postValue(View.GONE)
@@ -140,12 +144,11 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
     }
 
     fun onVisibilityFabClicked() {
-        _visibilityLoader.postValue(VISIBLE)
         interactor.setUserVisibility(
             isVisible = false,
             onSuccess = {
+                pagedList = getUserList(searchQuery)
                 _visibilityUser.postValue(INVISIBLE)
-                _visibilityLoader.postValue(View.GONE)
             },
             onError = { exception ->
                 _visibilityLoader.postValue(View.GONE)

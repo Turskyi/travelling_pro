@@ -801,14 +801,12 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val usersRef: Query = usersRef
+        val usersRef: CollectionReference = usersRef
         // getting only users who allowed to be visible
         usersRef.whereEqualTo(KEY_IS_VISIBLE, true)
-            // sorting them by quantity of visited countries
-            .orderBy(KEY_COUNTER, Query.Direction.DESCENDING)
             // getting part of the list for pagination
             .limit(to)
-        usersRef.get()
+            .get()
             .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                 val travellers: MutableList<TravellerEntity> = mutableListOf()
                 for (i in from until queryDocumentSnapshots.size()) {
@@ -823,6 +821,8 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         )
                     )
                 }
+                // sorting them by quantity of visited countries
+                travellers.sortBy { traveller -> traveller.counter }
                 onSuccess(travellers)
             }.addOnFailureListener { exception -> onError.invoke(exception) }
     }
@@ -837,10 +837,9 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         val usersRef: Query = usersRef
         // getting only users who allowed to be visible
         usersRef.whereEqualTo(KEY_IS_VISIBLE, true)
-            .orderBy(KEY_NAME)
             // getting part of the list for pagination
             .limit(requestedLoadSize)
-        usersRef.get()
+            .get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 val travellers: MutableList<TravellerEntity> = mutableListOf()
                 for (i in requestedStartPosition until queryDocumentSnapshots.size()) {
@@ -856,6 +855,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         travellers.add(traveller)
                     }
                     if (snapshot == queryDocumentSnapshots.last()) {
+                        travellers.sortBy { item -> item.name }
                         onSuccess(travellers)
                     }
                 }
