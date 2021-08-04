@@ -136,6 +136,9 @@
     <style name="DialogueBtnStyle">
         <item name="android:clickable">true</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:textColor">@color/text_btn_color</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_margin">@dimen/offset_12</item>
@@ -233,6 +236,7 @@
         <item name="theme">@style/ToolbarTitleStyle</item>
         <item name="contentInsetStartWithNavigation">0dp</item>
         <item name="layout_collapseMode">pin</item>
+        <item name="titleTextColor">@android:color/white</item>
         <item name="navigationIcon">?attr/homeAsUpIndicator</item>
         <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
     </style>

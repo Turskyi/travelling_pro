@@ -66,7 +66,7 @@
     <string name="dialog.no_internet">TURN ON INTERNET</string>
     <string name="home_dialog_btn_cancel">Cancel</string>
 
-    <string name="share_title">Share How Many Countries You Have Visited</string>
+    <string name="share_title">Share How Many Countries Has Been Visited</string>
     <string name="txt_info_home">• Click on \"+\" to add a country.\n• Click on a country to add a
         city and a month.\n• Click on the pie chart to change the view of it.\n• If you press on the pie chart,
         you can share it on Facebook or on another platform.\n• Click on a flag to be able to see

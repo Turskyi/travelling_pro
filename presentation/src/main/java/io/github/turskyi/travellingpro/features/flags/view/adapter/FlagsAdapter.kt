@@ -18,8 +18,8 @@ import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_USER
-import io.github.turskyi.travellingpro.features.flags.view.fragment.FlagFragment
-import io.github.turskyi.travellingpro.features.flags.view.fragment.FriendFlagsFragment
+import io.github.turskyi.travellingpro.features.flags.view.fragments.FlagFragment
+import io.github.turskyi.travellingpro.features.flags.view.fragments.FriendFlagsFragment
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
 

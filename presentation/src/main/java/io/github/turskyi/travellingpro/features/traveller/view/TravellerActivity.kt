@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.Gravity
+import io.github.turskyi.travellingpro.widgets.CirclePieChart
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
@@ -133,7 +134,7 @@ class TravellerActivity : AppCompatActivity() {
     }
 
     /** [showTitleWithOnlyCountries] function must be open
-     *  to use it in custom "circle pie chart" widget */
+     *  to use it in custom [CirclePieChart] widget */
     fun showTitleWithOnlyCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
             binding.includeAppBar.toolbarLayout.title = resources.getString(

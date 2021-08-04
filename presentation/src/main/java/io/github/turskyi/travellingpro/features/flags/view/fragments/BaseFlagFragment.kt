@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.flags.view.fragment
+package io.github.turskyi.travellingpro.features.flags.view.fragments
 
 import android.content.Context
 import android.graphics.Color.TRANSPARENT
@@ -11,7 +11,6 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.request.RequestOptions
@@ -19,27 +18,19 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
-import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_USER
-import io.github.turskyi.travellingpro.features.flags.viewmodel.FriendFlagsFragmentViewModel
 import io.github.turskyi.travellingpro.utils.extensions.toast
-import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import io.github.turskyi.travellingpro.widgets.ListenableWebView
-import org.koin.android.ext.android.inject
 
-class FriendFlagsFragment : Fragment() {
+open class BaseFlagFragment : Fragment() {
 
     private var _binding: FragmentFlagBinding? = null
-    private val binding get() = _binding!!
-
-    private val viewModel: FriendFlagsFragmentViewModel by inject()
+    val binding get() = _binding!!
 
     var mChangeFlagListener: OnChangeFlagFragmentListener? = null
-    private var flagsActivityViewListener: FlagsActivityView? = null
+    var flagsActivityViewListener: FlagsActivityView? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -62,15 +53,6 @@ class FriendFlagsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFlagBinding.inflate(inflater, container, false)
-        if (this.arguments != null && this.requireArguments()
-                .getParcelable<Traveller>(EXTRA_USER) != null
-        ) {
-            val traveller: Traveller = this.requireArguments().getParcelable(EXTRA_USER)!!
-            viewModel.setVisitedCountries(traveller.id)
-        } else {
-            toast(R.string.msg_not_found)
-            requireActivity().finish()
-        }
         return binding.root
     }
 
@@ -85,42 +67,7 @@ class FriendFlagsFragment : Fragment() {
         flagsActivityViewListener = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        initObservers()
-    }
-
-    private fun initObservers() {
-        viewModel.errorMessage.observe(this, { event ->
-            event.getMessageIfNotHandled()?.let { message ->
-                toastLong(message)
-            }
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
-            flagsActivityViewListener?.setLoaderVisibility(currentVisibility)
-        })
-        val visitedCountriesObserver: Observer<List<VisitedCountry>> =
-            Observer<List<VisitedCountry>> { countries ->
-                val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
-                if(mChangeFlagListener != null){
-                    mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
-                    if (countries[position].selfie.isEmpty()) {
-                        showTheFlag(countries, position)
-                    } else {
-                        showSelfie(countries, position)
-                        binding.ivEnlargedFlag.setOnClickListener(
-                            showFlagClickListener(countries, position)
-                        )
-                    }
-                } else {
-                    toast(R.string.msg_not_found)
-                    requireActivity().finish()
-                }
-            }
-        viewModel.visitedCountries.observe(viewLifecycleOwner, visitedCountriesObserver)
-    }
-
-    private fun showFlagClickListener(countries: List<VisitedCountry>, position: Int):
+    fun showFlagClickListener(countries: List<VisitedCountry>, position: Int):
             OnClickListener = OnClickListener {
         showTheFlag(countries, position)
         // change clickListener
@@ -159,7 +106,7 @@ class FriendFlagsFragment : Fragment() {
         binding.ivEnlargedFlag.setOnClickListener(showFlagClickListener(countries, position))
     }
 
-    private fun showSelfie(countries: List<VisitedCountry>, position: Int) {
+    fun showSelfie(countries: List<VisitedCountry>, position: Int) {
         binding.apply {
             ivEnlargedFlag.visibility = VISIBLE
             wvFlag.visibility = GONE
@@ -180,7 +127,7 @@ class FriendFlagsFragment : Fragment() {
     /**
      * @Description Opens the pictureUri in full size
      *  */
-    private fun showTheFlag(countries: List<VisitedCountry>, position: Int) {
+    fun showTheFlag(countries: List<VisitedCountry>, position: Int) {
         val uri: Uri = Uri.parse(countries[position].flag)
         GlideToVectorYou
             .init()
