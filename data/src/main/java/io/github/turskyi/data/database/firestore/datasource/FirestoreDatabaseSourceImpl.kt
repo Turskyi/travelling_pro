@@ -9,20 +9,6 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
-import io.github.turskyi.data.constants.Constants.KEY_AVATAR
-import io.github.turskyi.data.constants.Constants.KEY_COUNTER
-import io.github.turskyi.data.constants.Constants.KEY_ID
-import io.github.turskyi.data.constants.Constants.KEY_IS_VISIBLE
-import io.github.turskyi.data.constants.Constants.KEY_IS_VISITED
-import io.github.turskyi.data.constants.Constants.KEY_NAME
-import io.github.turskyi.data.constants.Constants.KEY_PARENT_ID
-import io.github.turskyi.data.constants.Constants.KEY_SELFIE
-import io.github.turskyi.data.constants.Constants.KEY_SELFIE_NAME
-import io.github.turskyi.data.constants.Constants.REF_CITIES
-import io.github.turskyi.data.constants.Constants.REF_COUNTRIES
-import io.github.turskyi.data.constants.Constants.REF_SELFIES
-import io.github.turskyi.data.constants.Constants.REF_USERS
-import io.github.turskyi.data.constants.Constants.REF_VISITED_COUNTRIES
 import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.entities.local.CityEntity
 import io.github.turskyi.data.entities.local.CountryEntity
@@ -38,13 +24,30 @@ import org.koin.core.component.KoinComponent
 
 class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) : KoinComponent,
     FirestoreDatabaseSource {
+    companion object {
+        // constants for firestore
+       private const val REF_SELFIES = "selfies"
+       private const val COLLECTION_USERS = "users"
+       private const val COLLECTION_COUNTRIES = "countries"
+       private const val COLLECTION_VISITED_COUNTRIES = "visited_countries"
+       private const val COLLECTION_CITIES = "cities"
+       private const val KEY_IS_VISITED = "isVisited"
+       private const val KEY_IS_VISIBLE = "isVisible"
+       private const val KEY_SELFIE = "selfie"
+       private const val KEY_SELFIE_NAME = "selfieName"
+       private const val KEY_ID = "id"
+       private const val KEY_NAME = "name"
+       private const val KEY_AVATAR = "avatar"
+       private const val KEY_PARENT_ID = "parentId"
+       private const val KEY_COUNTER = "counter"
+    }
     // init Authentication
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
     private val currentUser: FirebaseUser? = mFirebaseAuth.currentUser
     private val selfiesStorageRef: StorageReference = firebaseStorage.getReference(REF_SELFIES)
-    private val usersRef: CollectionReference = database.collection(REF_USERS)
+    private val usersRef: CollectionReference = database.collection(COLLECTION_USERS)
 
     override suspend fun saveTraveller(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
         if (currentUser != null) {
@@ -123,7 +126,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         val countriesRef: CollectionReference = usersRef
             .document(id)
-            .collection(REF_COUNTRIES)
+            .collection(COLLECTION_COUNTRIES)
         countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -144,7 +147,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         if (currentUser != null) {
             val countriesRef: CollectionReference = usersRef
                 .document(currentUser.uid)
-                .collection(REF_COUNTRIES)
+                .collection(COLLECTION_COUNTRIES)
             countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -175,7 +178,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         )
         if (currentUser != null) {
             usersRef.document(currentUser.uid)
-                .collection(REF_COUNTRIES).document(countryEntity.name).set(country)
+                .collection(COLLECTION_COUNTRIES).document(countryEntity.name).set(country)
                 .addOnSuccessListener {
                     if (index == countries.size - 1) {
                         onSuccess.invoke()
@@ -199,7 +202,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             val userDocRef: DocumentReference = usersRef.document(userId)
             // set mark "isVisited = true" in list of all countries
             val countryRef: DocumentReference = userDocRef
-                .collection(REF_COUNTRIES)
+                .collection(COLLECTION_COUNTRIES)
                 .document(countryEntity.name)
             countryRef.update(KEY_IS_VISITED, true)
                 .addOnSuccessListener {
@@ -219,7 +222,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onError: (Exception) -> Unit
     ) {
         userDocRef
-            .collection(REF_VISITED_COUNTRIES)
+            .collection(COLLECTION_VISITED_COUNTRIES)
             .document(countryEntity.name)
             .set(countryEntity.mapCountryToVisitedCountry())
             .addOnSuccessListener { incrementVisited(userDocRef, onSuccess, onError) }
@@ -262,7 +265,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         if (currentUser != null) {
             // deleting from list of visited countries
             usersRef.document(currentUser.uid)
-                .collection(REF_VISITED_COUNTRIES)
+                .collection(COLLECTION_VISITED_COUNTRIES)
                 .document(name)
                 .delete()
                 .addOnSuccessListener { markAsNotVisited(name, parentId, onSuccess, onError) }
@@ -282,7 +285,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val countryRef: DocumentReference =
-                usersRef.document(currentUser.uid).collection(REF_COUNTRIES).document(name)
+                usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES).document(name)
             countryRef.update(KEY_IS_VISITED, false)
                 .addOnSuccessListener {
                     /*
@@ -339,7 +342,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onError: (Exception) -> Unit
     ) {
         val visitedCities: CollectionReference =
-            usersRef.document(currentUser.uid).collection(REF_CITIES)
+            usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
         // getting visited cities of deleted visited country
         visitedCities.whereEqualTo(KEY_PARENT_ID, parentId)
             .get().addOnSuccessListener { queryDocumentSnapshots ->
@@ -392,7 +395,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                     // Saving the URL to the database
                     val countryRef: DocumentReference = usersRef
                         .document(currentUser.uid)
-                        .collection(REF_VISITED_COUNTRIES)
+                        .collection(COLLECTION_VISITED_COUNTRIES)
                         .document(name)
 
                     // before saving a new image deleting previous image
@@ -447,14 +450,14 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val userDocRef: DocumentReference = usersRef.document(currentUser.uid)
-            userDocRef.collection(REF_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId).get()
+            userDocRef.collection(COLLECTION_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId).get()
                 .addOnSuccessListener { documents: QuerySnapshot ->
                     for (document in documents) {
                         val country: VisitedCountryEntity =
                             document.toObject(VisitedCountryEntity::class.java)
                         if (country.id == city.parentId) {
                             val cityRef: DocumentReference = userDocRef
-                                .collection(REF_CITIES)
+                                .collection(COLLECTION_CITIES)
                                 .document("${city.name},${country.name}")
                             city.id = cityRef.id
                             cityRef
@@ -480,7 +483,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             usersRef.document(currentUser.uid)
-                .collection(REF_CITIES).document(id)
+                .collection(COLLECTION_CITIES).document(id)
                 .delete()
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
@@ -497,7 +500,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         if (currentUser != null) {
             val countriesRef: CollectionReference = usersRef
                 .document(currentUser.uid)
-                .collection(REF_VISITED_COUNTRIES)
+                .collection(COLLECTION_VISITED_COUNTRIES)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     if (queryDocumentSnapshots.size() == 0) {
@@ -527,7 +530,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         val countriesRef: CollectionReference = usersRef
             .document(id)
-            .collection(REF_VISITED_COUNTRIES)
+            .collection(COLLECTION_VISITED_COUNTRIES)
         countriesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 if (queryDocumentSnapshots.size() == 0) {
@@ -553,7 +556,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val citiesRef: CollectionReference =
-                usersRef.document(currentUser.uid).collection(REF_CITIES)
+                usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
             citiesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     if (queryDocumentSnapshots.isEmpty) {
@@ -586,7 +589,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onError: (Exception) -> Unit
     ) {
         val citiesRef: Query =
-            usersRef.document(userId).collection(REF_CITIES).whereEqualTo(KEY_PARENT_ID, countryId)
+            usersRef.document(userId).collection(COLLECTION_CITIES).whereEqualTo(KEY_PARENT_ID, countryId)
         citiesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 if (queryDocumentSnapshots.isEmpty) {
@@ -613,7 +616,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val citiesRef: Query =
-                usersRef.document(currentUser.uid).collection(REF_CITIES)
+                usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
                     .whereEqualTo(KEY_PARENT_ID, parentId)
             citiesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
@@ -643,7 +646,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val countriesRef: CollectionReference =
-                usersRef.document(currentUser.uid).collection(REF_COUNTRIES)
+                usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
@@ -684,7 +687,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         if (currentUser != null) {
             val countriesRef: Query = usersRef
                 .document(currentUser.uid)
-                .collection(REF_COUNTRIES)
+                .collection(COLLECTION_COUNTRIES)
                 .orderBy(KEY_ID)
             // sorting countries by number given in [KEY_ID]
             countriesRef.startAt(from).endBefore(to).get()
@@ -712,7 +715,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val countriesRef: Query = usersRef.document(currentUser.uid)
-                .collection(REF_COUNTRIES).orderBy(KEY_ID)
+                .collection(COLLECTION_COUNTRIES).orderBy(KEY_ID)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
@@ -807,7 +810,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         if (currentUser != null) {
             // getting number of visited Countries by current user
             val visitedCountriesRef: CollectionReference =
-                usersRef.document(currentUser.uid).collection(REF_VISITED_COUNTRIES)
+                usersRef.document(currentUser.uid).collection(COLLECTION_VISITED_COUNTRIES)
             visitedCountriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val travellerCounter: Int = queryDocumentSnapshots.size()
