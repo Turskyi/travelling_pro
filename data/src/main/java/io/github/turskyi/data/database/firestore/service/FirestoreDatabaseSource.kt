@@ -48,7 +48,11 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit,
     )
 
-    suspend fun setAllVisitedCities(onSuccess: (List<CityEntity>) -> Unit, onError: (Exception) -> Unit)
+    suspend fun setAllVisitedCities(
+        onSuccess: (List<CityEntity>) -> Unit,
+        onError: (Exception) -> Unit
+    )
+
     suspend fun setCities(
         userId: String,
         countryId: Int,
@@ -63,6 +67,11 @@ interface FirestoreDatabaseSource {
     )
 
     suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+
+    suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+
+
+    suspend fun setCityCount(userId: String, onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
     suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,

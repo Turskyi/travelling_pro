@@ -35,6 +35,10 @@ interface CountryRepository {
 
     suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
+    suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+
+    suspend fun setCityCount(userId: String, onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+
     suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (Int, Int) -> Unit,
         onError: (Exception) -> Unit

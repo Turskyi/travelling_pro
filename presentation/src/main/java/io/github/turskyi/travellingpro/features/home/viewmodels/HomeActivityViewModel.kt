@@ -21,7 +21,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
 
     var backPressedTiming: Long = 0
     var notVisitedCountriesCount: Float = 0F
-    var citiesCount: Int = 0
+    var cityCount: Int = 0
     var mLastClickTime: Long = 0
     var isPermissionGranted: Boolean = false
 
@@ -106,7 +106,6 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
                     parentId = country.id,
                     onSuccess = { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
-                        citiesCount += cities.size
                         country.childNode = cityList
                         /* since [setCitiesById] function is launched inside a separate thread,
                          * [showVisitedCountryNodes] function must be in the same thread,

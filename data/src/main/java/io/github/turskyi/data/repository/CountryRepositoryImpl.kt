@@ -27,6 +27,21 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         { exception -> onError.invoke(exception) },
     )
 
+    override suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+        databaseSource.setCityCount(
+            onSuccess = { count -> onSuccess(count) },
+            onError = { exception -> onError.invoke(exception) },
+        )
+    }
+
+    override suspend fun setCityCount(userId: String, onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+        databaseSource.setCityCount(
+            userId = userId,
+            onSuccess = { count -> onSuccess(count) },
+            onError = { exception -> onError.invoke(exception) },
+        )
+    }
+
     override suspend fun setCountNotVisitedCountriesById(
         id: String,
         onSuccess: (Int) -> Unit,
@@ -133,7 +148,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         id: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
-    )  = databaseSource.setVisitedCountriesById(
+    ) = databaseSource.setVisitedCountriesById(
         id = id,
         onSuccess = { countries ->
             onSuccess(countries.mapVisitedCountriesToVisitedModelList())

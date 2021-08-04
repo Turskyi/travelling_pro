@@ -200,7 +200,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     private fun initObservers() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
             initTitle()
-            updateAdapterWith(visitedCountries)
+            updateAdapterAndTitle(visitedCountries)
         })
         viewModel.visitedCountries.observe(this, { visitedCountries ->
             binding.includeAppBar.circlePieChart.apply {
@@ -290,7 +290,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     /** must be open to use it in custom "circle pie chart" widget */
-    fun setTitle() = if (viewModel.citiesCount > 0) {
+    fun setTitle() = if (viewModel.cityCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()
@@ -387,16 +387,19 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         }
     }
 
-    private fun updateAdapterWith(visitedCountryNodes: List<VisitedCountryNode>) {
+    private fun updateAdapterAndTitle(visitedCountryNodes: List<VisitedCountryNode>) {
+        viewModel.cityCount = 0
         // makes all list items collapsed
         for (countryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
+            viewModel.cityCount = viewModel.cityCount + countryNode.childNode.size
         }
         listAdapter.setList(visitedCountryNodes)
+        initTitle()
     }
 
     private fun initTitle() {
-        if (viewModel.citiesCount == 0) {
+        if (viewModel.cityCount == 0) {
             showTitleWithOnlyCountries()
         } else {
             showTitleWithCitiesAndCountries()
@@ -405,12 +408,12 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     private fun showTitleWithCitiesAndCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
-            if (viewModel.citiesCount > visitedCountryNodes.size) {
+            if (viewModel.cityCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
                         R.plurals.numberOfCitiesVisited,
-                        viewModel.citiesCount,
-                        viewModel.citiesCount
+                        viewModel.cityCount,
+                        viewModel.cityCount
                     )
                 } ${
                     resources.getQuantityString(

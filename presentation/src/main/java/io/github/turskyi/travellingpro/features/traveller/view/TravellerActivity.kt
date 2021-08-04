@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.Gravity
-import io.github.turskyi.travellingpro.widgets.CirclePieChart
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +17,11 @@ import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
 import io.github.turskyi.travellingpro.features.traveller.TravellerActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity.Companion.EXTRA_TRAVELLER
 import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
-import io.github.turskyi.travellingpro.utils.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.getScreenWidth
+import io.github.turskyi.travellingpro.utils.extensions.openActivityWithArgs
+import io.github.turskyi.travellingpro.utils.extensions.toast
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
+import io.github.turskyi.travellingpro.widgets.CirclePieChart
 import org.koin.android.ext.android.inject
 
 class TravellerActivity : AppCompatActivity() {
@@ -149,13 +152,13 @@ class TravellerActivity : AppCompatActivity() {
 
     private fun showTitleWithCitiesAndCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
-            if (viewModel.citiesCount > visitedCountryNodes.size) {
+            if (viewModel.cityCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = resources.getString(
                     R.string.name_and_counter, traveller!!.name, "${
                         resources.getQuantityString(
                             R.plurals.travellerCitiesVisited,
-                            viewModel.citiesCount,
-                            viewModel.citiesCount
+                            viewModel.cityCount,
+                            viewModel.cityCount
                         )
                     } ${
                         resources.getQuantityString(
@@ -185,7 +188,7 @@ class TravellerActivity : AppCompatActivity() {
     }
 
     private fun initTitle() {
-        if (viewModel.citiesCount == 0) {
+        if (viewModel.cityCount == 0) {
             showTitleWithOnlyCountries()
         } else {
             showTitleWithCitiesAndCountries()
@@ -194,9 +197,12 @@ class TravellerActivity : AppCompatActivity() {
 
     private fun updateAdapterWith(visitedCountryNodes: List<VisitedCountryNode>) {
         // makes all list items collapsed
+        viewModel.cityCount = 0
         for (countryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
+            viewModel.cityCount = viewModel.cityCount + countryNode.childNode.size
         }
         listAdapter.setList(visitedCountryNodes)
+        initTitle()
     }
 }

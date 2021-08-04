@@ -52,6 +52,16 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         onError: (Exception) -> Unit
     ) = countryRepository.setCountNotVisitedCountries(onSuccess, onError)
 
+    suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+        countryRepository.setCityCount(onSuccess, onError)
+    }
+
+    suspend fun setCityCount(
+        userId: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) = countryRepository.setCityCount(userId, onSuccess, onError)
+
     suspend fun setNotVisitedCountriesNum(
         id: String,
         onSuccess: (Int) -> Unit,
@@ -81,7 +91,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         countryId: Int,
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
-    ): Unit = countryRepository.setCities(userId,countryId,onSuccess, onError)
+    ): Unit = countryRepository.setCities(userId, countryId, onSuccess, onError)
 
     suspend fun setCities(
         parentId: Int,

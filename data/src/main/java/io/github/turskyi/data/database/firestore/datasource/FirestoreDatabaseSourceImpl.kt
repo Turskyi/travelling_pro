@@ -14,6 +14,7 @@ import io.github.turskyi.data.entities.local.CityEntity
 import io.github.turskyi.data.entities.local.CountryEntity
 import io.github.turskyi.data.entities.local.TravellerEntity
 import io.github.turskyi.data.entities.local.VisitedCountryEntity
+import io.github.turskyi.data.util.exceptions.BadRequestException
 import io.github.turskyi.data.util.exceptions.NotFoundException
 import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
 import kotlinx.coroutines.CoroutineScope
@@ -26,21 +27,22 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     FirestoreDatabaseSource {
     companion object {
         // constants for firestore
-       private const val REF_SELFIES = "selfies"
-       private const val COLLECTION_USERS = "users"
-       private const val COLLECTION_COUNTRIES = "countries"
-       private const val COLLECTION_VISITED_COUNTRIES = "visited_countries"
-       private const val COLLECTION_CITIES = "cities"
-       private const val KEY_IS_VISITED = "isVisited"
-       private const val KEY_IS_VISIBLE = "isVisible"
-       private const val KEY_SELFIE = "selfie"
-       private const val KEY_SELFIE_NAME = "selfieName"
-       private const val KEY_ID = "id"
-       private const val KEY_NAME = "name"
-       private const val KEY_AVATAR = "avatar"
-       private const val KEY_PARENT_ID = "parentId"
-       private const val KEY_COUNTER = "counter"
+        private const val REF_SELFIES = "selfies"
+        private const val COLLECTION_USERS = "users"
+        private const val COLLECTION_COUNTRIES = "countries"
+        private const val COLLECTION_VISITED_COUNTRIES = "visited_countries"
+        private const val COLLECTION_CITIES = "cities"
+        private const val KEY_IS_VISITED = "isVisited"
+        private const val KEY_IS_VISIBLE = "isVisible"
+        private const val KEY_SELFIE = "selfie"
+        private const val KEY_SELFIE_NAME = "selfieName"
+        private const val KEY_ID = "id"
+        private const val KEY_NAME = "name"
+        private const val KEY_AVATAR = "avatar"
+        private const val KEY_PARENT_ID = "parentId"
+        private const val KEY_COUNTER = "counter"
     }
+
     // init Authentication
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -127,7 +129,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         val countriesRef: CollectionReference = usersRef
             .document(id)
             .collection(COLLECTION_COUNTRIES)
-        countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
+        countriesRef.whereEqualTo(KEY_IS_VISITED, false).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result?.let { notVisitedCountries ->
@@ -148,7 +150,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             val countriesRef: CollectionReference = usersRef
                 .document(currentUser.uid)
                 .collection(COLLECTION_COUNTRIES)
-            countriesRef.whereEqualTo(KEY_IS_VISITED, false).orderBy(KEY_ID).get()
+            countriesRef.whereEqualTo(KEY_IS_VISITED, false).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         task.result?.let { notVisitedCountries ->
@@ -163,6 +165,61 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
         }
+    }
+
+    override suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+        if (currentUser != null) {
+            val countriesRef: CollectionReference = usersRef
+                .document(currentUser.uid)
+                .collection(COLLECTION_CITIES)
+            countriesRef.get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result != null) {
+                            onSuccess(task.result!!.size())
+                        } else {
+                            onError.invoke(NotFoundException())
+                        }
+                    } else {
+                        if (task.exception != null) {
+                            onError.invoke(task.exception!!)
+                        } else {
+                            onError.invoke(BadRequestException())
+                        }
+                    }
+                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
+        } else {
+            mFirebaseAuth.signOut()
+            onError.invoke(NotFoundException())
+        }
+    }
+
+    override suspend fun setCityCount(
+        userId: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val citiesRef: CollectionReference = usersRef
+            .document(userId)
+            .collection(COLLECTION_CITIES)
+        citiesRef.get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    if (task.result != null) {
+                        onSuccess(task.result!!.size())
+                    } else {
+                        onError.invoke(NotFoundException())
+                    }
+                } else {
+                    if (task.exception != null) {
+                        onError.invoke(task.exception!!)
+                    } else {
+                        onError.invoke(BadRequestException())
+                    }
+                }
+            }
+            .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
     override suspend fun insertAllCountries(
@@ -450,7 +507,8 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
     ) {
         if (currentUser != null) {
             val userDocRef: DocumentReference = usersRef.document(currentUser.uid)
-            userDocRef.collection(COLLECTION_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId).get()
+            userDocRef.collection(COLLECTION_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId)
+                .get()
                 .addOnSuccessListener { documents: QuerySnapshot ->
                     for (document in documents) {
                         val country: VisitedCountryEntity =
@@ -589,7 +647,8 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onError: (Exception) -> Unit
     ) {
         val citiesRef: Query =
-            usersRef.document(userId).collection(COLLECTION_CITIES).whereEqualTo(KEY_PARENT_ID, countryId)
+            usersRef.document(userId).collection(COLLECTION_CITIES)
+                .whereEqualTo(KEY_PARENT_ID, countryId)
         citiesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 if (queryDocumentSnapshots.isEmpty) {

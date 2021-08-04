@@ -16,12 +16,11 @@ import io.github.turskyi.travellingpro.utils.extensions.mapModelListToBaseNodeLi
 import io.github.turskyi.travellingpro.utils.extensions.mapVisitedListToVisitedNodeList
 import io.github.turskyi.travellingpro.utils.extensions.mapVisitedModelListToVisitedList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class TravellerActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
 
     var notVisitedCountriesCount: Float = 0F
-    var citiesCount: Int = 0
+    var cityCount: Int = 0
     var mLastClickTime: Long = 0
 
     private val _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
@@ -46,19 +45,21 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
     /** [showListOfVisitedCountriesById] is the first function in [TravellerActivity] */
     fun showListOfVisitedCountriesById(id: String) {
         _visibilityLoader.postValue(VISIBLE)
-        runBlocking {
-            viewModelScope.launch {
-                // loading count of not visited countries
-                interactor.setNotVisitedCountriesNum(
-                    id = id,
-                    onSuccess = { notVisitedCountriesNum ->
-                        // loading visited countries
-                        notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
-                    },
-                    onError = { exception -> showError(exception) },
-                )
-            }
-            setVisitedCountries(id)
+        setNotVisitedCountriesCount(id)
+        setVisitedCountries(id)
+    }
+
+    private fun setNotVisitedCountriesCount(id: String) {
+        viewModelScope.launch {
+            // loading count of not visited countries
+            interactor.setNotVisitedCountriesNum(
+                id = id,
+                onSuccess = { notVisitedCountriesNum ->
+                    // loading visited countries
+                    notVisitedCountriesCount = notVisitedCountriesNum.toFloat()
+                },
+                onError = { exception -> showError(exception) },
+            )
         }
     }
 
@@ -105,7 +106,6 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
                     countryId = country.id,
                     onSuccess = { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
-                        citiesCount += cities.size
                         country.childNode = cityList
                         /* since [setCities] function is launched inside a separate thread,
                         * [showVisitedCountryNodes] function must be in the same thread,
