@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.models.Country
+import io.github.turskyi.travellingpro.entities.Country
 
 class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.CountryViewHolder>(
     COUNTRIES_DIFF_CALLBACK
@@ -56,16 +56,6 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
 
     override fun onBindViewHolder(holder: CountryViewHolder, position: Int) =
         holder.bind(getItem(position))
-
-    private fun setSelectableItemBackground(holder: CountryViewHolder) {
-        val outValue = TypedValue()
-        holder.itemView.context.theme.resolveAttribute(
-            R.attr.selectableItemBackground,
-            outValue,
-            true
-        )
-        holder.llCountry.setBackgroundResource(outValue.resourceId)
-    }
 
     private fun showPicturesInSVG(
         country: Country?,
@@ -109,7 +99,17 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
         private val tvCountry: TextView = itemView.findViewById(R.id.tv_country)
         val ivFlag: ImageView = itemView.findViewById(R.id.iv_flag)
         val wvFlag: WebView = itemView.findViewById(R.id.wv_flag)
-        val llCountry: LinearLayout = itemView.findViewById(R.id.ll_country)
+        private val llCountry: LinearLayout = itemView.findViewById(R.id.ll_country)
+
+        init {
+            itemView.setOnClickListener {
+                onCountryClickListener?.invoke(getItem(layoutPosition) as Country)
+            }
+            itemView.setOnLongClickListener {
+                onCountryLongClickListener?.invoke(getItem(layoutPosition) as Country)
+                true
+            }
+        }
 
         fun bind(country: Country?) {
             tvCountry.text = country?.name
@@ -123,14 +123,14 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
             showPicturesInSVG(country, this)
         }
 
-        init {
-            itemView.setOnClickListener {
-                onCountryClickListener?.invoke(getItem(layoutPosition) as Country)
-            }
-            itemView.setOnLongClickListener {
-                onCountryLongClickListener?.invoke(getItem(layoutPosition) as Country)
+        private fun setSelectableItemBackground(holder: CountryViewHolder) {
+            val outValue = TypedValue()
+            holder.itemView.context.theme.resolveAttribute(
+                R.attr.selectableItemBackground,
+                outValue,
                 true
-            }
+            )
+            holder.llCountry.setBackgroundResource(outValue.resourceId)
         }
     }
 }

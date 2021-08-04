@@ -1,5 +1,8 @@
 <resources>
-    <!-- not translatable -->
+    <!-- START of not translatable -->
+    <string name="share_massage" translatable="false">#travelling_the_world \n https://play.google.com/store/apps/details?id=%1$s</string>
+    <string name="picture_file_name" translatable="false">piechart_%1$s.jpg</string>
+    <string name="picture_name" translatable="false">piechart_%1$s</string>
     <string name="home_dialog_date_format" translatable="false">MMMM yyyy</string>
     <string name="file_provider" translatable="false">.fileprovider</string>
     <string name="dir_screenshots" translatable="false">screenshots</string>
@@ -8,9 +11,12 @@
     <string name="geo_location" translatable="false">geo:0,0?q=%1$s</string>
     <string name="media_providers" translatable="false">com.android.providers.media</string>
     <string name="android_5_1" translatable="false">5.1</string>
-    <string name="image_type" translatable="false">image/jpeg</string>
+    <string name="image_and_jpeg_type" translatable="false">image/jpeg</string>
+    <string name="image_type" translatable="false">image/*</string>
     <string name="encoding_utf_8" translatable="false">UTF-8</string>
     <string name="mime_type_txt_html" translatable="false">text/html</string>
+    <string name="scheme_mailto" translatable="false">mailto</string>
+    <string name="email" translatable="false">dmitriy.turskiy@gmail.com</string>
     <string name="html_data_flag" translatable="false"><![CDATA[
     <html>
     <head>
@@ -18,6 +24,7 @@
     </head>
     <body><img src=\'%1$s\'/></body>
     </html>]]></string>
+    <string name="default_notification_channel_id" translatable="false">Notifications from Travelling application.</string>
 
     <!-- for face book sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
@@ -28,23 +35,24 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb2312394202364807</string>
     <!-- for general use of facebook auth-->
     <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
-    <!-- end of not translatable strings -->
+    <!-- END of not translatable strings -->
 
-    <!-- default  strings -->
+    <!-- START of default  strings -->
     <string name="app_name">Travelling Pro</string>
     <string name="content_description.flag">flag</string>
     <string name="content_description.item_arrow">arrow</string>
-    <string name="content_description.icon_search">search image</string>
+    <string name="content_description.icon_search">search icon</string>
     <string name="tap_back_button_in_order_to_exit">Click again to exit.</string>
     <string name="content_description.image">image</string>
+    <string name="content_description.button">button</string>
     <string name="dialog_btn_ok">OK</string>
     <string name="dialog_btn_ok_ready">OK ?</string>
     <string name="dialog_btn_not_ok">not OK</string>
     <string name="exception_unsupported_context">you cannot instantiate the context</string>
     <string name="exception_npe_context">you should init context util first</string>
-    <!-- end of default strings -->
+    <!-- END of default strings -->
 
-    <!-- home screen -->
+    <!-- START home screen -->
     <string name="home_onboarding_title_loading">…loading countries</string>
     <string name="home_onboarding_title_authorization">…authorization</string>
     <string name="delete_it">Delete %1$s ?</string>
@@ -57,9 +65,8 @@
     <string name="dialog_hold_on">Hold on a moment, trying to find your location.</string>
     <string name="dialog.no_internet">TURN ON INTERNET</string>
     <string name="home_dialog_btn_cancel">Cancel</string>
-    <string name="txt_info_billing">Please care to buy the full version of an app,
-        in order to sync your data with server.</string>
-    <string name="share_title">Share How Many Countries You Have Visited</string>
+
+    <string name="share_title">Share How Many Countries Has Been Visited</string>
     <string name="txt_info_home">• Click on \"+\" to add a country.\n• Click on a country to add a
         city and a month.\n• Click on the pie chart to change the view of it.\n• If you press on the pie chart,
         you can share it on Facebook or on another platform.\n• Click on a flag to be able to see
@@ -86,13 +93,17 @@
         <item quantity="few">in %d countries</item>
         <item quantity="other">in %d countries</item>
     </plurals>
-    <!-- end of strings for home screen -->
+    <!-- END of strings for home screen -->
 
-    <!-- screen with all countries -->
+    <!-- START screen with all countries -->
     <string name="hint.search_country">country</string>
-    <string name="all_countries_no_results">no results</string>
+    <string name="hint.search_traveller">name</string>
+    <string name="no_results">no results</string>
     <string name="txt_info_all_countries">• If you press on a country, you will be able to see
         the geographical location of it
+    </string>
+    <string name="txt_info_all_travellers">• If you click on a traveller, you will be able to see
+         his visited countries.\n• Would you like also to become visible to others?
     </string>
 
     <plurals name="numberOfCountriesRemain">
@@ -100,17 +111,24 @@
         <item quantity="few">%d countries remain to visit</item>
         <item quantity="other">%d countries remain to visit</item>
     </plurals>
-    <!-- end of strings for screen with all countries -->
+    <!-- END of strings for screen with all countries -->
 
-    <!-- flags screen -->
+    <!-- START flags screen -->
     <string name="txt_info_flags">• If you press on the flag, you can replace it with a photo.
         \n• Click on a photo to change it back to flag and vise versa.\n• Swipe
         left or right to see flags or photos from countries you have visited.
     </string>
+    <string name="txt_info_user_flags">• Click on a photo to change it back to flag and vise versa.\n• Swipe
+        left or right to see flags or photos from countries %1$s has visited.
+    </string>
     <string name="flag_chooser_title_complete_using">Complete action using</string>
-    <!-- end of strings for the screen of flags -->
+    <!-- END of strings for the screen of flags -->
 
-    <!-- messages -->
+    <!-- START of strings for the screen with travellers -->
+    <string name="title_activity_travellers">%d%% of travellers visited more countries than you</string>
+    <!-- END of strings for the screen with travellers -->
+
+    <!-- START of list with strings for messages -->
     <string name="msg.no_facebook_app">You do not have Facebook app installed</string>
     <string name="msg.no_app_installed">No app available to share pie chart</string>
     <string name="msg.internet_connection_lost">Тhe app is offline.</string>
@@ -125,11 +143,33 @@
     <string name="msg.sign_in_cancelled">sign in canceled</string>
     <string name="msg.no_internet">no internet connection</string>
     <string name="msg.bad_internet">bad internet connection</string>
+    <string name="msg.user_not_found">User not found</string>
+    <string name="msg.not_found">not found</string>
     <string name="msg.home_country_did_not_added">did not added anything</string>
     <string name="msg.exception_flag_listener">%1$s must implement OnFlagFragmentListener</string>
     <string name="msg.home_signed_in">Signed in</string>
-    <!-- end of strings for toasts messages -->
+    <string name="error_message_try_tomorrow">Then try tomorrow ;)</string>
+    <!-- END of strings for toasts messages -->
 
-    <string name="default_notification_channel_id">Notifications from Travelling application.</string>
+    <!-- START of strings for alert dialog content -->
+    <string name="alert_error_title">Something terrible has happened!</string>
+    <string name="alert_error_message">Would you like to write to the developer?</string>
+    <string name="error_message_intro">A scary story that happened to</string>
+    <string name="no">Nah</string>
+    <!-- END of strings for alert dialog content -->
 
+    <!-- START: text resources for Visible Traveller Page -->
+    <string name="name_and_counter">%1$s %2$s</string>
+    <plurals name="travellerCounter">
+        <item quantity="one">has been to %d country</item>
+        <item quantity="few">has been to %d countries</item>
+        <item quantity="other">has been to %d countries</item>
+    </plurals>
+
+    <plurals name="travellerCitiesVisited">
+        <item quantity="one">has been to %d city</item>
+        <item quantity="few">has been to %d cities</item>
+        <item quantity="other">has been to %d cities</item>
+    </plurals>
+    <!-- END: text resources for Visible Traveller Page -->
 </resources>

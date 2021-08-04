@@ -2,33 +2,25 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black">
+    style="@style/CoordinatorLayoutStyle">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                app:theme="@style/ToolbarTitleStyle"
-                app:titleTextColor="@android:color/white"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                android:layout_width="match_parent"
-                app:navigationIcon="?attr/homeAsUpIndicator"
-                android:layout_height="?attr/actionBarSize">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/ToolbarStyle">
 
-                <TextView
-                    android:id="@+id/tvToolbarTitle"
-                    android:gravity="center"
-                    android:paddingEnd="@dimen/offset_64"
-                    android:paddingStart="0dp"
-                    style="@style/ToolbarTitleStyle"
-                    tool:text="Flag" />
-            </androidx.appcompat.widget.Toolbar>
+            <TextView
+                android:id="@+id/tvToolbarTitle"
+                style="@style/ToolbarTitleStyle"
+                android:gravity="center"
+                tool:text="Flag" />
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"
@@ -36,11 +28,5 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/pb"
-        style="@style/ProgressBarStyle"
-        android:padding="@dimen/offset_4"
-        android:layout_marginTop="@dimen/offset_64"
-        android:scaleType="centerInside"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/anim_flight" />
+        style="@style/ProgressBarStyle" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
