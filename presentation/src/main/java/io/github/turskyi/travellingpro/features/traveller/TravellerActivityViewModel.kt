@@ -137,10 +137,12 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
     private fun showError(exception: Exception) {
         _visibilityLoader.postValue(GONE)
         _errorMessage.run {
-            exception.message?.let { message ->
-                // Trigger the event by setting a new Event as a new value
-                postValue(Event(message))
-            }
+            // Trigger the event by setting a new Event as a new value
+            postValue(
+                Event(
+                    exception.localizedMessage ?: exception.stackTraceToString(),
+                )
+            )
         }
     }
 }

@@ -55,9 +55,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
-        <activity
-            android:name=".features.flags.view.FlagsActivity"
-            android:parentActivityName=".features.home.view.ui.HomeActivity" />
+        <activity android:name=".features.flags.view.FlagsActivity" />
 
         <activity
             android:name=".features.traveller.view.TravellerActivity"

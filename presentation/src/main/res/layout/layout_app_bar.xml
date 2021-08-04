@@ -36,6 +36,19 @@
                 tools:src="@tools:sample/backgrounds/scenic" />
         </androidx.cardview.widget.CardView>
 
+        <!-- invisible view for Android Lollipop, instead of Circle -->
+
+        <ImageView
+            android:id="@+id/iv_square_avatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/offset_16"
+            android:contentDescription="@string/content_description.image"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/ToolbarStyle" />

@@ -1,13 +1,15 @@
 package io.github.turskyi.travellingpro.features.travellers.view.adapter
 
+import android.os.Build
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ItemTravellerBinding
 import io.github.turskyi.travellingpro.entities.Traveller
 
@@ -56,7 +58,8 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
         }
     }
 
-    inner class TravellerViewHolder(private val binding: ItemTravellerBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class TravellerViewHolder(private val binding: ItemTravellerBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.cvTraveller.setOnClickListener {
@@ -67,14 +70,20 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
         fun bind(traveller: Traveller) {
             setSelectableItemBackground(this)
             binding.apply {
-                Glide.with(itemView).load(traveller.avatar).into(ivAvatar)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    Glide.with(itemView).load(traveller.avatar).into(ivAvatar)
+                } else {
+                    cvAvatar.visibility = GONE
+                    ivSquareAvatar.visibility = VISIBLE
+                    Glide.with(itemView).load(traveller.avatar).into(ivSquareAvatar)
+                }
                 tvName.text = traveller.name
             }
         }
 
         private fun setSelectableItemBackground(holderTraveller: TravellerViewHolder) {
             holderTraveller.itemView.context.theme.resolveAttribute(
-                R.attr.selectableItemBackground,
+                io.github.turskyi.travellingpro.R.attr.selectableItemBackground,
                 TypedValue(),
                 true
             )

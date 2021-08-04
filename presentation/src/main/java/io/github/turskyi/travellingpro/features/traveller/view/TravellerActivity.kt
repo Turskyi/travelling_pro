@@ -1,8 +1,10 @@
 package io.github.turskyi.travellingpro.features.traveller.view
 
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.Gravity
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -63,8 +65,16 @@ class TravellerActivity : AppCompatActivity() {
             )
         }
         initGravityForTitle()
-        binding.includeAppBar.cvAvatar.visibility = VISIBLE
-        Glide.with(this).load(traveller!!.avatar).into(binding.includeAppBar.ivAvatar)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.includeAppBar.cvAvatar.visibility = VISIBLE
+            Glide.with(this).load(traveller!!.avatar).into(binding.includeAppBar.ivAvatar)
+        } else {
+            binding.includeAppBar.cvAvatar.visibility = GONE
+            binding.includeAppBar.ivSquareAvatar.visibility = VISIBLE
+            Glide.with(this).load(traveller!!.avatar).into(
+                binding.includeAppBar.ivSquareAvatar,
+            )
+        }
         viewModel.showListOfVisitedCountriesById(traveller!!.id)
     }
 
@@ -77,8 +87,8 @@ class TravellerActivity : AppCompatActivity() {
                     )
                 ) {
                     openActivityWithArgs(FlagsActivity::class.java) {
-                        putInt(FlagsActivity.EXTRA_POSITION, getItemPosition(country))
                         putParcelable(FlagsActivity.EXTRA_USER, traveller)
+                        putInt(FlagsActivity.EXTRA_POSITION, getItemPosition(country))
                         if (viewModel.visitedCountries.value != null) {
                             putInt(
                                 FlagsActivity.EXTRA_ITEM_COUNT,
@@ -134,12 +144,6 @@ class TravellerActivity : AppCompatActivity() {
                 )
             )
         })
-    }
-
-    fun setTitle() = if (viewModel.citiesCount > 0) {
-        showTitleWithCitiesAndCountries()
-    } else {
-        showTitleWithOnlyCountries()
     }
 
     private fun showTitleWithCitiesAndCountries() {

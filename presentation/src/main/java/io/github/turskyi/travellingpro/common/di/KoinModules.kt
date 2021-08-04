@@ -5,6 +5,7 @@ import io.github.turskyi.domain.interactors.TravellersInteractor
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
+import io.github.turskyi.travellingpro.features.flags.viewmodel.FriendFlagsFragmentViewModel
 import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
@@ -28,6 +29,7 @@ val viewModelsModule = module {
     factory { TravellerActivityViewModel(get()) }
     factory { AllCountriesActivityViewModel(get()) }
     factory { FlagsFragmentViewModel(get()) }
+    factory { FriendFlagsFragmentViewModel(get()) }
     factory { AddCityDialogViewModel(get()) }
     factory { TravellersActivityViewModel(get()) }
 }
