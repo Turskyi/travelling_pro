@@ -802,8 +802,9 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onError: (Exception) -> Unit
     ) {
         val usersRef: CollectionReference = usersRef
-        // getting only users who allowed to be visible
-        usersRef.whereEqualTo(KEY_IS_VISIBLE, true)
+        usersRef
+            // getting only users who allowed to be visible
+            .whereEqualTo(KEY_IS_VISIBLE, true)
             // getting part of the list for pagination
             .limit(to)
             .get()
@@ -821,8 +822,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                         )
                     )
                 }
-                // sorting them by quantity of visited countries
-                travellers.sortBy { traveller -> traveller.counter }
+                travellers.sortByDescending { traveller -> traveller.counter }
                 onSuccess(travellers)
             }.addOnFailureListener { exception -> onError.invoke(exception) }
     }

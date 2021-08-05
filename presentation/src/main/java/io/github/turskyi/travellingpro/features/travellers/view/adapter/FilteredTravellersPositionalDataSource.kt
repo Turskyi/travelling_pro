@@ -34,15 +34,17 @@ internal class FilteredTravellersPositionalDataSource(
         params: LoadRangeParams,
         callback: LoadRangeCallback<Traveller>
     ) {
-        interactor.setTravellersByName(userName,
-            params.loadSize.toLong(),
-            params.startPosition,
-            { travellers ->
+        interactor.setTravellersByName(
+            name = userName,
+            requestedLoadSize = params.loadSize.toLong(),
+            requestedStartPosition = params.startPosition,
+            onSusses = { travellers ->
                 callback.onResult(travellers.mapModelListToTravellerList())
             },
-            { exception ->
+            onError = { exception ->
                 exception.printStackTrace()
                 callback.onResult(emptyList())
-            })
+            },
+        )
     }
 }

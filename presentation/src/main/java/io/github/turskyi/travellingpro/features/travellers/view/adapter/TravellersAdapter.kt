@@ -53,7 +53,7 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
 
     override fun onBindViewHolder(holderTraveller: TravellerViewHolder, position: Int) {
         val currentItem: Traveller? = getItem(position)
-        if (currentItem != null) {
+        if (currentItem != null && currentItem.isVisible) {
             holderTraveller.bind(currentItem)
         }
     }

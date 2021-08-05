@@ -79,7 +79,7 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
                 /* If "true", then it should be created another viewType in Adapter "onCreateViewHolder"
                    while uploading */
                 .setEnablePlaceholders(false)
-                .setInitialLoadSizeHint(1)
+                .setInitialLoadSizeHint(10)
                 .setPageSize(10)
                 .build()
             // DataSource
@@ -92,7 +92,7 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
         } else {
             val config: PagedList.Config = PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
-                .setInitialLoadSizeHint(1)
+                .setInitialLoadSizeHint(10)
                 .setPageSize(1)
                 .build()
             val filteredDataSource =
