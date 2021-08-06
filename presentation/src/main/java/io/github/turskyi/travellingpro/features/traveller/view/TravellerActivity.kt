@@ -24,7 +24,7 @@ import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import io.github.turskyi.travellingpro.widgets.CirclePieChart
 import org.koin.android.ext.android.inject
 
-class TravellerActivity : AppCompatActivity() {
+class TravellerActivity : AppCompatActivity(), TravellerActivityView {
     private val viewModel: TravellerActivityViewModel by inject()
     private val listAdapter: VisitedCountriesAdapter by inject()
 
@@ -47,6 +47,28 @@ class TravellerActivity : AppCompatActivity() {
         super.onResume()
         // makes back icon visible
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    /** [initTitle] function is used in custom [CirclePieChart] widget */
+    override fun initTitle() {
+        if (viewModel.cityCount == 0) {
+            showTitleWithOnlyCountries()
+        } else {
+            showTitleWithCitiesAndCountries()
+        }
+    }
+
+    /** [showTitleWithOnlyCountries] function is used in custom [CirclePieChart] widget */
+    override fun showTitleWithOnlyCountries() {
+        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+            binding.includeAppBar.toolbarLayout.title = resources.getString(
+                R.string.name_and_counter, traveller!!.name, resources.getQuantityString(
+                    R.plurals.travellerCounter,
+                    visitedCountryNodes.size,
+                    visitedCountryNodes.size
+                )
+            )
+        })
     }
 
     private fun initView() {
@@ -136,20 +158,6 @@ class TravellerActivity : AppCompatActivity() {
             Gravity.BOTTOM
     }
 
-    /** [showTitleWithOnlyCountries] function must be open
-     *  to use it in custom [CirclePieChart] widget */
-    fun showTitleWithOnlyCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
-            binding.includeAppBar.toolbarLayout.title = resources.getString(
-                R.string.name_and_counter, traveller!!.name, resources.getQuantityString(
-                    R.plurals.travellerCounter,
-                    visitedCountryNodes.size,
-                    visitedCountryNodes.size
-                )
-            )
-        })
-    }
-
     private fun showTitleWithCitiesAndCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
             if (viewModel.cityCount > visitedCountryNodes.size) {
@@ -185,14 +193,6 @@ class TravellerActivity : AppCompatActivity() {
                 )
             }
         })
-    }
-
-    private fun initTitle() {
-        if (viewModel.cityCount == 0) {
-            showTitleWithOnlyCountries()
-        } else {
-            showTitleWithCitiesAndCountries()
-        }
     }
 
     private fun updateAdapterWith(visitedCountryNodes: List<VisitedCountryNode>) {

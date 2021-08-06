@@ -15,6 +15,8 @@ import com.github.mikephil.charting.listener.OnChartGestureListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
 import io.github.turskyi.travellingpro.entities.VisitedCountry
+import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
+import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivityView
 import io.github.turskyi.travellingpro.utils.IntFormatter
 import io.github.turskyi.travellingpro.utils.extensions.*
 
@@ -28,9 +30,36 @@ class CirclePieChart @JvmOverloads constructor(
     OnChartGestureListener {
 
     private var isCenterPieChartEnabled = false
+    private var homeActivityViewListener: HomeActivityView? = null
+    private var travellerActivityViewListener: TravellerActivityView? = null
 
     init {
         setNoDataText(null)
+        // init callbacks for Home activity and Traveller activity
+        try {
+            when (context) {
+                is HomeActivityView -> {
+                    homeActivityViewListener = context
+                }
+                is TravellerActivityView -> {
+                    travellerActivityViewListener = context
+                }
+                else -> {
+                    context.showReportDialog()
+                }
+            }
+        } catch (castException: ClassCastException) {
+            // in this case the activity does not implement the listener.
+            toastLong(
+                castException.localizedMessage ?: castException.stackTraceToString()
+            )
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        homeActivityViewListener = null
+        travellerActivityViewListener = null
     }
 
     override fun onChartGestureStart(
@@ -63,11 +92,11 @@ class CirclePieChart @JvmOverloads constructor(
     }
 
     override fun onChartSingleTapped(me: MotionEvent) {
-        if (context.getHomeActivity() != null) {
+        if (homeActivityViewListener != null) {
             when (isDrawHoleEnabled) {
                 false -> {
                     isDrawHoleEnabled = true
-                    context.getHomeActivity()!!.showTitleWithOnlyCountries()
+                    homeActivityViewListener!!.showTitleWithOnlyCountries()
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         centerText = context.convertPictureToSpannableString(
                             R.drawable.pic_pie_chart_center,
@@ -79,7 +108,20 @@ class CirclePieChart @JvmOverloads constructor(
                     centerText = ""
                     isDrawHoleEnabled = false
                     isCenterPieChartEnabled = false
-                    context.getHomeActivity()!!.setTitle()
+                    homeActivityViewListener!!.setTitle()
+                }
+            }
+        } else if (travellerActivityViewListener != null) {
+            when (isDrawHoleEnabled) {
+                false -> {
+                    isDrawHoleEnabled = true
+                    travellerActivityViewListener!!.showTitleWithOnlyCountries()
+                }
+                true -> {
+                    centerText = ""
+                    isDrawHoleEnabled = false
+                    isCenterPieChartEnabled = false
+                    travellerActivityViewListener!!.initTitle()
                 }
             }
         }
@@ -136,13 +178,13 @@ class CirclePieChart @JvmOverloads constructor(
             transparentCircleRadius = 24F
             setHoleColor(Color.BLACK)
         }
-        if (context.getTravellerActivity() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (travellerActivityViewListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             isDrawHoleEnabled = true
-            context.getTravellerActivity()!!.showTitleWithOnlyCountries()
-                centerText = context.convertPictureToSpannableString(
-                    R.drawable.pic_pie_chart_center,
-                )
-                isCenterPieChartEnabled = true
+            travellerActivityViewListener!!.showTitleWithOnlyCountries()
+            centerText = context.convertPictureToSpannableString(
+                R.drawable.pic_pie_chart_center,
+            )
+            isCenterPieChartEnabled = true
         }
     }
 
@@ -163,12 +205,10 @@ class CirclePieChart @JvmOverloads constructor(
         pieData.setValueTextColor(Color.WHITE)
 
         data = pieData
-        /* updates data in pieChart every time */
+        // updates data in pieChart every time
         invalidate()
     }
 
-    fun animatePieChart() {
-        // nice and smooth animation of a chart
-        animateY(1500)
-    }
+    // nice and smooth animation of a chart
+    fun animatePieChart() = animateY(1500)
 }

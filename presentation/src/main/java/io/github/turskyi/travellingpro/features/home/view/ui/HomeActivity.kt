@@ -35,10 +35,11 @@ import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
 import org.koin.android.ext.android.inject
 import java.util.*
 
-class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
+class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, HomeActivityView {
 
     private val viewModel: HomeActivityViewModel by inject()
     private val listAdapter: HomeAdapter by inject()
@@ -290,7 +291,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
     }
 
     /** must be open to use it in custom "circle pie chart" widget */
-    fun setTitle() = if (viewModel.cityCount > 0) {
+   override fun setTitle() = if (viewModel.cityCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()
@@ -440,7 +441,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
 
     /** [showTitleWithOnlyCountries] function must be open
      *  to use it in custom "circle pie chart" widget */
-    fun showTitleWithOnlyCountries() {
+    override fun showTitleWithOnlyCountries() {
         viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
             binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,

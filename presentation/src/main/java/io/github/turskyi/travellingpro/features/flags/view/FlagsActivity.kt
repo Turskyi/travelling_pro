@@ -9,8 +9,8 @@ import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityFlagsBinding
 import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
-import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
-import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.FlagsActivityView
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.adapter.FlagsAdapter
 import io.github.turskyi.travellingpro.features.flags.view.adapter.ZoomOutPageTransformer
 import io.github.turskyi.travellingpro.utils.extensions.toast
@@ -61,8 +61,10 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
         return true
     }
 
-    override fun getItemCount(): Int {
-        return getBundle!!.getInt(EXTRA_ITEM_COUNT)
+    override fun getItemCount(): Int = if (getBundle != null) {
+        getBundle!!.getInt(EXTRA_ITEM_COUNT)
+    } else {
+        0
     }
 
     override fun setLoaderVisibility(currentVisibility: Int) {

@@ -2,6 +2,7 @@ package io.github.turskyi.travellingpro.utils.extensions
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
@@ -16,17 +17,12 @@ import android.text.style.ImageSpan
 import android.widget.Toast
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
-import android.graphics.BitmapFactory
-
-import android.graphics.Bitmap
-import java.io.IOException
-import java.net.URL
-
 
 fun Context.isFacebookInstalled() = try {
     packageManager.getPackageInfo(
@@ -159,4 +155,40 @@ fun Context.isOnline(): Boolean {
         }
         return isConnected ?: false
     }
+}
+
+fun Context.showReportDialog() {
+    val lastDialog: AlertDialog = AlertDialog.Builder(this)
+        .setTitle(getString(R.string.alert_error_title))
+        .setMessage(getString(R.string.alert_error_message))
+        .setCancelable(false)
+        .setPositiveButton(
+            getString(R.string.yes)
+        ) { _: DialogInterface?, _: Int ->
+            val intent = Intent(
+                Intent.ACTION_SENDTO,
+                Uri.fromParts(
+                    getString(R.string.scheme_mailto),
+                    getString(R.string.email),
+                    /* Gets the decoded fragment part of this URI,
+                     * everything after the '#', null if undefined. */
+                    null
+                )
+            )
+            intent.putExtra(
+                Intent.EXTRA_SUBJECT,
+                getString(R.string.error_message_intro) + this.toString(),
+            )
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            }
+        }.setNegativeButton(
+            getString(R.string.no)
+        ) { dialog: DialogInterface, _: Int ->
+            toast(R.string.error_message_try_tomorrow)
+            dialog.cancel()
+            val newIntent = Intent(this, javaClass)
+            startActivity(newIntent)
+        }.create()
+    lastDialog.show()
 }

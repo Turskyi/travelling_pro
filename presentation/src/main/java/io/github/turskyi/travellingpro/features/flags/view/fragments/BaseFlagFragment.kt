@@ -19,8 +19,8 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
 import io.github.turskyi.travellingpro.entities.VisitedCountry
-import io.github.turskyi.travellingpro.features.flags.callbacks.FlagsActivityView
-import io.github.turskyi.travellingpro.features.flags.callbacks.OnChangeFlagFragmentListener
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.FlagsActivityView
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.widgets.ListenableWebView
 
