@@ -74,7 +74,6 @@ dependencies {
 
     implementation project(":domain")
     implementation project(":di")
-    implementation project(":data")
 
     // design components
     implementation "com.google.android.material:material:$material_version"
@@ -140,10 +139,6 @@ dependencies {
     // used for animation
     def lottieVersion = "4.0.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
-
-    // for "ci", used for deploying app to google app market
-    def appCenterSdkVersion = '4.2.0'
-    implementation "com.microsoft.appcenter:appcenter-distribute:${appCenterSdkVersion}"
 
     // Koin for Android
     implementation("io.insert-koin:koin-android:$insert_koin_version")
