@@ -1,0 +1,17 @@
+<resources>
+    <!-- App theme without action bar -->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- android:fitsSystemWindows="true" keeps status bar transparent while animation -->
+        <item name="android:fitsSystemWindows">true</item>
+        <!-- android:layout_height="@dimen/height_app_bar" fixed height controls the height of AppBarLayout -->
+        <item name="android:layout_height">@dimen/height_app_bar</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

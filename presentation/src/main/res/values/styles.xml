@@ -9,12 +9,6 @@
         <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
-    <!-- App theme without action bar -->
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
     <!-- Custom AppTheme.Launcher. Sets drawable as background in splash screen. -->
     <style name="AppTheme.Launcher">
         <item name="colorPrimaryDark">@android:color/black</item>
@@ -58,14 +52,23 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:paddingStart">@dimen/offset_4</item>
         <item name="android:paddingEnd">@dimen/offset_4</item>
+        <item name="android:paddingTop">@dimen/offset_12</item>
         <item name="android:layoutAnimation">@anim/layout_animation_from_bottom</item>
+        <item name="layout_behavior">
+            com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
+        </item>
     </style>
 
     <style name="ProgressBarStyle">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:padding">@dimen/offset_40</item>
+        <item name="android:padding">@dimen/offset_4</item>
         <item name="android:visibility">visible</item>
+        <item name="android:layout_marginTop">@dimen/offset_64</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="lottie_loop">true</item>
+        <item name="lottie_autoPlay">true</item>
+        <item name="lottie_rawRes">@raw/anim_flight</item>
     </style>
 
     <style name="LinearLayoutForListItemStyle">
@@ -86,6 +89,19 @@
         <item name="android:padding">@dimen/offset_4</item>
     </style>
 
+    <style name="NoResultsTextViewStyle">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_weight">9</item>
+        <item name="android:fontFamily">casual</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/offset_4</item>
+        <item name="android:text">@string/no_results</item>
+        <item name="android:textSize">@dimen/headline6</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="ImageViewStyle">
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_width">0dp</item>
@@ -98,6 +114,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">casual</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/headline6</item>
         <item name="android:textColorPrimary">@android:color/white</item>
@@ -112,10 +129,6 @@
         <item name="color">@android:color/white</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
     <style name="RoundShapedDarkAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/bg_popup_dark</item>
     </style>
@@ -123,6 +136,9 @@
     <style name="DialogueBtnStyle">
         <item name="android:clickable">true</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:textColor">@color/text_btn_color</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_margin">@dimen/offset_12</item>
@@ -133,9 +149,16 @@
     <style name="ShadowLayout">
         <item name="containerBackgroundColor">@android:color/black</item>
         <item name="shadowGravity">bottom</item>
-        <item name="shadowRadius">@dimen/offset_12</item>
-        <item name="containerElevation">@dimen/elevation_12</item>
+        <item name="shadowRadius">@dimen/offset_8</item>
+        <item name="containerElevation">@dimen/elevation_1</item>
         <item name="shadowColor">@android:color/white</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="scaleViewOnElevationChange">true</item>
+        <item name="shadowMarginStart">@dimen/offset_8</item>
+        <item name="shadowMarginTop">@dimen/offset_8</item>
     </style>
 
     <style name="CasualTextAppearance">
@@ -184,5 +207,108 @@
     <style name="Widget.Design.MultilineCollapsingToolbar" parent="@style/Widget.Design.CollapsingToolbar" />
 
     <style name="ActionBar.Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
+
+    <style name="CoordinatorLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:animateLayoutChanges">true</item>
+        <item name="android:animationCache">true</item>
+        <item name="android:persistentDrawingCache">animation</item>
+        <item name="android:background">@android:color/black</item>
+        <!-- android:fitsSystemWindows="true" makes status bar the same color as the content -->
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="CollapsingToolbarLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/offset_8</item>
+        <item name="contentScrim">?attr/colorPrimary</item>
+        <item name="layout_scrollFlags">scroll|snap|enterAlways</item>
+        <item name="toolbarId">@+id/toolbar</item>
+    </style>
+
+    <style name="ToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:gravity">top</item>
+        <item name="theme">@style/ToolbarTitleStyle</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="layout_collapseMode">pin</item>
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="navigationIcon">?attr/homeAsUpIndicator</item>
+        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
+    </style>
+
+    <style name="ImageButtonStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:padding">@dimen/offset_8</item>
+        <item name="android:src">@drawable/ic_search</item>
+    </style>
+
+    <style name="EditTextStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:labelFor">@+id/ib_search</item>
+        <item name="android:maxLength">100</item>
+        <item name="android:paddingTop">@dimen/offset_4</item>
+        <item name="android:paddingStart">@dimen/offset_8</item>
+        <item name="android:paddingEnd">@dimen/offset_8</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="FloatingActionButtonStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:drawingCacheQuality">auto</item>
+        <item name="android:fadeScrollbars">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:soundEffectsEnabled">true</item>
+        <item name="elevation">@dimen/elevation_4</item>
+        <item name="fabCustomSize">@dimen/size_search_fab_custom</item>
+        <item name="fabSize">auto</item>
+        <item name="layout_anchorGravity">bottom|end</item>
+        <item name="maxImageSize">@dimen/size_search_fab_max_image</item>
+        <item name="useCompatPadding">true</item>
+    </style>
+
+    <style name="MultilineCollapsingToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@android:color/black</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:soundEffectsEnabled">true</item>
+        <item name="collapsedTitleGravity">start</item>
+        <item name="collapsedTitleTextAppearance">@style/CasualSmallTextAppearance</item>
+        <item name="contentScrim">@android:color/black</item>
+        <item name="expandedTitleGravity">bottom|center</item>
+        <item name="expandedTitleTextAppearance">@style/CasualTextAppearance</item>
+        <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
+        <item name="scrimAnimationDuration">@android:integer/config_longAnimTime</item>
+        <item name="statusBarScrim">@android:color/black</item>
+        <item name="toolbarId">@+id/toolbar</item>
+    </style>
+
+    <style name="FrameLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">@dimen/offset_10</item>
+        <item name="android:paddingBottom">@dimen/offset_40</item>
+        <item name="layout_collapseMode">pin</item>
+    </style>
+
+    <style name="CirclePieChartStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:elevation">@dimen/elevation_4</item>
+        <item name="android:soundEffectsEnabled">true</item>
+    </style>
 
 </resources>

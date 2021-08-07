@@ -6,8 +6,8 @@ buildscript {
         build_tools_version = "30.0.3"
         min_sdk_version = 21
         target_sdk_version = 30
-        version_code = 9
-        version_name = "1.0.8"
+        version_code = 10
+        version_name = "1.0.9"
     }
     repositories {
         google()
@@ -15,15 +15,15 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$build_gradle_version"
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
         // Google Services plugin (used with firebase)
         classpath "com.google.gms:google-services:$google_services_version"
         // Crashlytics Gradle plugin
         classpath "com.google.firebase:firebase-crashlytics-gradle:$firebase_crashlytics_gradle_version"
-       // the dependency for the Performance Monitoring plugin
-        classpath 'com.google.firebase:perf-plugin:1.4.0'
+        // the dependency for the Performance Monitoring plugin
+        classpath "com.google.firebase:perf-plugin:$firebase_perf_version"
     }
 }
 
@@ -46,9 +46,9 @@ subprojects {
             // Paging
             implementation "androidx.paging:paging-runtime:$paging_version"
 
-            //  Bill of Materials for the Firebase platform
+            /* Bill of Materials for the Firebase platform
+             * When using the BoM, no need to specify versions in Firebase library dependencies */
             implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
-            // When using the BoM, no need to specify versions in Firebase library dependencies
 
             // Declaring the dependencies for the Crashlytics and Analytics libraries
             implementation 'com.google.firebase:firebase-crashlytics-ktx'
@@ -58,7 +58,7 @@ subprojects {
 
             // Declare the dependency for the Cloud Firestore library
             implementation 'com.google.firebase:firebase-firestore-ktx'
-            implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version"
+            implementation "com.google.firebase:firebase-storage-ktx"
 
             // authentication
             implementation "com.google.firebase:firebase-auth"

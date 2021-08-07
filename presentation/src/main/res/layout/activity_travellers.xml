@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CoordinatorLayoutStyle"
+    tools:context=".features.travellers.view.TravellersActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- layout_scrollFlags cannot be added to style, because it will not work from there -->
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="@style/CollapsingToolbarLayoutStyle"
+            app:layout_scrollFlags="scroll|snap|enterAlways">
+
+            <include
+                android:id="@+id/include_toolbar"
+                layout="@layout/layout_toolbar" />
+
+            <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
+                android:id="@+id/sllSearch"
+                style="@style/ShadowLayout">
+
+                <ImageButton
+                    android:id="@+id/ib_search"
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/content_description.icon_search" />
+
+                <EditText
+                    android:id="@+id/et_search"
+                    style="@style/EditTextStyle"
+                    android:autofillHints="@string/hint.search_traveller"
+                    android:hint="@string/hint.search_traveller"
+                    android:inputType="textPersonName" />
+            </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_travellers"
+        style="@style/RecyclerViewStyle" />
+
+    <TextView
+        android:id="@+id/tv_no_results"
+        style="@style/NoResultsTextViewStyle" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/pb"
+        style="@style/ProgressBarStyle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/float_btn_visibility"
+        style="@style/FloatingActionButtonStyle"
+        android:contentDescription="@string/content_description.button"
+        android:tag="@drawable/btn_hide_ripple"
+        android:visibility="visible"
+        app:layout_anchor="@id/rv_travellers"
+        app:srcCompat="@drawable/btn_hide_ripple" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -9,23 +9,28 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import io.github.turskyi.data.BuildConfig.HOST_URL
-import io.github.turskyi.data.api.datasource.CountriesNetSource
-import io.github.turskyi.data.api.service.CountriesApi
-import io.github.turskyi.data.firebase.dataSource.FirestoreSourceImpl
-import io.github.turskyi.data.firebase.service.FirestoreSource
+import io.github.turskyi.data.network.datasource.NetSource
+import io.github.turskyi.data.network.service.CountriesApi
+import io.github.turskyi.data.database.firestore.datasource.FirestoreDatabaseSourceImpl
+import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.data.util.hasNetwork
-import io.github.turskyi.data.repository.CountriesRepositoryImpl
-import io.github.turskyi.domain.repository.CountriesRepository
+import io.github.turskyi.data.repository.CountryRepositoryImpl
+import io.github.turskyi.data.repository.TravellerRepositoryImpl
+import io.github.turskyi.domain.repository.CountryRepository
+import io.github.turskyi.domain.repository.TravellerRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.Request
 
 val repositoriesModule = module {
-    factory<CountriesRepository> { CountriesRepositoryImpl() }
+    factory<CountryRepository> { CountryRepositoryImpl(CoroutineScope(SupervisorJob())) }
+    factory<TravellerRepository> { TravellerRepositoryImpl(CoroutineScope(SupervisorJob())) }
 }
 
 val dataProvidersModule = module {
     single {
         OkHttpClient.Builder()
-            .cache(get<Cache>())
+            .cache(get())
             .addInterceptor { chain ->
                 var request: Request = chain.request()
                 request = if (hasNetwork(androidContext())) {
@@ -58,13 +63,13 @@ val dataProvidersModule = module {
     single<Retrofit> {
         Retrofit.Builder()
             .baseUrl(HOST_URL)
-            .client(get<OkHttpClient>())
-            .addConverterFactory(GsonConverterFactory.create(get<Gson>())).build()
+            .client(get())
+            .addConverterFactory(GsonConverterFactory.create(get())).build()
     }
 }
 
 val sourcesModule = module {
     single { get<Retrofit>().create(CountriesApi::class.java) }
-    single { CountriesNetSource(get()) }
-    factory<FirestoreSource> { FirestoreSourceImpl() }
+    single { NetSource(get()) }
+    factory<FirestoreDatabaseSource> { FirestoreDatabaseSourceImpl(CoroutineScope(SupervisorJob())) }
 }

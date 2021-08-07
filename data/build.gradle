@@ -10,8 +10,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.min_sdk_version
         targetSdkVersion rootProject.target_sdk_version
-        versionCode rootProject.version_code
-        versionName rootProject.version_name
 
         buildConfigField "String", "HOST_URL", "\"${rootProject.HOST_URL}\""
 

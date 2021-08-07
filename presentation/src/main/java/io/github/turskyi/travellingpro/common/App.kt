@@ -20,7 +20,7 @@ class App : Application() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate()
 
-        /* allows using cached data while offline */
+        // allows using cached data while offline
         if (FirebaseApp.getApps(this).isNotEmpty()) {
             /**
              * The Firebase Database client will cache synchronized data and keep track of all writes you've

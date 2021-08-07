@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appBar"
+    style="@style/AppTheme.AppBarOverlay">
+
+    <io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar.CollapsingToolbarLayoutExtension
+        android:id="@+id/toolbar_layout"
+        style="@style/MultilineCollapsingToolbarStyle">
+
+        <FrameLayout style="@style/FrameLayoutStyle">
+
+            <io.github.turskyi.travellingpro.widgets.CirclePieChart
+                android:id="@+id/circle_pie_chart"
+                style="@style/CirclePieChartStyle" />
+
+        </FrameLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="15dp"
+            tools:visibility="visible"
+            android:layout_gravity="center"
+            card_view:cardCornerRadius="@dimen/radius_circle">
+
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="@dimen/size_face"
+                android:layout_height="@dimen/size_face"
+                android:contentDescription="@string/content_description.image"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- invisible view for Android Lollipop, instead of Circle -->
+
+        <ImageView
+            android:id="@+id/iv_square_avatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/offset_16"
+            android:contentDescription="@string/content_description.image"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/ToolbarStyle" />
+
+    </io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar.CollapsingToolbarLayoutExtension>
+
+</com.google.android.material.appbar.AppBarLayout>
