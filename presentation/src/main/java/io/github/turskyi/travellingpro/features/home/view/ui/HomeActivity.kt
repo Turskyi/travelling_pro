@@ -218,6 +218,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         viewModel.errorMessage.observe(this, { event ->
             event.getMessageIfNotHandled()?.let { message ->
                 toastLong(message)
+                AuthUI.getInstance().signOut(this)
             }
         })
 
@@ -317,7 +318,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                         response == null -> {
                             // User pressed back button
                             toastLong(R.string.msg_sign_in_cancelled)
-                            finishAndRemoveTask()
+                            AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
                         response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
@@ -328,11 +329,12 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                         response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
                             toastLong(R.string.msg_bad_internet)
                             internetResultLauncher.launch(internetSettingsIntent)
+                            AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
                         else -> {
                             toastLong(response.error?.localizedMessage)
-                            finishAndRemoveTask()
+                            AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
                     }
