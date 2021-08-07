@@ -92,7 +92,7 @@ dependencies {
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation "com.google.firebase:firebase-database-ktx"
+    implementation "com.google.firebase:firebase-database-ktx:20.0.1"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
     implementation 'com.google.firebase:firebase-perf:20.0.2'
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
@@ -105,7 +105,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
     // Glide (Image caching and management)
-    def glideVersion = "4.11.0"
+    def glideVersion = "4.12.0"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
 
@@ -134,18 +134,18 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
     // Facebook SDK
-    def facebookVersion = "11.1.0"
+    def facebookVersion = "11.2.0"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "3.4.4"
+    def lottieVersion = "4.0.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // for "ci", used for deploying app to google app market
-    def appCenterSdkVersion = '4.1.0'
+    def appCenterSdkVersion = '4.2.0'
     implementation "com.microsoft.appcenter:appcenter-distribute:${appCenterSdkVersion}"
 
     // Koin for Android
