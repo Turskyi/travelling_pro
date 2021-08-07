@@ -38,6 +38,12 @@ import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
 import org.koin.android.ext.android.inject
 import java.util.*
+import com.microsoft.appcenter.distribute.Distribute
+
+import com.microsoft.appcenter.AppCenter
+
+
+
 
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, HomeActivityView {
 
@@ -52,6 +58,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
+        AppCenter.start(Distribute::class.java)
         registerActivitiesForResult()
         checkPermissionAndInitAuthentication(this@HomeActivity)
         initView()
