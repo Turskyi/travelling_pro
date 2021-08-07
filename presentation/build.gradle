@@ -74,6 +74,7 @@ dependencies {
 
     implementation project(":domain")
     implementation project(":di")
+    implementation project(":data")
 
     // design components
     implementation "com.google.android.material:material:$material_version"
