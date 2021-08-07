@@ -1,5 +1,7 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
 
 android {
     compileSdkVersion rootProject.compile_sdk_version
@@ -37,9 +39,6 @@ dependencies {
     /* data module which is the inner (lower) layer of the project knows only about domain layer
      * (a layer with interfaces which communicates with outer (top) level of the project ) */
     implementation project(':domain')
-
-    // kotlin
-    api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     // Koin for Android
     api ("io.insert-koin:koin-android:$insert_koin_version")
