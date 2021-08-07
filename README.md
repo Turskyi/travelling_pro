@@ -14,6 +14,11 @@ after every push to the dev branch,
 
 • Programming language: **Kotlin**;  
 
+• SDK: Android
+
+• Embedded SDK: [Facebook Sharing](https://developers.facebook.com/docs/sharing/android),
+[Facebook Login](https://developers.facebook.com/docs/facebook-login/overview);
+
 • Structural design patterns: [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
  wrapped with [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html);
 
@@ -22,6 +27,8 @@ after every push to the dev branch,
 [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel);
 
 • Database: [Firestore](https://firebase.google.com/docs/firestore);
+
+• Object storage service: [Cloud Storage for Firebase](https://firebase.google.com/docs/storage);
 
 • Dependency injection: [Koin](https://insert-koin.io/docs/reference/introduction);
 
@@ -33,10 +40,8 @@ after every push to the dev branch,
 
 • Google Play services: [Location](https://developer.android.com/training/location);
 
-• Embeded SDK: [Facebook Sharing](https://developers.facebook.com/docs/sharing/android), [Facebook Login](https://developers.facebook.com/docs/facebook-login/overview);
-
 • UI components: [Lottie](https://lottiefiles.com/what-is-lottie), [PhotoView](https://github.com/Baseflow/PhotoView),
  [ViewPager2](https://developer.android.com/jetpack/androidx/releases/viewpager2),
  [data chart](https://weeklycoding.com/mpandroidchart/), [RecyclerView](http://www.recyclerview.org/),
-[Loading SVG](https://github.com/corouteam/GlideToVectorYou), [Glide](https://bumptech.github.io/glide/),
+ [Loading SVG](https://github.com/corouteam/GlideToVectorYou), [Glide](https://bumptech.github.io/glide/),
  [Data Binding](https://developer.android.com/topic/libraries/data-binding).
