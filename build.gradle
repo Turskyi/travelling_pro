@@ -40,21 +40,22 @@ subprojects {
             // Paging
             implementation "androidx.paging:paging-runtime:$paging_version"
 
-            /* Bill of Materials for the Firebase platform
+            /* Bill of Materials for the Firebase platform.
              * When using the BoM, no need to specify versions in Firebase library dependencies */
             implementation platform("com.google.firebase:firebase-bom:$firebase_bom_version")
 
-            // Declaring the dependencies for the Crashlytics and Analytics libraries
+            // Declaring the dependencies for the Crashlytics library
             implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
-            // Firebase SDK for Google Analytics
+            // Firebase SDK for Google Analytics library
             implementation 'com.google.firebase:firebase-analytics-ktx'
 
-            // Declare the dependency for the Cloud Firestore library
+            // Declaring the dependency for the Cloud Firestore library
             implementation 'com.google.firebase:firebase-firestore-ktx'
+//            object storage service
             implementation "com.google.firebase:firebase-storage-ktx"
 
-            // authentication
+            // authentication (to get current user etc.)
             implementation "com.google.firebase:firebase-auth"
 
             // avoids "Service not registered" exception

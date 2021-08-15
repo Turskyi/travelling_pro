@@ -88,9 +88,11 @@ dependencies {
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation "com.google.firebase:firebase-database-ktx:20.0.1"
+    // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
+// performance tracing
     implementation 'com.google.firebase:firebase-perf:20.0.2'
+// to send notifications across devices from firebase console
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
 
     // ViewModel and LiveData
