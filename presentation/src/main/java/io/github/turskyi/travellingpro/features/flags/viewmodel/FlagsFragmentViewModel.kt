@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : ViewModel(),
     LifecycleObserver {
-    var visitedCount = 0
+    private var visitedCount = 0
 
     private val _visibilityLoader = MutableLiveData<Int>()
     val visibilityLoader: MutableLiveData<Int>

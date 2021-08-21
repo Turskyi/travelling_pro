@@ -83,10 +83,8 @@ internal class CollapsingTextHelper(private val mView: View) {
     private var mCollapsedTextGravity: Int = Gravity.CENTER_VERTICAL
     private var mExpandedTextSize: Float = 15f
     private var mCollapsedTextSize: Float = 15f
-    var expandedTextColor: ColorStateList? = null
-        private set
-    var collapsedTextColor: ColorStateList? = null
-        private set
+    private var expandedTextColor: ColorStateList? = null
+    private var collapsedTextColor: ColorStateList? = null
     private var mExpandedDrawY: Float = 0f
     private var mCollapsedDrawY: Float = 0f
     private var mExpandedDrawX: Float = 0f
@@ -133,11 +131,6 @@ internal class CollapsingTextHelper(private val mView: View) {
     private var lineSpacingMultiplier: Float = 1f
     fun setTextSizeInterpolator(interpolator: Interpolator?) {
         mTextSizeInterpolator = interpolator
-        recalculate()
-    }
-
-    fun setPositionInterpolator(interpolator: Interpolator?) {
-        mPositionInterpolator = interpolator
         recalculate()
     }
 
@@ -268,10 +261,6 @@ internal class CollapsingTextHelper(private val mView: View) {
         }
     }
 
-    fun getMaxLines(): Int {
-        return maxLines
-    }
-
     // getter and setter methods for line spacing
     fun setLineSpacingExtra(lineSpacingExtra: Float) {
         if (lineSpacingExtra != this.lineSpacingExtra) {
@@ -281,20 +270,12 @@ internal class CollapsingTextHelper(private val mView: View) {
         }
     }
 
-    fun getLineSpacingExtra(): Float {
-        return lineSpacingExtra
-    }
-
     fun setLineSpacingMultiplier(lineSpacingMultiplier: Float) {
         if (lineSpacingMultiplier != this.lineSpacingMultiplier) {
             this.lineSpacingMultiplier = lineSpacingMultiplier
             clearTexture()
             recalculate()
         }
-    }
-
-    fun getLineSpacingMultiplier(): Float {
-        return lineSpacingMultiplier
     }
 
     private fun readFontFamilyTypeface(resId: Int): Typeface? {
@@ -310,29 +291,6 @@ internal class CollapsingTextHelper(private val mView: View) {
         }
         return null
     }
-
-    fun setTypefaces(typeface: Typeface?) {
-        mExpandedTypeface = typeface
-        mCollapsedTypeface = mExpandedTypeface
-        recalculate()
-    }
-
-    var collapsedTypeface: Typeface?
-        get() = if (mCollapsedTypeface != null) mCollapsedTypeface else Typeface.DEFAULT
-        set(typeface) {
-            if (areTypefacesDifferent(mCollapsedTypeface, typeface)) {
-                mCollapsedTypeface = typeface
-                recalculate()
-            }
-        }
-    var expandedTypeface: Typeface?
-        get() = if (mExpandedTypeface != null) mExpandedTypeface else Typeface.DEFAULT
-        set(typeface) {
-            if (areTypefacesDifferent(mExpandedTypeface, typeface)) {
-                mExpandedTypeface = typeface
-                recalculate()
-            }
-        }
 
     fun setState(state: IntArray?): Boolean {
         mState = state
@@ -364,26 +322,6 @@ internal class CollapsingTextHelper(private val mView: View) {
             if (mFraction != mExpandedFraction) {
                 mExpandedFraction = mFraction
                 calculateCurrentOffsets()
-            }
-        }
-    var collapsedTextSize: Float
-        get() {
-            return mCollapsedTextSize
-        }
-        set(textSize) {
-            if (mCollapsedTextSize != textSize) {
-                mCollapsedTextSize = textSize
-                recalculate()
-            }
-        }
-    var expandedTextSize: Float
-        get() {
-            return mExpandedTextSize
-        }
-        set(textSize) {
-            if (mExpandedTextSize != textSize) {
-                mExpandedTextSize = textSize
-                recalculate()
             }
         }
 
@@ -750,7 +688,7 @@ internal class CollapsingTextHelper(private val mView: View) {
                 )
                 // if last char in line is space, move it behind the ellipsis
                 var lineEnd: CharSequence? = ""
-                if (lineText.get(lineText.length - 1) == ' ') {
+                if (lineText[lineText.length - 1] == ' ') {
                     lineEnd = lineText.subSequence(lineText.length - 1, lineText.length)
                     lineText = lineText.subSequence(0, lineText.length - 1)
                 }

@@ -24,6 +24,13 @@
     </head>
     <body><img src=\'%1$s\'/></body>
     </html>]]></string>
+    <string name="html_mini_flag" translatable="false"><![CDATA[
+    <html>
+    <head>
+    <style type=\'text/css\'>body{margin:auto auto;text-align:center;} img{width:80%%25;}</style>
+    </head>
+    <body><img src=\'%1$s\'/></body>
+    </html>]]></string>
     <string name="default_notification_channel_id" translatable="false">Notifications from Travelling application.</string>
 
     <!-- for face book sharing -->
@@ -35,6 +42,7 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb2312394202364807</string>
     <!-- for general use of facebook auth-->
     <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
+    <string name="tag_info_dialog" translatable="false">info dialog</string>
     <!-- END of not translatable strings -->
 
     <!-- START of default  strings -->
@@ -48,8 +56,6 @@
     <string name="dialog_btn_ok">OK</string>
     <string name="dialog_btn_ok_ready">OK ?</string>
     <string name="dialog_btn_not_ok">not OK</string>
-    <string name="exception_unsupported_context">you cannot instantiate the context</string>
-    <string name="exception_npe_context">you should init context util first</string>
     <!-- END of default strings -->
 
     <!-- START home screen -->
@@ -131,15 +137,8 @@
     <!-- START of list with strings for messages -->
     <string name="msg.no_facebook_app">You do not have Facebook app installed</string>
     <string name="msg.no_app_installed">No app available to share pie chart</string>
-    <string name="msg.internet_connection_lost">Тhe app is offline.</string>
-    <string name="msg.connection_billing">Problems with connecting to google play.</string>
-    <string name="msg.error_due_to_canceling_purchase">Cancelling the purchase</string>
-    <string name="msg.error_unexpected">unexpected error occurred</string>
-    <string name="msg.complete_purchase">You\'ve started the pending purchase. Care to complete it.</string>
-    <string name="msg.purchase_acknowledged">Purchase acknowledged</string>
     <string name="msg.gps_permission_denied">GPS permission denied</string>
     <string name="msg.did_not_choose">did not choose anything</string>
-    <string name="msg.did_not_sign_in">did not sign in</string>
     <string name="msg.sign_in_cancelled">sign in canceled</string>
     <string name="msg.no_internet">no internet connection</string>
     <string name="msg.bad_internet">bad internet connection</string>

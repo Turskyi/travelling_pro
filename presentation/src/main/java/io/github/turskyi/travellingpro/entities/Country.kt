@@ -7,7 +7,7 @@ data class Country(
     var id: Int,
     val name: String,
     val flag: String,
-    var visited: Boolean,
+    var isVisited: Boolean,
     var selfie: String,
     val selfieName: String,
 ) : Parcelable {
@@ -29,7 +29,7 @@ data class Country(
         parcel.writeValue(id)
         parcel.writeValue(name)
         parcel.writeValue(flag)
-        parcel.writeValue(visited)
+        parcel.writeValue(isVisited)
         parcel.writeValue(selfie)
         parcel.writeValue(selfieName)
     }

@@ -11,25 +11,7 @@ data class CountryModel(
 ) {
     // required empty constructor for firestore serialization
     constructor() : this(0, "", "", false, "", "")
-    constructor(id: Int, name: String, flag: String) : this(
-        id, name, flag, false, "", ""
-    )
-
-    constructor(id: Int, name: String, flag: String, isVisited: Boolean) : this(
-        id,
-        name,
-        flag,
-        isVisited,
-        "",
-        ""
-    )
-
-    constructor(id: Int, name: String, flag: String, selfie: String, selfieName: String) : this(
-        id,
-        name,
-        flag,
-        false,
-        selfie,
-        selfieName
+    constructor(name: String, flag: String) : this(
+        id = 0, name = name, flag = flag, isVisited = false, selfie = "", selfieName = ""
     )
 }

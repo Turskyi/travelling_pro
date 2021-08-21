@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.turskyi.travellingpro.common
 
 import android.app.Application

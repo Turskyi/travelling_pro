@@ -292,7 +292,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     /** must be open to use it in custom "circle pie chart" widget */
-   override fun setTitle() = if (viewModel.cityCount > 0) {
+    override fun setTitle() = if (viewModel.cityCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()
@@ -333,7 +333,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                             return@registerForActivityResult
                         }
                         else -> {
-                            toastLong(response.error?.localizedMessage)
+                            toastLong(response.error?.localizedMessage ?: response.error.toString())
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }

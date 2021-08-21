@@ -16,14 +16,6 @@ data class VisitedCountryEntity(
         selfieName = "",
     )
 
-    constructor(name: String, flag: String) : this(
-        id = 0,
-        name = name,
-        flag = flag,
-        selfie = "",
-        selfieName = "",
-    )
-
     constructor(id: Int, name: String, flag: String) : this(
         id,
         name,

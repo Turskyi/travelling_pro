@@ -10,17 +10,14 @@
     <dimen name="offset_16">16dp</dimen>
     <dimen name="offset_20">20dp</dimen>
     <dimen name="offset_26">26dp</dimen>
-    <dimen name="offset_29">29dp</dimen>
     <dimen name="offset_40">40dp</dimen>
     <dimen name="offset_64">64dp</dimen>
-    <dimen name="offset_140">140dp</dimen>
 
     <!--region Elevations-->
     <dimen name="elevation_1">1dp</dimen>
     <dimen name="elevation_2">2dp</dimen>
     <dimen name="elevation_4">4dp</dimen>
     <dimen name="elevation_8">8dp</dimen>
-    <dimen name="elevation_12">12dp</dimen>
 
     <!--region Typography-->
     <!--https://material.io/develop/android/theming/typography/-->
@@ -31,7 +28,6 @@
 
     <!-- heights -->
     <dimen name="height_list_item_tablet">60dp</dimen>
-    <dimen name="height_toolbar_all_countries">72dp</dimen>
     <dimen name="height_share_btn">120dp</dimen>
     <dimen name="height_bottom_sheet">400dp</dimen>
     <dimen name="height_app_bar">300dp</dimen>
@@ -50,7 +46,6 @@
     <!-- sizes -->
     <dimen name="size_search_fab_custom">30dp</dimen>
     <dimen name="size_search_fab_max_image">34dp</dimen>
-    <dimen name="size_min">48dp</dimen>
     <dimen name="size_fab_custom">57dp</dimen>
     <dimen name="size_max_float_btn">60dp</dimen>
     <dimen name="size_avatar">150dp</dimen>
