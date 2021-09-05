@@ -87,7 +87,7 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'com.google.firebase:firebase-analytics:19.0.1'
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing

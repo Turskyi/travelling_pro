@@ -3,7 +3,6 @@ package io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -176,7 +175,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
 
         // Now draw the status bar scrim
         if (mStatusBarScrim != null && mScrimAlpha > 0) {
-            val topInset = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+            val topInset = if (mLastInsets != null) {
+                mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            } else {
+                0
+            }
             if (topInset > 0) {
                 mStatusBarScrim!!.setBounds(
                     0, -mCurrentOffset, width,
@@ -244,7 +247,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     }
 
     private fun isToolbarChild(child: View): Boolean {
-        return if (mToolbarDirectChild == null || mToolbarDirectChild === this) child === mToolbar else child === mToolbarDirectChild
+        return if (mToolbarDirectChild == null || mToolbarDirectChild === this) {
+            child === mToolbar
+        } else {
+            child === mToolbarDirectChild
+        }
     }
 
     /**
@@ -253,12 +260,12 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
      */
     private fun findDirectChild(descendant: View?): View? {
         var directChild = descendant
-        var p = descendant!!.parent
-        while (p !== this && p != null) {
-            if (p is View) {
-                directChild = p
+        var viewParent = descendant?.parent
+        while (viewParent !== this && viewParent != null) {
+            if (viewParent is View) {
+                directChild = viewParent
             }
-            p = p.parent
+            viewParent = viewParent.parent
         }
         return directChild
     }
@@ -290,7 +297,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         ensureToolbar()
         super.onMeasure(widthMeasureSpec, mHeightMeasureSpec)
         val mode = MeasureSpec.getMode(mHeightMeasureSpec)
-        val topInset = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+        val topInset = if (mLastInsets != null) {
+            mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+        } else {
+            0
+        }
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
             /* If we have a top inset and we're set to wrap_content height we need to make sure
              * we add the top inset to our height, therefore we re-measure */
@@ -442,8 +453,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         if (mScrimAnimator == null) {
             mScrimAnimator = ValueAnimator()
             mScrimAnimator!!.duration = scrimAnimationDuration
-            mScrimAnimator?.interpolator =
-                if (targetAlpha > mScrimAlpha) AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR else AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
+            mScrimAnimator?.interpolator = if (targetAlpha > mScrimAlpha) {
+                AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR
+            } else {
+                AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
+            }
             mScrimAnimator!!.addUpdateListener { animator ->
                 scrimAlpha = animator.animatedValue as Int
             }
@@ -595,10 +609,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         }
 
     /* If we reach here then we don't have a min height set. Instead we'll take a
-     * guess at 1/3 of our height being visible */
-// If we have one explicitly set, return it
-
-    // Otherwise we'll use the default computed value// Update the scrim visibility// If we have a minHeight set, lets use 2 * minHeight (capped at our height)
+     * guess at 1/3 of our height being visible.
+     * If we have one explicitly set, return it
+     * Otherwise we'll use the default computed value.
+     * Update the scrim visibility.
+     * If we have a minHeight set, lets use 2 * minHeight (capped at our height) */
     /**
      * Set the amount of visible height in pixels used to define when to trigger a scrim
      * visibility change.
@@ -624,15 +639,20 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             }
 
             // Otherwise we'll use the default computed value
-            val insetTop = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+            val insetTop = if (mLastInsets != null) {
+                mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            } else {
+                0
+            }
             val minHeight: Int = ViewCompat.getMinimumHeight(this)
             return if (minHeight > 0) {
                 // If we have a minHeight set, lets use 2 * minHeight (capped at our height)
                 (minHeight * 2 + insetTop).coerceAtMost(height)
-            } else height / 3
-
-            /* If we reach here then we don't have a min height set. Instead we'll take a
-             * guess at 1/3 of our height being visible */
+            } else {
+                /* If we reach here then we don't have a min height set. Instead we'll take a
+                 * guess at 1/3 of our height being visible */
+                height / 3
+            }
         }
         set(height) {
             if (mScrimVisibleHeightTrigger != height) {
@@ -642,8 +662,8 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             }
         }
 
-    override fun checkLayoutParams(p: ViewGroup.LayoutParams): Boolean {
-        return p is LayoutParams
+    override fun checkLayoutParams(layoutParams: ViewGroup.LayoutParams): Boolean {
+        return layoutParams is LayoutParams
     }
 
     override fun generateDefaultLayoutParams(): LayoutParams {
@@ -760,7 +780,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     private inner class OffsetUpdateListener : AppBarLayout.OnOffsetChangedListener {
         override fun onOffsetChanged(layout: AppBarLayout?, verticalOffset: Int) {
             mCurrentOffset = verticalOffset
-            val insetTop: Int = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+            val insetTop: Int = if (mLastInsets != null) {
+                mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            } else {
+                0
+            }
             var i = 0
             val childCount: Int = childCount
             while (i < childCount) {

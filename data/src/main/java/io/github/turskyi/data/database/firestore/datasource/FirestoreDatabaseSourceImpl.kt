@@ -1,5 +1,7 @@
 package io.github.turskyi.data.database.firestore.datasource
 
+import io.github.turskyi.data.R
+import android.app.Application
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -22,8 +24,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
+import android.provider.MediaStore
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
+import io.github.turskyi.data.util.exceptions.NetworkErrorException
+import java.io.ByteArrayOutputStream
 
-class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) : KoinComponent,
+class FirestoreDatabaseSourceImpl(
+    private val application: Application,
+    private val applicationScope: CoroutineScope,
+) : KoinComponent,
     FirestoreDatabaseSource {
     companion object {
         // constants for firestore
@@ -282,11 +293,11 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
             .collection(COLLECTION_VISITED_COUNTRIES)
             .document(countryEntity.name)
             .set(countryEntity.mapCountryToVisitedCountry())
-            .addOnSuccessListener { incrementVisited(userDocRef, onSuccess, onError) }
+            .addOnSuccessListener { incrementUserVisitedCounter(userDocRef, onSuccess, onError) }
             .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    private fun incrementVisited(
+    private fun incrementUserVisitedCounter(
         userDocRef: DocumentReference,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -352,7 +363,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                      */
                     runBlocking {
                         applicationScope.launch(Dispatchers.IO) {
-                            decrementVisited(currentUser, onSuccess, onError)
+                            decrementTravellerVisitedCounter(currentUser, onSuccess, onError)
                         }
                         deleteCitiesByCountry(currentUser, parentId, onSuccess, onError)
                     }
@@ -363,7 +374,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         }
     }
 
-    private fun decrementVisited(
+    private fun decrementTravellerVisitedCounter(
         currentUser: FirebaseUser,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -398,12 +409,13 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val visitedCities: CollectionReference =
-            usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
+        val visitedCities: CollectionReference = usersRef.document(currentUser.uid).collection(
+            COLLECTION_CITIES,
+        )
         // getting visited cities of deleted visited country
         visitedCities.whereEqualTo(KEY_PARENT_ID, parentId)
             .get().addOnSuccessListener { queryDocumentSnapshots ->
-                if (queryDocumentSnapshots.size() == 0) {
+                if (queryDocumentSnapshots.isEmpty) {
                     onSuccess.invoke()
                 } else {
                     // Getting a new write batch and commit all write operations
@@ -427,15 +439,39 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
+
         val selfieImage: Uri = Uri.parse(selfie)
-        val metadata: StorageMetadata = storageMetadata { contentType = "image/jpg" }
 
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
 
-        /* In the putFile method,
-         * there is a TaskSnapshot which contains the details of uploaded file */
-        val uploadTask: UploadTask = selfieRef.putFile(selfieImage, metadata)
+        val bitmap: Bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val source: ImageDecoder.Source =
+                ImageDecoder.createSource(application.contentResolver, selfieImage)
+            //NOTE: this method takes a lot of time if an image is too large
+            ImageDecoder.decodeBitmap(source)
+        } else {
+            @Suppress("DEPRECATION")
+            MediaStore.Images.Media.getBitmap(application.contentResolver, selfieImage)
+        }
+        val metadata: StorageMetadata =
+            storageMetadata {
+                contentType = application.resources.getString(R.string.image_and_jpg_type)
+            }
+        // check if image more than 200 kb
+        val uploadTask: UploadTask = if (bitmap.byteCount > 200000) {
+            // reduce size of the image to 25% of the initial quality
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 25, byteArrayOutputStream)
+            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+            /* In the putBytes method,
+             * there is a TaskSnapshot which contains the details of uploaded file */
+            selfieRef.putBytes(byteArray, metadata)
+        } else {
+            /* In the putFile method,
+             * there is a TaskSnapshot which contains the details of uploaded file */
+            selfieRef.putFile(selfieImage, metadata)
+        }
 
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful && task.exception != null) {
@@ -457,19 +493,19 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
 
                     // before saving a new image deleting previous image
                     deleteImage(
-                        previousSelfieName,
-                        {
+                        selfieName = previousSelfieName,
+                        onSuccess = {
                             // if deleting is successful , saving new url and new image name to model
                             countryRef.update(
                                 mapOf(
                                     KEY_SELFIE to uploadedSelfieUrl,
                                     KEY_SELFIE_NAME to selfieName
                                 )
-                            ).addOnSuccessListener {
-                                onSuccess.invoke()
-                            }.addOnFailureListener { exception -> onError.invoke(exception) }
+                            )
+                                .addOnSuccessListener { onSuccess.invoke() }
+                                .addOnFailureListener { exception -> onError.invoke(exception) }
                         },
-                        { exception -> onError.invoke(exception) },
+                        onError = { exception -> onError.invoke(exception) },
                     )
                 } else {
                     mFirebaseAuth.signOut()
@@ -477,7 +513,12 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 }
             } else {
                 // Handle failures
-                task.exception?.let { exception -> onError.invoke(exception) }
+                if (task.exception != null) {
+                    onError.invoke(task.exception!!)
+                } else {
+                    mFirebaseAuth.signOut()
+                    onError.invoke(NetworkErrorException())
+                }
             }
         }
     }
@@ -486,7 +527,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
         selfieName: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
-    ) = applicationScope.launch(Dispatchers.IO) {
+    ) {
         try {
             if (selfieName != "") {
                 selfiesStorageRef.child(selfieName).delete()
@@ -561,7 +602,7 @@ class FirestoreDatabaseSourceImpl(private val applicationScope: CoroutineScope) 
                 .collection(COLLECTION_VISITED_COUNTRIES)
             countriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
-                    if (queryDocumentSnapshots.size() == 0) {
+                    if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
                         val countries: MutableList<VisitedCountryEntity> = mutableListOf()

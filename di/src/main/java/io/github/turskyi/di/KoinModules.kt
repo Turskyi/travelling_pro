@@ -1,4 +1,5 @@
 package io.github.turskyi.di
+
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Cache
@@ -21,6 +22,7 @@ import io.github.turskyi.domain.repository.TravellerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import okhttp3.Request
+import org.koin.android.ext.koin.androidApplication
 
 val repositoriesModule = module {
     factory<CountryRepository> { CountryRepositoryImpl(CoroutineScope(SupervisorJob())) }
@@ -71,5 +73,7 @@ val dataProvidersModule = module {
 val sourcesModule = module {
     single { get<Retrofit>().create(CountriesApi::class.java) }
     single { NetSource(get()) }
-    factory<FirestoreDatabaseSource> { FirestoreDatabaseSourceImpl(CoroutineScope(SupervisorJob())) }
+    factory<FirestoreDatabaseSource> {
+        FirestoreDatabaseSourceImpl(androidApplication(), CoroutineScope(SupervisorJob()))
+    }
 }

@@ -12,8 +12,6 @@ import android.view.ViewGroup
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
-import com.bumptech.glide.request.RequestOptions
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
@@ -40,7 +38,7 @@ open class BaseFlagFragment : Fragment() {
             toast(getString(R.string.msg_exception_flag_listener, context))
         }
         try {
-            flagsActivityViewListener = context as FlagsActivityView?
+            flagsActivityViewListener = context as FlagsActivityView
         } catch (castException: ClassCastException) {
             // in this case the activity does not implement the listener.
             toast(castException.localizedMessage ?: castException.stackTraceToString())
@@ -114,13 +112,7 @@ open class BaseFlagFragment : Fragment() {
         val uri: Uri = Uri.parse(countries[position].selfie)
         Glide.with(this)
             .load(uri)
-            .thumbnail(0.5F)
-            .apply(
-                RequestOptions()
-                    .placeholder(R.drawable.anim_loading)
-                    .error(R.drawable.ic_broken_image)
-                    .priority(Priority.IMMEDIATE)
-            )
+            .placeholder(R.drawable.anim_loading)
             .into(binding.ivEnlargedFlag)
     }
 
