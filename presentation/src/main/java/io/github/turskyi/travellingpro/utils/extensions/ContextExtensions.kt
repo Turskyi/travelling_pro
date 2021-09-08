@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import io.github.turskyi.travellingpro.R
+import java.io.IOException
 
 fun Context.isFacebookInstalled(): Boolean {
     return try {
@@ -50,7 +52,7 @@ fun Context.getAppCompatActivity(): AppCompatActivity? {
 }
 
 fun Context.getFragmentActivity(): FragmentActivity? {
-    var context = this
+    var context: Context = this
     while (context is ContextWrapper) {
         if (context is FragmentActivity) {
             return context
@@ -110,27 +112,29 @@ fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG
  */
 fun Context.isOnline(): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val connectivityManager =
+        val connectivityManager: ConnectivityManager =
             this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
+        val network: Network? = connectivityManager.activeNetwork
         return if (network != null) {
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)!!
+            val networkCapabilities: NetworkCapabilities = connectivityManager.getNetworkCapabilities(network)!!
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
                     || networkCapabilities.hasTransport(
                 NetworkCapabilities.TRANSPORT_WIFI
             )
         } else false
     } else {
-        // Initial Value
-        var isConnected = false
-        val connectivityManager =
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        @Suppress("DEPRECATION") val activeNetwork = connectivityManager.activeNetworkInfo
-        @Suppress("DEPRECATION")
-        if (activeNetwork != null && activeNetwork.isConnected) {
-            isConnected = true
+        val runtime: Runtime = Runtime.getRuntime()
+        try {
+            // Pinging to Google server
+            val ipProcess: Process = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
+            val exitValue: Int = ipProcess.waitFor()
+            return exitValue == 0
+        } catch (ioException: IOException) {
+            ioException.printStackTrace()
+        } catch (interruptedException: InterruptedException) {
+            interruptedException.printStackTrace()
         }
-        return isConnected
+        return false
     }
 }
 

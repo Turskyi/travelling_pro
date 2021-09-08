@@ -94,8 +94,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:20.0.2'
 // to send notifications across devices from firebase console
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
-    // Firebase for storage image loader
-    implementation 'com.firebaseui:firebase-ui-storage:8.0.0'
 
     // Glide (Image caching and management)
     def glideVersion = "4.12.0"
