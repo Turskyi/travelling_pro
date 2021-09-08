@@ -96,7 +96,7 @@ fun Context.toast(@StringRes msgResId: Int) {
     Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
 }
 
-fun Context.toast(msg: String?) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
 fun Context.toastLong(@StringRes msgResId: Int) {
     Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
@@ -122,7 +122,7 @@ fun Context.isOnline(): Boolean {
         } else false
     } else {
         // Initial Value
-        var isConnected: Boolean? = false
+        var isConnected = false
         val connectivityManager =
             this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         @Suppress("DEPRECATION") val activeNetwork = connectivityManager.activeNetworkInfo
@@ -130,7 +130,7 @@ fun Context.isOnline(): Boolean {
         if (activeNetwork != null && activeNetwork.isConnected) {
             isConnected = true
         }
-        return isConnected ?: false
+        return isConnected
     }
 }
 

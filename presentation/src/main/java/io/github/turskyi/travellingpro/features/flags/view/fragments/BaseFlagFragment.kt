@@ -11,7 +11,6 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
@@ -100,7 +99,7 @@ open class BaseFlagFragment : Fragment() {
     private fun showSelfieClickListener(countries: List<VisitedCountry>, position: Int):
             OnClickListener = OnClickListener {
         showSelfie(countries, position)
-        // return first clickListener
+        // returns first clickListener
         binding.ivEnlargedFlag.setOnClickListener(showFlagClickListener(countries, position))
     }
 
@@ -109,9 +108,8 @@ open class BaseFlagFragment : Fragment() {
             ivEnlargedFlag.visibility = VISIBLE
             wvFlag.visibility = GONE
         }
-        val uri: Uri = Uri.parse(countries[position].selfie)
-        Glide.with(this)
-            .load(uri)
+        com.github.twocoffeesoneteam.glidetovectoryou.GlideApp.with(this@BaseFlagFragment)
+            .load(countries[position].selfie)
             .placeholder(R.drawable.anim_loading)
             .into(binding.ivEnlargedFlag)
     }

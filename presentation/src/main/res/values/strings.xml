@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- START of not translatable -->
     <string name="share_massage" translatable="false">#travelling_the_world \n https://play.google.com/store/apps/details?id=%1$s</string>
     <string name="picture_file_name" translatable="false">piechart_%1$s.jpg</string>
@@ -37,9 +37,9 @@
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
     <!-- for facebook auth -->
-    <string name="facebook_application_id" translatable="false">2312394202364807</string>
+    <string name="facebook_application_id" translatable="false" tools:keep="@string/facebook_application_id">2312394202364807</string>
     <!-- for firebase FirebaseUI -->
-    <string name="facebook_login_protocol_scheme" translatable="false">fb2312394202364807</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2312394202364807</string>
     <!-- for general use of facebook auth-->
     <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
     <string name="tag_info_dialog" translatable="false">info dialog</string>

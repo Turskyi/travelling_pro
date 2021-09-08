@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar
 
 import android.content.res.ColorStateList
@@ -132,20 +134,6 @@ internal class CollapsingTextHelper(private val mView: View) {
     fun setTextSizeInterpolator(interpolator: Interpolator?) {
         mTextSizeInterpolator = interpolator
         recalculate()
-    }
-
-    fun setCollapsedTextColor(textColor: ColorStateList) {
-        if (collapsedTextColor !== textColor) {
-            collapsedTextColor = textColor
-            recalculate()
-        }
-    }
-
-    fun setExpandedTextColor(textColor: ColorStateList) {
-        if (expandedTextColor !== textColor) {
-            expandedTextColor = textColor
-            recalculate()
-        }
     }
 
     fun setExpandedBounds(left: Int, top: Int, right: Int, bottom: Int) {
