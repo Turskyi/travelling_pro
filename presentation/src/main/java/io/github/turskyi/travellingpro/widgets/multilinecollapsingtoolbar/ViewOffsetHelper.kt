@@ -15,12 +15,9 @@ import androidx.core.view.ViewCompat
 class ViewOffsetHelper(private val mView: View) {
     var layoutTop = 0
         private set
-    var layoutLeft = 0
-        private set
-    var topAndBottomOffset = 0
-        private set
-    var leftAndRightOffset = 0
-        private set
+    private var layoutLeft = 0
+    private var topAndBottomOffset = 0
+    private var leftAndRightOffset = 0
 
     fun onViewLayout() {
         // Now grab the intended top
@@ -50,20 +47,4 @@ class ViewOffsetHelper(private val mView: View) {
         }
         return false
     }
-
-    /**
-     * Set the left and right offset for this [ViewOffsetHelper]'s view.
-     *
-     * @param offset the offset in px.
-     * @return true if the offset has changed
-     */
-    fun setLeftAndRightOffset(offset: Int): Boolean {
-        if (leftAndRightOffset != offset) {
-            leftAndRightOffset = offset
-            updateOffsets()
-            return true
-        }
-        return false
-    }
-
 }

@@ -1,5 +1,6 @@
 package io.github.turskyi.travellingpro.features.flags.view.fragments
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -35,6 +36,7 @@ class FlagFragment : BaseFlagFragment() {
         initObservers()
     }
 
+    @SuppressLint("InvalidFragmentVersionForActivityResult")
     private fun initResultLauncher() {
         photoPickerResultLauncher = registerForActivityResult(
             StartActivityForResult()
@@ -119,7 +121,7 @@ class FlagFragment : BaseFlagFragment() {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             "" + imageId
         )
-        val galleryPicture = VisitedCountry(
+        val visitedCountry = VisitedCountry(
             id = id,
             title = name,
             flag = flag,
@@ -127,7 +129,7 @@ class FlagFragment : BaseFlagFragment() {
             selfieName = "${System.currentTimeMillis()}",
         )
         cursor?.close()
-        return galleryPicture
+        return visitedCountry
     }
 
     private fun addSelfieLongClickListener(): OnLongClickListener = OnLongClickListener {
@@ -158,21 +160,19 @@ class FlagFragment : BaseFlagFragment() {
             }
         })
         viewModel.visibilityLoader.observe(this, { currentVisibility ->
-            flagsActivityViewListener?.setLoaderVisibility(currentVisibility)
+            flagsActivityViewListener!!.setLoaderVisibility(currentVisibility)
         })
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
             Observer<List<VisitedCountry>> { countries ->
-                val position: Int? = this.arguments?.getInt(EXTRA_POSITION)
-                position?.let {
-                    mChangeFlagListener?.onChangeToolbarTitle(countries[position].title)
-                    if (countries[position].selfie.isEmpty()) {
-                        showTheFlag(countries, position)
-                    } else {
-                        showSelfie(countries, position)
-                        binding.ivEnlargedFlag.setOnClickListener(
-                            showFlagClickListener(countries, position)
-                        )
-                    }
+                val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
+                mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
+                if (countries[position].selfie.isEmpty()) {
+                    showTheFlag(countries, position)
+                } else {
+                    showSelfie(countries, position)
+                    binding.ivEnlargedFlag.setOnClickListener(
+                        showFlagClickListener(countries, position)
+                    )
                 }
             }
         viewModel.visitedCountries.observe(viewLifecycleOwner, visitedCountriesObserver)

@@ -12,7 +12,7 @@ import io.github.turskyi.travellingpro.utils.extensions.mapVisitedModelListToVis
 import kotlinx.coroutines.launch
 
 class FriendFlagsFragmentViewModel(private val interactor: CountriesInteractor) : ViewModel() {
-    var visitedCount: Int = 0
+    private var visitedCount: Int = 0
 
     private val _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
     val visibilityLoader: MutableLiveData<Int>

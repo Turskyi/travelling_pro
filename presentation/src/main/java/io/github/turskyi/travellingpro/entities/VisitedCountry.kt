@@ -10,7 +10,7 @@ data class VisitedCountry(
     var flag: String,
     var selfie: String,
     /* [selfieName] is the id of the file that we later will be using to store picture in
-    * firebase storage */
+     * firebase storage */
     var selfieName: String,
     var cities: List<City>,
 ) : Parcelable {

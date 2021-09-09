@@ -1,6 +1,7 @@
 package io.github.turskyi.travellingpro.features.home.view.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -269,6 +270,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         registerAllCountriesActivityResultLauncher()
     }
 
+    @SuppressLint("InvalidFragmentVersionForActivityResult")
     private fun registerInternetConnectionLauncher() {
         internetResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -292,7 +294,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     /** must be open to use it in custom "circle pie chart" widget */
-   override fun setTitle() = if (viewModel.cityCount > 0) {
+    override fun setTitle() = if (viewModel.cityCount > 0) {
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()
@@ -333,7 +335,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                             return@registerForActivityResult
                         }
                         else -> {
-                            toastLong(response.error?.localizedMessage)
+                            toastLong(response.error?.localizedMessage ?: response.error.toString())
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }

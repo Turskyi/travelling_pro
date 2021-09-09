@@ -123,11 +123,10 @@ class ShadowedLinearLayout @JvmOverloads constructor(
 
         val shapeDrawablePadding = Rect()
 
-        val shadowOffset: Float
         shapeDrawablePadding.right = (makeHorizontalOffset(elevation) + shadowMarginEnd).toInt()
         shapeDrawablePadding.left = (makeHorizontalOffset(elevation) + shadowMarginStart).toInt()
 
-        shadowOffset = when (shadowGravity) {
+        val shadowOffset: Float = when (shadowGravity) {
             Gravity.CENTER -> 0f
             Gravity.TOP -> -1 * elevationValue / 3f
             Gravity.BOTTOM -> elevationValue / 1.5f

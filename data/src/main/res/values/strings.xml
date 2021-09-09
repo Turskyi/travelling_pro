@@ -1,0 +1,5 @@
+<resources>
+    <!-- START of not translatable -->
+    <string name="image_and_jpg_type" translatable="false">image/jpg</string>
+    <!-- END of not translatable -->
+</resources>

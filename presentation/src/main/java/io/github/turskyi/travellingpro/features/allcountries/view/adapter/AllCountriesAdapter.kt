@@ -41,7 +41,7 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
                 override fun areContentsTheSame(
                     oldItem: Country,
                     newItem: Country
-                ): Boolean = oldItem.name == newItem.name && oldItem.visited == newItem.visited
+                ): Boolean = oldItem.name == newItem.name && oldItem.isVisited == newItem.isVisited
             }
     }
 
@@ -54,14 +54,18 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
         return CountryViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: CountryViewHolder, position: Int) =
-        holder.bind(getItem(position))
+    override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
+        val currentCountry: Country? = getItem(position)
+        if (currentCountry != null) {
+            holder.bind(currentCountry)
+        }
+    }
 
     private fun showPicturesInSVG(
-        country: Country?,
+        country: Country,
         holder: CountryViewHolder
     ) {
-        val uri: Uri = Uri.parse(country?.flag)
+        val uri: Uri = Uri.parse(country.flag)
 
         GlideToVectorYou
             .init()
@@ -79,7 +83,7 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
 
     private fun showPicturesInWebView(
         holder: CountryViewHolder,
-        country: Country?
+        country: Country
     ) {
         holder.ivFlag.visibility = GONE
         holder.wvFlag.run {
@@ -87,10 +91,9 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
             visibility = VISIBLE
             setBackgroundColor(Color.TRANSPARENT)
             loadData(
-                "<html><head><style type='text/css'>" +
-                        "body{margin:auto auto;text-align:center;} img{width:80%25;}" +
-                        " </style></head><body><img src='${country?.flag}'/>" +
-                        "</body></html>", "text/html", "UTF-8"
+                resources.getString(R.string.html_mini_flag, country.flag),
+                resources.getString(R.string.mime_type_txt_html),
+                resources.getString(R.string.encoding_utf_8),
             )
         }
     }
@@ -111,10 +114,10 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
             }
         }
 
-        fun bind(country: Country?) {
-            tvCountry.text = country?.name
+        fun bind(country: Country) {
+            tvCountry.text = country.name
             setSelectableItemBackground(this)
-            if (country?.visited == true) {
+            if (country.isVisited) {
                 tvCountry.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             } else {
                 tvCountry.paintFlags =

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
@@ -21,46 +22,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
-import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
+import java.io.IOException
 
-fun Context.isFacebookInstalled() = try {
-    packageManager.getPackageInfo(
-        getString(R.string.facebook_package),
-        PackageManager.GET_META_DATA
-    )
-    true
-} catch (e: PackageManager.NameNotFoundException) {
-    false
+fun Context.isFacebookInstalled(): Boolean {
+    return try {
+        packageManager.getPackageInfo(
+            getString(R.string.facebook_package),
+            PackageManager.GET_META_DATA
+        )
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
 }
 
-fun Context.spToPix(@DimenRes sizeRes: Int) =
-    resources.getDimension(sizeRes) / resources.displayMetrics.density
-
-fun Context.getHomeActivity(): HomeActivity? {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is HomeActivity) {
-            return context
-        }
-        context = context.baseContext
-    }
-    return null
-}
-
-fun Context.getTravellerActivity(): TravellerActivity? {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is TravellerActivity) {
-            return context
-        }
-        context = context.baseContext
-    }
-    return null
+fun Context.spToPix(@DimenRes sizeRes: Int): Float {
+    return resources.getDimension(sizeRes) / resources.displayMetrics.density
 }
 
 fun Context.getAppCompatActivity(): AppCompatActivity? {
-    var context = this
+    var context: Context = this
     while (context is ContextWrapper) {
         if (context is AppCompatActivity) {
             return context
@@ -71,7 +52,7 @@ fun Context.getAppCompatActivity(): AppCompatActivity? {
 }
 
 fun Context.getFragmentActivity(): FragmentActivity? {
-    var context = this
+    var context: Context = this
     while (context is ContextWrapper) {
         if (context is FragmentActivity) {
             return context
@@ -113,19 +94,17 @@ fun Context.getToolbarHeight(): Int {
     return toolbarHeight
 }
 
-fun Context.toast(
-    @StringRes msgResId: Int
-) = Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
+fun Context.toast(@StringRes msgResId: Int) {
+    Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
+}
 
-fun Context.toast(msg: String?) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
-fun Context.toastLong(
-    @StringRes msgResId: Int
-) = Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
+fun Context.toastLong(@StringRes msgResId: Int) {
+    Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
+}
 
-fun Context.toastLong(
-    msg: String?
-) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
 /**
  * @Description
@@ -133,27 +112,29 @@ fun Context.toastLong(
  */
 fun Context.isOnline(): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val connectivityManager =
+        val connectivityManager: ConnectivityManager =
             this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
+        val network: Network? = connectivityManager.activeNetwork
         return if (network != null) {
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)!!
+            val networkCapabilities: NetworkCapabilities = connectivityManager.getNetworkCapabilities(network)!!
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
                     || networkCapabilities.hasTransport(
                 NetworkCapabilities.TRANSPORT_WIFI
             )
         } else false
     } else {
-        // Initial Value
-        var isConnected: Boolean? = false
-        val connectivityManager =
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        @Suppress("DEPRECATION") val activeNetwork = connectivityManager.activeNetworkInfo
-        @Suppress("DEPRECATION")
-        if (activeNetwork != null && activeNetwork.isConnected) {
-            isConnected = true
+        val runtime: Runtime = Runtime.getRuntime()
+        try {
+            // Pinging to Google server
+            val ipProcess: Process = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
+            val exitValue: Int = ipProcess.waitFor()
+            return exitValue == 0
+        } catch (ioException: IOException) {
+            ioException.printStackTrace()
+        } catch (interruptedException: InterruptedException) {
+            interruptedException.printStackTrace()
         }
-        return isConnected ?: false
+        return false
     }
 }
 

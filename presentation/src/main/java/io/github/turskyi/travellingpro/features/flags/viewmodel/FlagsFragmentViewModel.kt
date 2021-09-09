@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : ViewModel(),
     LifecycleObserver {
-    var visitedCount = 0
+    private var visitedCount = 0
 
     private val _visibilityLoader = MutableLiveData<Int>()
     val visibilityLoader: MutableLiveData<Int>
@@ -33,13 +33,15 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
                 visitedCount = countries.size
                 _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)
-            }, {exception ->
+            }, { exception ->
                 _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
+                    // Trigger the event by setting a new Event as a new value
+                    postValue(
+                        Event(
+                            exception.localizedMessage ?: exception.stackTraceToString()
+                        )
+                    )
                 }
             })
         }
@@ -51,13 +53,15 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
             interactor.updateSelfie(name, selfie, selfieName, { countries ->
                 _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)
-            }, {exception ->
+            }, { exception ->
                 _visibilityLoader.postValue(GONE)
                 _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
+                    // Trigger the event by setting a new Event as a new value
+                    postValue(
+                        Event(
+                            exception.localizedMessage ?: exception.stackTraceToString()
+                        )
+                    )
                 }
             })
         }

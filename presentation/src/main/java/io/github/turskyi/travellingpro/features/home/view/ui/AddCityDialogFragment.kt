@@ -131,7 +131,9 @@ class AddCityDialogFragment : DialogFragment() {
                                 this, {
                                     alertDialog.dismiss()
                                 }, { exception ->
-                                    toastLong(exception.message)
+                                    toastLong(
+                                        exception.localizedMessage ?: exception.stackTraceToString()
+                                    )
                                 }
                             )
                         }
@@ -276,7 +278,7 @@ class AddCityDialogFragment : DialogFragment() {
             locationListener
         )
     } catch (exception: SecurityException) {
-        toastLong(exception.message)
+        toastLong(exception.localizedMessage ?: exception.stackTraceToString())
     }
 
     private fun addLastLocation(
@@ -293,7 +295,7 @@ class AddCityDialogFragment : DialogFragment() {
             val cityName: String = addresses.first().locality
             editText.setText(cityName)
         } catch (exception: IOException) {
-            toastLong(exception.message)
+            toastLong(exception.localizedMessage ?: exception.stackTraceToString())
         }
     }
 }

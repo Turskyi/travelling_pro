@@ -3,12 +3,9 @@ package io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Rect
-import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.AttributeSet
@@ -19,7 +16,6 @@ import android.widget.FrameLayout
 import androidx.annotation.*
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.ViewGroupUtils
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.math.MathUtils
 import androidx.core.util.ObjectsCompat
@@ -77,6 +73,7 @@ import kotlin.math.roundToInt
  * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_statusBarScrim
  * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_toolbarId
  */
+@SuppressLint("CustomViewStyleable")
 class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -114,45 +111,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     private var mOnOffsetChangedListener: AppBarLayout.OnOffsetChangedListener? = null
     var mCurrentOffset = 0
     var mLastInsets: WindowInsetsCompat? = null
-    //  add setMaxLines and getMaxLines
-    /**
-     * Gets the maximum number of lines to display in the expanded state
-     */
-    /**
-     * Sets the maximum number of lines to display in the expanded state
-     */
-    var maxLines: Int
-        @SuppressLint("RestrictedApi")
-        get() = mCollapsingTextHelper?.getMaxLines() ?: 0
-        @SuppressLint("RestrictedApi")
-        set(maxLines) {
-            mCollapsingTextHelper?.setMaxLines(maxLines)
-        }
-
-    // add setLineSpacingExtra and getLineSpacingExtra
-    /**
-     * Gets the line spacing extra applied to each line in the expanded state
-     */
-    /**
-     * Set line spacing extra. The default is 0.0f
-     */
-    var lineSpacingExtra: Float
-        get() = mCollapsingTextHelper?.getLineSpacingExtra() ?: 0F
-        set(lineSpacingExtra) {
-            mCollapsingTextHelper?.setLineSpacingExtra(lineSpacingExtra)
-        }
-    // add setLineSpacingExtra and getLineSpacingExtra
-    /**
-     * Gets the line spacing multiplier applied to each line in the expanded state
-     */
-    /**
-     * Set line spacing multiplier. The default is 1.0f
-     */
-    var lineSpacingMultiplier: Float
-        get() = mCollapsingTextHelper?.getLineSpacingMultiplier() ?: 0F
-        set(lineSpacingMultiplier) {
-            mCollapsingTextHelper?.setLineSpacingMultiplier(lineSpacingMultiplier)
-        }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -217,7 +175,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
 
         // Now draw the status bar scrim
         if (mStatusBarScrim != null && mScrimAlpha > 0) {
-            val topInset = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+            val topInset = if (mLastInsets != null) {
+                mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            } else {
+                0
+            }
             if (topInset > 0) {
                 mStatusBarScrim!!.setBounds(
                     0, -mCurrentOffset, width,
@@ -285,7 +247,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     }
 
     private fun isToolbarChild(child: View): Boolean {
-        return if (mToolbarDirectChild == null || mToolbarDirectChild === this) child === mToolbar else child === mToolbarDirectChild
+        return if (mToolbarDirectChild == null || mToolbarDirectChild === this) {
+            child === mToolbar
+        } else {
+            child === mToolbarDirectChild
+        }
     }
 
     /**
@@ -294,12 +260,12 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
      */
     private fun findDirectChild(descendant: View?): View? {
         var directChild = descendant
-        var p = descendant!!.parent
-        while (p !== this && p != null) {
-            if (p is View) {
-                directChild = p
+        var viewParent = descendant?.parent
+        while (viewParent !== this && viewParent != null) {
+            if (viewParent is View) {
+                directChild = viewParent
             }
-            p = p.parent
+            viewParent = viewParent.parent
         }
         return directChild
     }
@@ -331,7 +297,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         ensureToolbar()
         super.onMeasure(widthMeasureSpec, mHeightMeasureSpec)
         val mode = MeasureSpec.getMode(mHeightMeasureSpec)
-        val topInset = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+        val topInset = if (mLastInsets != null) {
+            mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+        } else {
+            0
+        }
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
             /* If we have a top inset and we're set to wrap_content height we need to make sure
              * we add the top inset to our height, therefore we re-measure */
@@ -442,31 +412,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         set(title) {
             mCollapsingTextHelper?.text = title
         }
-    /**
-     * Returns whether this view is currently displaying its own title.
-     *
-     * @see .setTitleEnabled
-     * @attr ref R.styleable#CollapsingToolbarLayout_titleEnabled
-     */
-    /**
-     * Sets whether this view should display its own title.
-     *
-     *
-     * The title displayed by this view will shrink and grow based on the scroll offset.
-     *
-     * @see .setTitle
-     * @see .isTitleEnabled
-     * @attr ref R.styleable#CollapsingToolbarLayout_titleEnabled
-     */
-    var isTitleEnabled: Boolean
-        get() = mCollapsingTitleEnabled
-        set(enabled) {
-            if (enabled != mCollapsingTitleEnabled) {
-                mCollapsingTitleEnabled = enabled
-                updateDummyView()
-                requestLayout()
-            }
-        }
 
     /**
      * Set whether the content scrim and/or status bar scrim should be shown or not. Any change
@@ -508,8 +453,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         if (mScrimAnimator == null) {
             mScrimAnimator = ValueAnimator()
             mScrimAnimator!!.duration = scrimAnimationDuration
-            mScrimAnimator?.interpolator =
-                if (targetAlpha > mScrimAlpha) AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR else AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
+            mScrimAnimator?.interpolator = if (targetAlpha > mScrimAlpha) {
+                AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR
+            } else {
+                AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
+            }
             mScrimAnimator!!.addUpdateListener { animator ->
                 scrimAlpha = animator.animatedValue as Int
             }
@@ -520,7 +468,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         mScrimAnimator!!.start()
     }
 
-    var scrimAlpha: Int
+    private var scrimAlpha: Int
         get() = mScrimAlpha
         set(alpha) {
             if (alpha != mScrimAlpha) {
@@ -533,29 +481,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             }
         }
 
-    /**
-     * Set the color to use for the content scrim.
-     *
-     * @param color the color to display
-     *
-     * @attr ref R.styleable#CollapsingToolbarLayout_contentScrim
-     * @see .getContentScrim
-     */
-    fun setContentScrimColor(@ColorInt color: Int) {
-        contentScrim = ColorDrawable(color)
-    }
-
-    /**
-     * Set the drawable to use for the content scrim from resources.
-     *
-     * @param resId drawable resource id
-     *
-     * @attr ref R.styleable#CollapsingToolbarLayout_contentScrim
-     * @see .getContentScrim
-     */
-    fun setContentScrimResource(@DrawableRes resId: Int) {
-        contentScrim = ContextCompat.getDrawable(context, resId)
-    }
     /**
      * Returns the drawable which is used for the foreground scrim.
      *
@@ -624,32 +549,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     }
 
     /**
-     * Set the color to use for the status bar scrim.
-     *
-     *
-     * This scrim is only shown when we have been given a top system inset.
-     *
-     * @param color the color to display
-     *
-     * @attr ref R.styleable#CollapsingToolbarLayout_statusBarScrim
-     * @see .getStatusBarScrim
-     */
-    fun setStatusBarScrimColor(@ColorInt color: Int) {
-        statusBarScrim = ColorDrawable(color)
-    }
-
-    /**
-     * Set the drawable to use for the content scrim from resources.
-     *
-     * @param resId drawable resource id
-     *
-     * @attr ref R.styleable#CollapsingToolbarLayout_statusBarScrim
-     * @see .getStatusBarScrim
-     */
-    fun setStatusBarScrimResource(@DrawableRes resId: Int) {
-        statusBarScrim = ContextCompat.getDrawable(context, resId)
-    }
-    /**
      * Returns the drawable which is used for the status bar scrim.
      *
      * @attr ref R.styleable#CollapsingToolbarLayout_statusBarScrim
@@ -692,78 +591,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         }
 
     /**
-     * Sets the text color and size for the collapsed title from the specified
-     * TextAppearance resource.
-     *
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_collapsedTitleTextAppearance
-     */
-    fun setCollapsedTitleTextAppearance(@StyleRes resId: Int) {
-        mCollapsingTextHelper?.setCollapsedTextAppearance(resId)
-    }
-
-    /**
-     * Sets the text color of the collapsed title.
-     *
-     * @param color The new text color in ARGB format
-     */
-    fun setCollapsedTitleTextColor(@ColorInt color: Int) {
-        setCollapsedTitleTextColor(ColorStateList.valueOf(color))
-    }
-
-    /**
-     * Sets the text colors of the collapsed title.
-     *
-     * @param colors ColorStateList containing the new text colors
-     */
-    private fun setCollapsedTitleTextColor(@NonNull colors: ColorStateList?) {
-        mCollapsingTextHelper?.setCollapsedTextColor(colors!!)
-    }
-    /**
-     * Returns the horizontal and vertical alignment for title when collapsed.
-     *
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_collapsedTitleGravity
-     */
-    /**
-     * Sets the horizontal alignment of the collapsed title and the vertical gravity that will
-     * be used when there is extra space in the collapsed bounds beyond what is required for
-     * the title itself.
-     *
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_collapsedTitleGravity
-     */
-    var collapsedTitleGravity: Int
-        get() = mCollapsingTextHelper?.collapsedTextGravity ?: 0
-        set(gravity) {
-            mCollapsingTextHelper?.collapsedTextGravity = gravity
-        }
-
-    /**
-     * Sets the text color and size for the expanded title from the specified
-     * TextAppearance resource.
-     *
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleTextAppearance
-     */
-    fun setExpandedTitleTextAppearance(@StyleRes resId: Int) {
-        mCollapsingTextHelper?.setExpandedTextAppearance(resId)
-    }
-
-    /**
-     * Sets the text color of the expanded title.
-     *
-     * @param color The new text color in ARGB format
-     */
-    fun setExpandedTitleColor(@ColorInt color: Int) {
-        setExpandedTitleTextColor(ColorStateList.valueOf(color))
-    }
-
-    /**
-     * Sets the text colors of the expanded title.
-     *
-     * @param colors ColorStateList containing the new text colors
-     */
-    private fun setExpandedTitleTextColor(@NonNull colors: ColorStateList?) {
-        mCollapsingTextHelper?.setExpandedTextColor(colors!!)
-    }
-    /**
      * Returns the horizontal and vertical alignment for title when expanded.
      *
      * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleGravity
@@ -780,129 +607,13 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         set(gravity) {
             mCollapsingTextHelper?.expandedTextGravity = gravity
         }
-    /**
-     * Returns the typeface used for the collapsed title.
-     */
-    /**
-     * Set the typeface to use for the collapsed title.
-     *
-     */
-    @get:NonNull
-    var collapsedTitleTypeface: Typeface?
-        get() = mCollapsingTextHelper?.collapsedTypeface
-        set(typeface) {
-            mCollapsingTextHelper?.collapsedTypeface = typeface
-        }
-    /**
-     * Returns the typeface used for the expanded title.
-     */
-    /**
-     * Set the typeface to use for the expanded title.
-     *
-     */
-    @get:NonNull
-    var expandedTitleTypeface: Typeface?
-        get() = mCollapsingTextHelper?.expandedTypeface
-        set(typeface) {
-            mCollapsingTextHelper?.expandedTypeface = typeface
-        }
-
-    /**
-     * Sets the expanded title margins.
-     *
-     * @param start the starting title margin in pixels
-     * @param top the top title margin in pixels
-     * @param end the ending title margin in pixels
-     * @param bottom the bottom title margin in pixels
-     *
-     * @see .getExpandedTitleMarginStart
-     * @see .getExpandedTitleMarginTop
-     * @see .getExpandedTitleMarginEnd
-     * @see .getExpandedTitleMarginBottom
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMargin
-     */
-    fun setExpandedTitleMargin(start: Int, top: Int, end: Int, bottom: Int) {
-        mExpandedMarginStart = start
-        mExpandedMarginTop = top
-        mExpandedMarginEnd = end
-        mExpandedMarginBottom = bottom
-        requestLayout()
-    }
-    /**
-     * @return the starting expanded title margin in pixels
-     *
-     * @see .setExpandedTitleMarginStart
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginStart
-     */
-    /**
-     * Sets the starting expanded title margin in pixels.
-     *
-     * @see .getExpandedTitleMarginStart
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginStart
-     */
-    var expandedTitleMarginStart: Int
-        get() = mExpandedMarginStart
-        set(margin) {
-            mExpandedMarginStart = margin
-            requestLayout()
-        }
-    /**
-     * @return the top expanded title margin in pixels
-     * @see .setExpandedTitleMarginTop
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginTop
-     */
-    /**
-     * Sets the top expanded title margin in pixels.
-     *
-     * @see .getExpandedTitleMarginTop
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginTop
-     */
-    var expandedTitleMarginTop: Int
-        get() = mExpandedMarginTop
-        set(margin) {
-            mExpandedMarginTop = margin
-            requestLayout()
-        }
-    /**
-     * @return the ending expanded title margin in pixels
-     * @see .setExpandedTitleMarginEnd
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginEnd
-     */
-    /**
-     * Sets the ending expanded title margin in pixels.
-     *
-     * @see .getExpandedTitleMarginEnd
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginEnd
-     */
-    var expandedTitleMarginEnd: Int
-        get() = mExpandedMarginEnd
-        set(margin) {
-            mExpandedMarginEnd = margin
-            requestLayout()
-        }
-    /**
-     * @return the bottom expanded title margin in pixels
-     * @see .setExpandedTitleMarginBottom
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginBottom
-     */
-    /**
-     * Sets the bottom expanded title margin in pixels.
-     *
-     * @see .getExpandedTitleMarginBottom
-     * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_expandedTitleMarginBottom
-     */
-    var expandedTitleMarginBottom: Int
-        get() = mExpandedMarginBottom
-        set(margin) {
-            mExpandedMarginBottom = margin
-            requestLayout()
-        }
 
     /* If we reach here then we don't have a min height set. Instead we'll take a
-     * guess at 1/3 of our height being visible */
-// If we have one explicitly set, return it
-
-    // Otherwise we'll use the default computed value// Update the scrim visibility// If we have a minHeight set, lets use 2 * minHeight (capped at our height)
+     * guess at 1/3 of our height being visible.
+     * If we have one explicitly set, return it
+     * Otherwise we'll use the default computed value.
+     * Update the scrim visibility.
+     * If we have a minHeight set, lets use 2 * minHeight (capped at our height) */
     /**
      * Set the amount of visible height in pixels used to define when to trigger a scrim
      * visibility change.
@@ -928,15 +639,20 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             }
 
             // Otherwise we'll use the default computed value
-            val insetTop = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+            val insetTop = if (mLastInsets != null) {
+                mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            } else {
+                0
+            }
             val minHeight: Int = ViewCompat.getMinimumHeight(this)
             return if (minHeight > 0) {
                 // If we have a minHeight set, lets use 2 * minHeight (capped at our height)
                 (minHeight * 2 + insetTop).coerceAtMost(height)
-            } else height / 3
-
-            /* If we reach here then we don't have a min height set. Instead we'll take a
-             * guess at 1/3 of our height being visible */
+            } else {
+                /* If we reach here then we don't have a min height set. Instead we'll take a
+                 * guess at 1/3 of our height being visible */
+                height / 3
+            }
         }
         set(height) {
             if (mScrimVisibleHeightTrigger != height) {
@@ -946,8 +662,8 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             }
         }
 
-    override fun checkLayoutParams(p: ViewGroup.LayoutParams): Boolean {
-        return p is LayoutParams
+    override fun checkLayoutParams(layoutParams: ViewGroup.LayoutParams): Boolean {
+        return layoutParams is LayoutParams
     }
 
     override fun generateDefaultLayoutParams(): LayoutParams {
@@ -1000,8 +716,9 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
          */
         var parallaxMultiplier = DEFAULT_PARALLAX_MULTIPLIER
 
-        constructor(c: Context, attrs: AttributeSet?) : super(c, attrs) {
-            val typedArray: TypedArray = c.obtainStyledAttributes(
+        @SuppressLint("CustomViewStyleable")
+        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+            val typedArray: TypedArray = context.obtainStyledAttributes(
                 attrs,
                 R.styleable.CollapsingToolbarLayout_Layout
             )
@@ -1017,9 +734,8 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         }
 
         constructor(width: Int, height: Int) : super(width, height)
-        constructor(width: Int, height: Int, gravity: Int) : super(width, height, gravity)
-        constructor(p: ViewGroup.LayoutParams?) : super(p!!)
-        constructor(source: MarginLayoutParams?) : super(source!!)
+
+        constructor(layoutParams: ViewGroup.LayoutParams) : super(layoutParams)
 
         companion object {
             private const val DEFAULT_PARALLAX_MULTIPLIER = 0.5f
@@ -1064,7 +780,11 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     private inner class OffsetUpdateListener : AppBarLayout.OnOffsetChangedListener {
         override fun onOffsetChanged(layout: AppBarLayout?, verticalOffset: Int) {
             mCurrentOffset = verticalOffset
-            val insetTop: Int = if (mLastInsets != null) mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top else 0
+            val insetTop: Int = if (mLastInsets != null) {
+                mLastInsets!!.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            } else {
+                0
+            }
             var i = 0
             val childCount: Int = childCount
             while (i < childCount) {
