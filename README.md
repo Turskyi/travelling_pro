@@ -6,6 +6,8 @@ An Android mobile application to help collect all countries that you have visite
 
 • App store: [Google Play](https://play.google.com/store/apps/details?id=io.github.turskyi.travellingpro);
 
+• Testing invite link: https://appdistribution.firebase.dev/i/95a4a3bcea0281c7;
+
 • Operating system: [Android](https://www.android.com/);
 
 • Programming language: [Kotlin](https://kotlinlang.org/);
