@@ -9,7 +9,7 @@ interface CountryRepository {
     suspend fun refreshCountriesInDb(onSuccess: () -> Unit, onError: (Exception) -> Unit)
 
     suspend fun updateSelfie(
-        name: String,
+        shortName: String,
         selfie: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
@@ -33,7 +33,7 @@ interface CountryRepository {
         onError: (Exception) -> Unit
     )
 
-    suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    suspend fun getCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
     suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 

@@ -5,7 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class VisitedCountry(
-    var id: Int,
+    val id: Int,
+    val shortName: String,
     val title: String,
     var flag: String,
     var selfie: String,
@@ -14,8 +15,9 @@ data class VisitedCountry(
     var selfieName: String,
     var cities: List<City>,
 ) : Parcelable {
-    constructor(id: Int, title: String, flag: String, selfie: String, selfieName: String) : this(
+    constructor(id: Int, shortName: String, title: String, flag: String, selfie: String, selfieName: String) : this(
         id,
+        shortName,
         title,
         flag,
         selfie,

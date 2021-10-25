@@ -133,10 +133,12 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
         _visibilityLoader.postValue(GONE)
     }
 
-    private suspend fun downloadCountries() = interactor.downloadCountries(
-        { showListOfVisitedCountries() },
-        { exception -> showError(exception) },
-    )
+    private suspend fun downloadCountries() {
+        interactor.downloadCountries(
+            { showListOfVisitedCountries() },
+            { exception -> showError(exception) },
+        )
+    }
 
     fun onFloatBtnClicked() {
         _navigateToAllCountries.value = true

@@ -12,6 +12,12 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit
     )
 
+    suspend fun insertAllFlags(
+        countries: List<CountryEntity>,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    )
+
     suspend fun markAsVisited(
         countryEntity: CountryEntity,
         onSuccess: () -> Unit,
@@ -19,14 +25,14 @@ interface FirestoreDatabaseSource {
     )
 
     suspend fun removeCountryFromVisited(
-        name: String,
+        shortName: String,
         parentId: Int,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     )
 
     suspend fun updateSelfie(
-        name: String,
+        shortName: String,
         selfie: String,
         previousSelfieName: String,
         onSuccess: () -> Unit,
@@ -66,12 +72,12 @@ interface FirestoreDatabaseSource {
         onError: (Exception) -> Unit,
     )
 
-    suspend fun setCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    suspend fun getCountNotVisitedCountries(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
-    suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    suspend fun getCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
 
-    suspend fun setCityCount(userId: String, onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
+    suspend fun getCityCount(userId: String, onSuccess: (Int) -> Unit, onError: (Exception) -> Unit)
 
     suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
@@ -115,7 +121,7 @@ interface FirestoreDatabaseSource {
     )
 
     suspend fun setUserVisibility(onSuccess: (Boolean) -> Unit, onError: (Exception) -> Unit)
-    suspend fun setCountNotVisitedCountriesById(
+    suspend fun getCountNotVisitedCountriesById(
         id: String,
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit,
