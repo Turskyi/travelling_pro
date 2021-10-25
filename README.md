@@ -60,7 +60,7 @@ wrapped with
 [Glide](https://bumptech.github.io/glide/),
 [Data Binding](https://developer.android.com/topic/libraries/data-binding);
 
-• Api: https://restcountries.com/#api-endpoints-v2-all
+• Api: https://restcountries.com/#api-endpoints-v2-all;
 
 • Screenshots:  
 <img src="/screenshots/device-2020-06-05-085243.png?raw=true" width="200" >
