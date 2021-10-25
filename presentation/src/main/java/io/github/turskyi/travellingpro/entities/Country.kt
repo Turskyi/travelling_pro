@@ -5,6 +5,7 @@ import android.os.Parcelable
 
 data class Country(
     var id: Int,
+    val shortName: String,
     val name: String,
     val flag: String,
     var isVisited: Boolean,
@@ -13,6 +14,7 @@ data class Country(
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as Int,
+        parcel.readValue(String::class.java.classLoader) as String,
         parcel.readValue(String::class.java.classLoader) as String,
         parcel.readValue(String::class.java.classLoader) as String,
         parcel.readValue(Boolean::class.java.classLoader) as Boolean,
@@ -27,6 +29,7 @@ data class Country(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeValue(id)
+        parcel.writeValue(shortName)
         parcel.writeValue(name)
         parcel.writeValue(flag)
         parcel.writeValue(isVisited)
@@ -34,5 +37,5 @@ data class Country(
         parcel.writeValue(selfieName)
     }
 
-    override fun describeContents() = 0
+    override fun describeContents(): Int = 0
 }

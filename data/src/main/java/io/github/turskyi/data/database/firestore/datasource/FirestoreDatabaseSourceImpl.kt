@@ -52,6 +52,7 @@ class FirestoreDatabaseSourceImpl(
         private const val KEY_AVATAR = "avatar"
         private const val KEY_PARENT_ID = "parentId"
         private const val KEY_COUNTER = "counter"
+        private const val KEY_FLAG = "flag"
     }
 
     // init Authentication
@@ -132,7 +133,7 @@ class FirestoreDatabaseSourceImpl(
         }
     }
 
-    override suspend fun setCountNotVisitedCountriesById(
+    override suspend fun getCountNotVisitedCountriesById(
         id: String,
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
@@ -153,7 +154,7 @@ class FirestoreDatabaseSourceImpl(
             .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    override suspend fun setCountNotVisitedCountries(
+    override suspend fun getCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -178,7 +179,7 @@ class FirestoreDatabaseSourceImpl(
         }
     }
 
-    override suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
+    override suspend fun getCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
         if (currentUser != null) {
             val countriesRef: CollectionReference = usersRef
                 .document(currentUser.uid)
@@ -206,7 +207,7 @@ class FirestoreDatabaseSourceImpl(
         }
     }
 
-    override suspend fun setCityCount(
+    override suspend fun getCityCount(
         userId: String,
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
@@ -237,26 +238,54 @@ class FirestoreDatabaseSourceImpl(
         countries: List<CountryEntity>,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
-    ) = countries.forEachIndexed { index, countryEntity ->
-        val country = CountryEntity(
-            id = index,
-            name = countryEntity.name,
-            flag = countryEntity.flag,
-            isVisited = false,
-        )
-        if (currentUser != null) {
-            usersRef.document(currentUser.uid)
-                .collection(COLLECTION_COUNTRIES).document(countryEntity.name).set(country)
-                .addOnSuccessListener {
-                    if (index == countries.size - 1) {
-                        onSuccess.invoke()
+    ) {
+        countries.forEachIndexed { index: Int, countryEntity: CountryEntity ->
+            val country = CountryEntity(
+                id = index,
+                shortName = countryEntity.shortName,
+                name = countryEntity.name,
+                flag = countryEntity.flag,
+                isVisited = false,
+            )
+            if (currentUser != null) {
+                usersRef.document(currentUser.uid)
+                    .collection(COLLECTION_COUNTRIES).document(countryEntity.shortName).set(country)
+                    .addOnSuccessListener {
+                        if (index == countries.lastIndex) {
+                            onSuccess.invoke()
+                        }
+                    }.addOnFailureListener { exception ->
+                        onError.invoke(exception)
                     }
-                }.addOnFailureListener { exception ->
-                    onError.invoke(exception)
-                }
-        } else {
-            mFirebaseAuth.signOut()
-            onError.invoke(NotFoundException())
+            } else {
+                mFirebaseAuth.signOut()
+                onError.invoke(NotFoundException())
+            }
+        }
+    }
+
+    override suspend fun insertAllFlags(
+        countries: List<CountryEntity>,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        countries.forEachIndexed { index: Int, countryEntity: CountryEntity ->
+            if (currentUser != null) {
+                usersRef.document(currentUser.uid)
+                    .collection(COLLECTION_COUNTRIES).document(countryEntity.shortName).update(
+                        mapOf(KEY_FLAG to countryEntity.flag)
+                    )
+                    .addOnSuccessListener {
+                        if (index == countries.size - 1) {
+                            onSuccess.invoke()
+                        }
+                    }.addOnFailureListener { exception ->
+                        onError.invoke(exception)
+                    }
+            } else {
+                mFirebaseAuth.signOut()
+                onError.invoke(NotFoundException())
+            }
         }
     }
 
@@ -271,7 +300,7 @@ class FirestoreDatabaseSourceImpl(
             // set mark "isVisited = true" in list of all countries
             val countryRef: DocumentReference = userDocRef
                 .collection(COLLECTION_COUNTRIES)
-                .document(countryEntity.name)
+                .document(countryEntity.shortName)
             countryRef.update(KEY_IS_VISITED, true)
                 .addOnSuccessListener {
                     addToListOfVisited(userDocRef, countryEntity, onSuccess, onError)
@@ -291,7 +320,7 @@ class FirestoreDatabaseSourceImpl(
     ) {
         userDocRef
             .collection(COLLECTION_VISITED_COUNTRIES)
-            .document(countryEntity.name)
+            .document(countryEntity.shortName)
             .set(countryEntity.mapCountryToVisitedCountry())
             .addOnSuccessListener { incrementUserVisitedCounter(userDocRef, onSuccess, onError) }
             .addOnFailureListener { exception -> onError.invoke(exception) }
@@ -325,7 +354,7 @@ class FirestoreDatabaseSourceImpl(
     }
 
     override suspend fun removeCountryFromVisited(
-        name: String,
+        shortName: String,
         parentId: Int,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
@@ -334,9 +363,9 @@ class FirestoreDatabaseSourceImpl(
             // deleting from list of visited countries
             usersRef.document(currentUser.uid)
                 .collection(COLLECTION_VISITED_COUNTRIES)
-                .document(name)
+                .document(shortName)
                 .delete()
-                .addOnSuccessListener { markAsNotVisited(name, parentId, onSuccess, onError) }
+                .addOnSuccessListener { markAsNotVisited(shortName, parentId, onSuccess, onError) }
                 .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
@@ -346,14 +375,14 @@ class FirestoreDatabaseSourceImpl(
 
     /** set mark "isVisited = false" in list of all countries */
     private fun markAsNotVisited(
-        name: String,
+        shortName: String,
         parentId: Int,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
         if (currentUser != null) {
             val countryRef: DocumentReference =
-                usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES).document(name)
+                usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES).document(shortName)
             countryRef.update(KEY_IS_VISITED, false)
                 .addOnSuccessListener {
                     /*
@@ -433,7 +462,7 @@ class FirestoreDatabaseSourceImpl(
     }
 
     override suspend fun updateSelfie(
-        name: String,
+        shortName: String,
         selfie: String,
         previousSelfieName: String,
         onSuccess: () -> Unit,
@@ -489,7 +518,7 @@ class FirestoreDatabaseSourceImpl(
                     val countryRef: DocumentReference = usersRef
                         .document(currentUser.uid)
                         .collection(COLLECTION_VISITED_COUNTRIES)
-                        .document(name)
+                        .document(shortName)
 
                     // before saving a new image deleting previous image
                     deleteImage(
@@ -557,7 +586,7 @@ class FirestoreDatabaseSourceImpl(
                         if (country.id == city.parentId) {
                             val cityRef: DocumentReference = userDocRef
                                 .collection(COLLECTION_CITIES)
-                                .document("${city.name},${country.name}")
+                                .document("${city.name},${country.shortName}")
                             city.id = cityRef.id
                             cityRef
                                 .set(city)

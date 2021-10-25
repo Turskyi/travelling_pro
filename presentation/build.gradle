@@ -86,12 +86,12 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.6.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
-    implementation 'com.google.firebase:firebase-analytics:19.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.3'
+    implementation 'com.google.firebase:firebase-analytics:19.0.2'
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
-    implementation 'com.google.firebase:firebase-perf:20.0.2'
+    implementation 'com.google.firebase:firebase-perf:20.0.3'
 // to send notifications across devices from firebase console
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
 
@@ -132,14 +132,14 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
     // Facebook SDK
-    def facebookVersion = "11.3.0"
+    def facebookVersion = "12.0.1"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "4.1.0"
+    def lottieVersion = "4.2.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android
@@ -153,7 +153,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
 
-    def jupiter_version = "5.7.0"
+    def jupiter_version = "5.8.1"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
 }

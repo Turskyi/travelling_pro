@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chad.library.adapter.base.entity.node.BaseNode
 import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
@@ -67,10 +68,9 @@ class TravellerActivityViewModel(private val interactor: CountriesInteractor) : 
         viewModelScope.launch {
             interactor.setVisitedCountries(
                 id = userId,
-                onSuccess = { countries ->
+                onSuccess = { countries: List<VisitedCountryModel> ->
                     val visitedCountries: List<VisitedCountry> =
                         countries.mapVisitedModelListToVisitedList()
-
                     val visitedCountryWithCityNodes: MutableList<VisitedCountryNode> =
                         visitedCountries.mapVisitedListToVisitedNodeList()
                     if (visitedCountryWithCityNodes.isEmpty()) {

@@ -79,8 +79,9 @@ class CountryNodeProvider : BaseNodeProvider() {
     private fun setSelectableBorderLessFor(view: View) {
         val outValue = TypedValue()
         context.theme.resolveAttribute(
-            R.attr.selectableItemBackgroundBorderless, outValue,
-            true
+            R.attr.selectableItemBackgroundBorderless,
+            outValue,
+            true,
         )
         view.setBackgroundResource(outValue.resourceId)
     }
@@ -95,7 +96,7 @@ class CountryNodeProvider : BaseNodeProvider() {
             .with(holder.itemView.context)
             .withListener(object : GlideToVectorYouListener {
                 override fun onLoadFailed() {
-                        showPicturesInWebView(holder, visitedCountryNode)
+                    showPicturesInWebView(holder, visitedCountryNode)
                 }
 
                 override fun onResourceReady() {

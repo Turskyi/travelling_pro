@@ -56,19 +56,20 @@ class FlagFragment : BaseFlagFragment() {
                             val contentImg: VisitedCountry? = imageId?.let { contentImgId ->
                                 position?.let {
                                     getContentUriFromUri(
-                                        visitedCountries[position].id,
-                                        contentImgId,
-                                        visitedCountries[position].title,
-                                        visitedCountries[position].flag
+                                        id = visitedCountries[position].id,
+                                        imageId = contentImgId,
+                                        shortName = visitedCountries[position].shortName,
+                                        name = visitedCountries[position].title,
+                                        flag = visitedCountries[position].flag
                                     )
                                 }
                             }
                             contentImg?.selfie?.let { uri ->
                                 position?.let {
                                     viewModel.updateSelfie(
-                                        visitedCountries[position].title,
-                                        uri,
-                                        visitedCountries[position].selfieName,
+                                        shortName = visitedCountries[position].shortName,
+                                        selfie = uri,
+                                        selfieName = visitedCountries[position].selfieName,
                                     )
                                 }
                             }
@@ -82,9 +83,9 @@ class FlagFragment : BaseFlagFragment() {
                         Observer<List<VisitedCountry>> { visitedCountries ->
                             position?.let {
                                 viewModel.updateSelfie(
-                                    visitedCountries[position].title,
-                                    selectedImageUri.toString(),
-                                    visitedCountries[position].selfieName
+                                    shortName = visitedCountries[position].shortName,
+                                    selfie = selectedImageUri.toString(),
+                                    selfieName = visitedCountries[position].selfieName
                                 )
                             }
                         }
@@ -101,6 +102,7 @@ class FlagFragment : BaseFlagFragment() {
     private fun getContentUriFromUri(
         id: Int,
         imageId: Int,
+        shortName: String,
         name: String,
         flag: String
     ): VisitedCountry {
@@ -123,6 +125,7 @@ class FlagFragment : BaseFlagFragment() {
         )
         val visitedCountry = VisitedCountry(
             id = id,
+            shortName = shortName,
             title = name,
             flag = flag,
             selfie = uriImage.toString(),

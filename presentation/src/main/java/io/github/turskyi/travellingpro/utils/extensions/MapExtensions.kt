@@ -14,14 +14,24 @@ fun List<VisitedCountryModel>.mapVisitedModelListToVisitedList(): MutableList<Vi
     return this.mapTo(mutableListOf(), { it.mapModelToCountry() })
 }
 
-fun VisitedCountryModel.mapModelToCountry() = VisitedCountry(id, title, flag, selfie, selfieName)
+fun VisitedCountryModel.mapModelToCountry() = VisitedCountry(id, shortName, title, flag, selfie, selfieName)
 
-fun CountryModel.mapModelToCountry() = Country(id, name, flag, isVisited, selfie, selfieName)
-fun Country.mapToModel() = CountryModel(id, name, flag, isVisited, selfie, selfieName)
-fun VisitedCountryNode.mapVisitedCountryNodeToCountry() = Country(
-    id = id, isVisited = true, name = title,
-    flag = flag, selfie = selfie, selfieName = selfieName
-)
+fun CountryModel.mapModelToCountry(): Country {
+    return Country(id, shortName, name, flag, isVisited, selfie, selfieName)
+}
+
+fun Country.mapToModel() = CountryModel(id, shortName, name, flag, isVisited, selfie, selfieName)
+fun VisitedCountryNode.mapVisitedCountryNodeToCountry(): Country {
+    return Country(
+        id = id,
+        shortName = shortName,
+        isVisited = true,
+        name = title,
+        flag = flag,
+        selfie = selfie,
+        selfieName = selfieName,
+    )
+}
 
 fun List<VisitedCountry>.mapVisitedListToVisitedNodeList(): MutableList<VisitedCountryNode> {
     return this.mapTo(
@@ -32,6 +42,7 @@ fun List<VisitedCountry>.mapVisitedListToVisitedNodeList(): MutableList<VisitedC
 
 fun VisitedCountry.mapVisitedCountryToNode() = VisitedCountryNode(
     id = id,
+    shortName = shortName,
     title = title,
     flag = flag,
     selfie = selfie,
