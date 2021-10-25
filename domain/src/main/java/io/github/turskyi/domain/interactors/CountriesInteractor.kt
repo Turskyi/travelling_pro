@@ -22,12 +22,12 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     ): Unit = countryRepository.setCountriesByName(name, onSuccess, onError)
 
     suspend fun updateSelfie(
-        name: String,
+        shortName: String,
         selfie: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.updateSelfie(name, selfie, selfieName, onSuccess, onError)
+    ) = countryRepository.updateSelfie(shortName, selfie, selfieName, onSuccess, onError)
 
     suspend fun setCountries(
         limit: Int,
@@ -50,7 +50,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
     suspend fun setNotVisitedCountriesNum(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.setCountNotVisitedCountries(onSuccess, onError)
+    ) = countryRepository.getCountNotVisitedCountries(onSuccess, onError)
 
     suspend fun setNotVisitedCountriesNum(
         id: String,

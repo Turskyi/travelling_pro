@@ -1,3 +1,5 @@
+@file:Suppress("unused", "unused")
+
 package io.github.turskyi.data.entities.local
 
 data class TravellerEntity(

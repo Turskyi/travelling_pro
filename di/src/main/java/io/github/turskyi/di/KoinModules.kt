@@ -21,19 +21,21 @@ import io.github.turskyi.domain.repository.CountryRepository
 import io.github.turskyi.domain.repository.TravellerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import okhttp3.Interceptor
 import okhttp3.Request
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.Module
 
-val repositoriesModule = module {
+val repositoriesModule: Module = module {
     factory<CountryRepository> { CountryRepositoryImpl(CoroutineScope(SupervisorJob())) }
     factory<TravellerRepository> { TravellerRepositoryImpl(CoroutineScope(SupervisorJob())) }
 }
 
-val dataProvidersModule = module {
+val dataProvidersModule: Module = module {
     single {
         OkHttpClient.Builder()
             .cache(get())
-            .addInterceptor { chain ->
+            .addInterceptor { chain: Interceptor.Chain ->
                 var request: Request = chain.request()
                 request = if (hasNetwork(androidContext())) {
                     request.newBuilder().header(
@@ -70,7 +72,7 @@ val dataProvidersModule = module {
     }
 }
 
-val sourcesModule = module {
+val sourcesModule: Module = module {
     single { get<Retrofit>().create(CountriesApi::class.java) }
     single { NetSource(get()) }
     factory<FirestoreDatabaseSource> {
