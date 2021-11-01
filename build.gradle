@@ -2,12 +2,12 @@
 buildscript {
     ext {
         // sdk versions
-        compile_sdk_version = 30
+        compile_sdk_version = 31
         build_tools_version = "30.0.3"
         min_sdk_version = 21
-        target_sdk_version = 30
-        version_code = 13
-        version_name = "2.0.0"
+        target_sdk_version = 29
+        version_code = 14
+        version_name = "2.0.1"
     }
     repositories {
         google()
