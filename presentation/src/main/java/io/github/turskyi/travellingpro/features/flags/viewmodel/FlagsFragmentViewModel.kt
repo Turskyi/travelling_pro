@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
 class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : ViewModel(),
-    LifecycleObserver {
+    LifecycleEventObserver {
     private var visitedCount = 0
 
     private val _visibilityLoader = MutableLiveData<Int>()
@@ -26,11 +26,16 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
     val errorMessage: LiveData<Event<String>>
         get() = _errorMessage
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private fun getVisitedCountries() {
-        viewModelScope.launch {
-            interactor.setVisitedCountries({ countries ->
-                visitedCount = countries.size
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (event == Lifecycle.Event.ON_CREATE) {
+            getVisitedCountries()
+        }
+    }
+
+    fun updateSelfie(shortName: String, selfie: String, selfieName: String) {
+        _visibilityLoader.postValue(VISIBLE)
+        viewModelScope.launch(IO) {
+            interactor.updateSelfie(shortName, selfie, selfieName, { countries ->
                 _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)
             }, { exception ->
@@ -47,10 +52,10 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
         }
     }
 
-    fun updateSelfie(shortName: String, selfie: String, selfieName: String) {
-        _visibilityLoader.postValue(VISIBLE)
-        viewModelScope.launch(IO) {
-            interactor.updateSelfie(shortName, selfie, selfieName, { countries ->
+    private fun getVisitedCountries() {
+        viewModelScope.launch {
+            interactor.setVisitedCountries({ countries ->
+                visitedCount = countries.size
                 _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
                 _visibilityLoader.postValue(GONE)
             }, { exception ->

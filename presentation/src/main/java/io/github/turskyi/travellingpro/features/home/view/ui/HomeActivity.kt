@@ -1,7 +1,6 @@
 package io.github.turskyi.travellingpro.features.home.view.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -135,8 +134,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         binding.includeAppBar.toolbarLayout.title = getString(
             R.string.home_onboarding_title_authorization,
         )
-        // set drawable icon "info"
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.btn_info_ripple)
+        if (supportActionBar != null) {
+            // set drawable icon "info"
+            supportActionBar!!.setHomeAsUpIndicator(R.drawable.btn_info_ripple)
+        }
 
         val linearLayoutManager = LinearLayoutManager(this)
         binding.rvVisitedCountries.apply {
@@ -184,8 +185,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
             onCountryNameClickListener = { countryNode ->
                 // Creating the new Fragment with the Country id passed in.
-                val fragment: AddCityDialogFragment =
-                    AddCityDialogFragment.newInstance(countryNode.id)
+                val fragment: AddCityDialogFragment = AddCityDialogFragment.newInstance(
+                    countryNode.id,
+                )
                 fragment.show(supportFragmentManager, null)
             }
             onCityLongClickListener = { city ->
@@ -217,8 +219,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         })
 
         viewModel.errorMessage.observe(this, { event ->
-            event.getMessageIfNotHandled()?.let { message ->
-                toastLong(message)
+            val errorMessage: String? = event.getMessageIfNotHandled()
+            if (errorMessage != null) {
+                toastLong(errorMessage)
                 AuthUI.getInstance().signOut(this)
             }
         })
@@ -227,7 +230,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
          * but it is made on purpose of demonstration databinding */
         viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
             if (shouldNavigate == true) {
-                val allCountriesIntent = Intent(this, AllCountriesActivity::class.java)
+                val allCountriesIntent = Intent(
+                    this,
+                    AllCountriesActivity::class.java,
+                )
                 allCountriesResultLauncher.launch(allCountriesIntent)
                 viewModel.onNavigatedToAllCountries()
             }
@@ -257,10 +263,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
     private fun requestPermission(activity: AppCompatActivity) = ActivityCompat.requestPermissions(
         activity,
-        listOf(
+        arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ).toTypedArray(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        ),
         resources.getInteger(R.integer.location_and_storage_request_code)
     )
 
@@ -270,7 +276,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         registerAllCountriesActivityResultLauncher()
     }
 
-    @SuppressLint("InvalidFragmentVersionForActivityResult")
     private fun registerInternetConnectionLauncher() {
         internetResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -335,7 +340,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                             return@registerForActivityResult
                         }
                         else -> {
-                            toastLong(response.error?.localizedMessage ?: response.error.toString())
+                            toastLong(
+                                response.error?.localizedMessage ?: response.error.toString()
+                            )
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
@@ -395,7 +402,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     private fun updateAdapterAndTitle(visitedCountryNodes: List<VisitedCountryNode>) {
         viewModel.cityCount = 0
         // makes all list items collapsed
-        for (countryNode in visitedCountryNodes) {
+        for (countryNode: VisitedCountryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
             viewModel.cityCount = viewModel.cityCount + countryNode.childNode.size
         }

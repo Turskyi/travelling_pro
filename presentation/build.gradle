@@ -83,17 +83,17 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.2.3'
-    implementation 'com.google.firebase:firebase-analytics:19.0.2'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.4'
+    implementation 'com.google.firebase:firebase-analytics:20.0.0'
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
     implementation 'com.google.firebase:firebase-perf:20.0.3'
 // to send notifications across devices from firebase console
-    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    implementation 'com.google.firebase:firebase-messaging:23.0.0'
 
     // Glide (Image caching and management)
     def glideVersion = "4.12.0"
@@ -101,7 +101,7 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glideVersion"
 
     // ViewModel and LiveData
-    def lifecycle_version = "2.3.1"
+    def lifecycle_version = "2.4.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"

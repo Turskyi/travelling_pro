@@ -2,6 +2,7 @@ package io.github.turskyi.travellingpro.features.flags.view
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -45,16 +46,19 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
         binding.tvToolbarTitle.text = title
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
+    override fun onCreatePanelMenu(featureId: Int, menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_info, menu)
-        return true
+        return super.onCreatePanelMenu(featureId, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (getBundle!!.getParcelable<Traveller>(EXTRA_USER) != null) {
+        if (getBundle != null && getBundle!!.getParcelable<Traveller>(EXTRA_USER) != null) {
             val traveller: Traveller = getBundle!!.getParcelable(EXTRA_USER)!!
-            openInfoDialog(R.string.txt_info_user_flags, traveller.name)
+            openInfoDialog(
+                R.string.txt_info_user_flags,
+                traveller.name,
+            )
         } else {
             openInfoDialog(R.string.txt_info_flags)
         }
@@ -75,8 +79,10 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
         binding = ActivityFlagsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        if (supportActionBar != null) {
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            supportActionBar!!.setDisplayShowHomeEnabled(true)
+        }
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
         initAdapter()
     }
@@ -89,8 +95,10 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
             adapter = flagsAdapter
             offscreenPageLimit = 4
             setPageTransformer(ZoomOutPageTransformer())
-            val startPosition: Int = getBundle!!.getInt(EXTRA_POSITION)
-            post { setCurrentItem(startPosition, true) }
+            if (getBundle != null) {
+                val startPosition: Int = getBundle!!.getInt(EXTRA_POSITION)
+                post { setCurrentItem(startPosition, true) }
+            }
         }
     }
 

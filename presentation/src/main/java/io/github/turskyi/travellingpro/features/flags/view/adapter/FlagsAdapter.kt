@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.turskyi.travellingpro.entities.Traveller
@@ -20,7 +20,7 @@ import io.github.turskyi.travellingpro.utils.extensions.toastLong
 
 class FlagsAdapter(private val activity: AppCompatActivity) :
     FragmentStateAdapter(activity),
-    LifecycleObserver {
+    LifecycleEventObserver {
     private var flagsActivityViewListener: FlagsActivityView? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -40,15 +40,13 @@ class FlagsAdapter(private val activity: AppCompatActivity) :
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onLifeCycleDestroy() {
-        flagsActivityViewListener = null
-    }
-
     override fun getItemCount(): Int = flagsActivityViewListener?.getItemCount() ?: 0
 
     override fun createFragment(position: Int): Fragment {
-        return if (activity.intent.extras != null && activity.intent.extras!!.getParcelable<Traveller>(EXTRA_USER) != null) {
+        return if (activity.intent.extras != null && activity.intent.extras!!.getParcelable<Traveller>(
+                EXTRA_USER
+            ) != null
+        ) {
             val traveller: Traveller = activity.intent.extras!!.getParcelable(EXTRA_USER)!!
             FriendFlagsFragment().apply {
                 arguments = bundleOf(
@@ -57,9 +55,13 @@ class FlagsAdapter(private val activity: AppCompatActivity) :
                 )
             }
         } else {
-            FlagFragment().apply {
-                arguments = bundleOf(EXTRA_POSITION to position)
-            }
+            FlagFragment().apply { arguments = bundleOf(EXTRA_POSITION to position) }
+        }
+    }
+
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            flagsActivityViewListener = null
         }
     }
 }

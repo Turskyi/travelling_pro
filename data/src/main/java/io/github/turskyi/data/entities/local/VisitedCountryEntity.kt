@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.turskyi.data.entities.local
 
 data class VisitedCountryEntity(
