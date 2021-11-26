@@ -87,7 +87,12 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.2.4'
-    implementation 'com.google.firebase:firebase-analytics:20.0.0'
+    implementation('com.google.firebase:firebase-analytics:20.0.0') {
+        // remove add dependency
+        exclude module: "play-services-ads-identifier"
+        exclude module: "play-services-measurement"
+        exclude module: "play-services-measurement-sdk"
+    }
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
@@ -132,14 +137,14 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
     // Facebook SDK
-    def facebookVersion = "12.0.1"
+    def facebookVersion = "12.1.0"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "4.2.0"
+    def lottieVersion = "4.2.1"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android
