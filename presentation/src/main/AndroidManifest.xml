@@ -22,7 +22,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:name=".common.App"
@@ -89,6 +88,11 @@
             </intent-filter>
         </activity>
 
+        <!-- remove advertising dependency -->
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+
         <!-- [START fcm_default_icon] -->
         <!-- Default icon. This is used when no icon is set for incoming notification messages. -->
         <meta-data
@@ -104,7 +108,8 @@
         <!-- [START fcm_default_channel] -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" /> <!-- [END fcm_default_channel] -->
+            android:value="@string/default_notification_channel_id" />
+        <!-- [END fcm_default_channel] -->
 
         <provider
             android:name="androidx.core.content.FileProvider"
