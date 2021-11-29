@@ -88,7 +88,7 @@
             </intent-filter>
         </activity>
 
-        <!-- remove add dependency -->
+        <!-- remove advertising dependency -->
         <meta-data
             android:name="google_analytics_adid_collection_enabled"
             android:value="false" />
