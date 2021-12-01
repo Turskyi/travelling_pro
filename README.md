@@ -1,4 +1,4 @@
-# Travelling Pro
+# Travelling Pro [![Build status](https://build.appcenter.ms/v0.1/apps/add3e42d-20e7-466d-9300-e42abf3e6b76/branches/master/badge)](https://appcenter.ms)
 
 An Android mobile application to help collect all countries that you have visited.
 
