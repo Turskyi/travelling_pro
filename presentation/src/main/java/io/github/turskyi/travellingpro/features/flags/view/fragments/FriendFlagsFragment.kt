@@ -36,18 +36,18 @@ class FriendFlagsFragment : BaseFlagFragment() {
     }
 
     private fun initObservers() {
-        viewModel.errorMessage.observe(this, { event ->
+        viewModel.errorMessage.observe(this) { event ->
             event.getMessageIfNotHandled()?.let { message ->
                 toastLong(message)
             }
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility: Int ->
             flagsActivityViewListener?.setLoaderVisibility(currentVisibility)
-        })
+        }
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
             Observer<List<VisitedCountry>> { countries ->
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
-                if(mChangeFlagListener != null){
+                if (mChangeFlagListener != null) {
                     mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
                     if (countries[position].selfie.isEmpty()) {
                         showTheFlag(countries, position)

@@ -5,7 +5,7 @@ android:opacity="opaque">
     android:width="@dimen/width_smallest_screen"
     android:gravity="center">
     <shape
-        android:shape="oval">
+        android:shape="rectangle">
         <gradient
             android:endColor="#9b0493"
             android:angle="135"

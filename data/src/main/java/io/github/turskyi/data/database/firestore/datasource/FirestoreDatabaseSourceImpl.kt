@@ -524,7 +524,7 @@ class FirestoreDatabaseSourceImpl(
                     deleteImage(
                         selfieName = previousSelfieName,
                         onSuccess = {
-                            // if deleting is successful , saving new url and new image name to model
+                            // if deleting is successful, saving new url and new image name to model
                             countryRef.update(
                                 mapOf(
                                     KEY_SELFIE to uploadedSelfieUrl,

@@ -9,7 +9,6 @@ import android.location.*
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -23,8 +22,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import io.github.turskyi.travellingpro.R
-import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
 import io.github.turskyi.travellingpro.entities.City
+import io.github.turskyi.travellingpro.features.home.viewmodels.AddCityDialogViewModel
 import io.github.turskyi.travellingpro.utils.extensions.isOnline
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
@@ -62,7 +61,7 @@ class AddCityDialogFragment : DialogFragment() {
         )
 
         val viewGroup: ViewGroup = requireActivity().findViewById(android.R.id.content)
-        val dialogView: View = LayoutInflater.from(context).inflate(
+        val dialogView: View = layoutInflater.inflate(
             R.layout.dialogue_city, viewGroup,
             false
         )

@@ -16,6 +16,7 @@ import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyL
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
+import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
 import io.github.turskyi.travellingpro.utils.extensions.openActivityWithObject
 import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
@@ -98,13 +99,13 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private fun initObservers() {
         val observer = EmptyListObserver(binding.rvTravellers, binding.tvNoResults)
         listAdapter.registerAdapterDataObserver(observer)
-        viewModel.topTravellersPercentLiveData.observe(this, { topPercent ->
+        viewModel.topTravellersPercentLiveData.observe(this) { topPercent ->
             updateTitle(topPercent)
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility ->
             binding.pb.visibility = currentVisibility
-        })
-        viewModel.visibilityUser.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityUser.observe(this) { currentVisibility ->
             if (currentVisibility == VISIBLE) {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_eye_ripple)
                 binding.floatBtnVisibility.tag = R.drawable.btn_eye_ripple
@@ -114,12 +115,12 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
                 binding.floatBtnVisibility.tag = R.drawable.btn_hide_ripple
                 listAdapter.submitList(viewModel.pagedList)
             }
-        })
-        viewModel.errorMessage.observe(this, { event ->
+        }
+        viewModel.errorMessage.observe(this) { event: Event<String> ->
             event.getMessageIfNotHandled()?.let { message ->
                 toastLong(message)
             }
-        })
+        }
     }
 
     private fun showTraveller(traveller: Traveller) {

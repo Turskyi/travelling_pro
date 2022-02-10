@@ -1,8 +1,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:width="@dimen/width_facebook_icon"
     android:height="200dp"
     android:viewportWidth="390"
-    android:viewportHeight="200">
+    android:viewportHeight="200"
+    tools:keep="@drawable/ic_btn_facebook">
   <path
       android:pathData="M100,0L290,0A100,100 0,0 1,390 100L390,100A100,100 0,0 1,290 200L100,200A100,100 0,0 1,0 100L0,100A100,100 0,0 1,100 0z"
       android:fillColor="#475993"/>

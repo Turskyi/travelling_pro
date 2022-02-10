@@ -7,14 +7,16 @@ import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.travellingpro.entities.*
 
 fun List<CountryModel>.mapModelListToCountryList(): MutableList<Country> {
-    return this.mapTo(mutableListOf(), { it.mapModelToCountry() })
+    return this.mapTo(mutableListOf()) { it.mapModelToCountry() }
 }
 
 fun List<VisitedCountryModel>.mapVisitedModelListToVisitedList(): MutableList<VisitedCountry> {
-    return this.mapTo(mutableListOf(), { it.mapModelToCountry() })
+    return this.mapTo(mutableListOf()) { it.mapModelToCountry() }
 }
 
-fun VisitedCountryModel.mapModelToCountry() = VisitedCountry(id, shortName, title, flag, selfie, selfieName)
+fun VisitedCountryModel.mapModelToCountry(): VisitedCountry {
+    return VisitedCountry(id, shortName, title, flag, selfie, selfieName)
+}
 
 fun CountryModel.mapModelToCountry(): Country {
     return Country(id, shortName, name, flag, isVisited, selfie, selfieName)
@@ -34,10 +36,7 @@ fun VisitedCountryNode.mapVisitedCountryNodeToCountry(): Country {
 }
 
 fun List<VisitedCountry>.mapVisitedListToVisitedNodeList(): MutableList<VisitedCountryNode> {
-    return this.mapTo(
-        mutableListOf(),
-        { it.mapVisitedCountryToNode() },
-    )
+    return this.mapTo(mutableListOf()) { it.mapVisitedCountryToNode() }
 }
 
 fun VisitedCountry.mapVisitedCountryToNode() = VisitedCountryNode(
@@ -51,13 +50,13 @@ fun VisitedCountry.mapVisitedCountryToNode() = VisitedCountryNode(
 
 fun CityModel.mapModelToBaseNode() = City(id = id, name = name, parentId = parentId, month = month)
 fun List<CityModel>.mapModelListToBaseNodeList(): MutableList<City> {
-    return this.mapTo(mutableListOf(), { it.mapModelToBaseNode() })
+    return this.mapTo(mutableListOf()) { it.mapModelToBaseNode() }
 }
 
 fun City.mapNodeToModel() = CityModel(id = id, name = name, parentId = parentId, month = month)
 
 fun List<TravellerModel>.mapModelListToTravellerList(): MutableList<Traveller> {
-    return this.mapTo(mutableListOf(), { it.mapModelToTraveller() })
+    return this.mapTo(mutableListOf()) { it.mapModelToTraveller() }
 }
 
 private fun TravellerModel.mapModelToTraveller(): Traveller {

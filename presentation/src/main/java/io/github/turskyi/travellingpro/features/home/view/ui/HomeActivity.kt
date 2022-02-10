@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings.ACTION_WIRELESS_SETTINGS
@@ -22,22 +24,21 @@ import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
-import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
-import io.github.turskyi.travellingpro.utils.extensions.*
-import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
-import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
-import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
-import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
 import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
+import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
+import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
+import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
+import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
+import io.github.turskyi.travellingpro.utils.extensions.*
 import org.koin.android.ext.android.inject
-import java.util.*
 
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, HomeActivityView {
 
@@ -128,6 +129,15 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
     private fun initView() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
+        // init animated background
+        binding.root.setBackgroundResource(R.drawable.gradient_list)
+        val layoutBackground: Drawable = binding.root.background
+        if (layoutBackground is AnimationDrawable) {
+            val animationDrawable: AnimationDrawable = binding.root.background as AnimationDrawable
+            animationDrawable.setEnterFadeDuration(2000)
+            animationDrawable.setExitFadeDuration(4000)
+            animationDrawable.start()
+        }
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
         setSupportActionBar(binding.includeAppBar.toolbar)
@@ -202,33 +212,33 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     private fun initObservers() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries ->
             initTitle()
             updateAdapterAndTitle(visitedCountries)
-        })
-        viewModel.visitedCountries.observe(this, { visitedCountries ->
+        }
+        viewModel.visitedCountries.observe(this) { visitedCountries ->
             binding.includeAppBar.circlePieChart.apply {
                 initPieChart()
                 createPieChartWith(visitedCountries, viewModel.notVisitedCountriesCount)
                 binding.includeAppBar.circlePieChart.animatePieChart()
             }
             showFloatBtn(visitedCountries)
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility ->
             binding.pb.visibility = currentVisibility
-        })
+        }
 
-        viewModel.errorMessage.observe(this, { event ->
+        viewModel.errorMessage.observe(this) { event ->
             val errorMessage: String? = event.getMessageIfNotHandled()
             if (errorMessage != null) {
                 toastLong(errorMessage)
                 AuthUI.getInstance().signOut(this)
             }
-        })
+        }
 
         /*  here could be a more efficient way to handle a click to open activity,
          * but it is made on purpose of demonstration databinding */
-        viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
+        viewModel.navigateToAllCountries.observe(this) { shouldNavigate ->
             if (shouldNavigate == true) {
                 val allCountriesIntent = Intent(
                     this,
@@ -237,7 +247,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 allCountriesResultLauncher.launch(allCountriesIntent)
                 viewModel.onNavigatedToAllCountries()
             }
-        })
+        }
     }
 
     private fun checkPermissionAndInitAuthentication(activity: AppCompatActivity) {
@@ -419,7 +429,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     private fun showTitleWithCitiesAndCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountryNodes ->
             if (viewModel.cityCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
@@ -447,19 +457,21 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                     )
                 }"
             }
-        })
+        }
     }
 
     /** [showTitleWithOnlyCountries] function must be open
      *  to use it in custom "circle pie chart" widget */
     override fun showTitleWithOnlyCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(
+            this,
+        ) { visitedCountryNodes: List<VisitedCountryNode> ->
             binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
                 visitedCountryNodes.size,
                 visitedCountryNodes.size
             )
-        })
+        }
     }
 
     private fun initAuthentication() {

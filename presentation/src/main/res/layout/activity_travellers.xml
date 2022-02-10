@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bg_dark_space"
     style="@style/CoordinatorLayoutStyle"
-    tools:context=".features.travellers.view.TravellersActivity">
+    tools:context=".features.travellers.view.TravellersActivity"
+    tools:keep="@layout/activity_travellers">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"

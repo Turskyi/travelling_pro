@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/CoordinatorLayoutStyle"
     android:background="@drawable/bg_dark_space"
-    tools:context=".features.traveller.view.TravellerActivity">
+    tools:context=".features.traveller.view.TravellerActivity"
+    tools:keep="@layout/activity_traveller">
 
     <include
         android:id="@+id/include_app_bar"

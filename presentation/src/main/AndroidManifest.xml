@@ -36,7 +36,6 @@
         <activity
             android:name=".features.home.view.ui.HomeActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -71,8 +70,7 @@
         <!-- To use Facebook Login or Share -->
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
 
         <!-- Login via facebook redirects here. -->
         <activity

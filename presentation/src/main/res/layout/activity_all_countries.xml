@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
     style="@style/CoordinatorLayoutStyle"
-    tool:context=".features.allcountries.view.ui.AllCountriesActivity">
+    tool:context=".features.allcountries.view.ui.AllCountriesActivity"
+    tool:keep="@layout/activity_all_countries">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
