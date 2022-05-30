@@ -33,7 +33,9 @@
     </html>]]></string>
     <string name="default_notification_channel_id" translatable="false">Notifications from Travelling application.</string>
 
-    <!-- for face book sharing -->
+    <!--    for Facebook SDK -->
+    <string name="facebook_client_token">57499b8c06caa963b5a0be59e88db381</string>
+    <!-- for facebook sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
     <!-- for facebook auth -->

@@ -52,7 +52,7 @@ class CountryNodeProvider : BaseNodeProvider() {
         helper.getView<TextView>(R.id.tv_country).setOnClickListener {
             onTextClickListener?.invoke(visitedCountryNode)
         }
-        if (item.childNode.isNullOrEmpty()) {
+        if (item.childNode.isEmpty()) {
             helper.setVisible(R.id.iv_more, false)
         } else {
             if (visitedCountryNode.isExpanded) {

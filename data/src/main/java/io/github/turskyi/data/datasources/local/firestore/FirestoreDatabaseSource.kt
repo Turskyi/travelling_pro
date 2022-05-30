@@ -1,9 +1,9 @@
-package io.github.turskyi.data.database.firestore.service
+package io.github.turskyi.data.datasources.local.firestore
 
-import io.github.turskyi.data.entities.local.CityEntity
-import io.github.turskyi.data.entities.local.CountryEntity
-import io.github.turskyi.data.entities.local.TravellerEntity
-import io.github.turskyi.data.entities.local.VisitedCountryEntity
+import io.github.turskyi.data.datasources.local.entities.CityEntity
+import io.github.turskyi.data.datasources.local.entities.CountryEntity
+import io.github.turskyi.data.datasources.local.entities.TravellerEntity
+import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
 
 interface FirestoreDatabaseSource {
     suspend fun insertAllCountries(

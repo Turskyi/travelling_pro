@@ -1,6 +1,7 @@
 package io.github.turskyi.travellingpro.features.home.view.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -173,13 +174,14 @@ class AddCityDialogFragment : DialogFragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
         if (requestCode == resources.getInteger(R.integer.location_access_request_code)) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
                 addCityTo(etCity)
             } else {
                 toastLong(R.string.msg_gps_permission_denied)
@@ -232,6 +234,8 @@ class AddCityDialogFragment : DialogFragment() {
                 resources.getInteger(R.integer.location_access_request_code)
             )
         } else {
+//TODO: Handle "Missing permissions required by FusedLocationProviderClient.getLastLocation: android.permission.ACCESS_COARSE_LOCATION or android.permission.ACCESS_FINE_LOCATION"
+            @SuppressLint("MissingPermission")
             val findLastLocationTask: Task<Location> = fusedLocationClient.lastLocation
             findLastLocationTask.addOnSuccessListener { location ->
                 if (location != null) {
@@ -244,40 +248,37 @@ class AddCityDialogFragment : DialogFragment() {
         }
     }
 
-    private fun addChangedLocation(editText: LinedEditText) = try {
-        val locationListener: LocationListener = object : LocationListener {
-            override fun onLocationChanged(location: Location) {
-                val geoCoder = Geocoder(requireContext(), Locale.getDefault())
-                val addressesChanged: MutableList<Address>? =
-                    location.latitude.let { latitude ->
-                        geoCoder.getFromLocation(
-                            latitude,
-                            location.longitude, 1
-                        )
-                    }
-                val cityChanged: String? = addressesChanged?.get(0)?.locality
-                editText.setText(cityChanged)
-            }
+    @SuppressLint("MissingPermission")
+    private fun addChangedLocation(editText: LinedEditText) {
+        try {
+            val locationListener: LocationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    val geoCoder = Geocoder(requireContext(), Locale.getDefault())
+                    val addressesChanged: MutableList<Address>? =
+                        location.latitude.let { latitude ->
+                            geoCoder.getFromLocation(
+                                latitude,
+                                location.longitude, 1
+                            )
+                        }
+                    val cityChanged: String? = addressesChanged?.get(0)?.locality
+                    editText.setText(cityChanged)
+                }
 
-            override fun onStatusChanged(
-                provider: String,
-                status: Int,
-                extras: Bundle
-            ) {
+                override fun onProviderEnabled(provider: String) {}
+                override fun onProviderDisabled(provider: String) {}
             }
-
-            override fun onProviderEnabled(provider: String) {}
-            override fun onProviderDisabled(provider: String) {}
+            // Request location updates
+            //  TODO: Handle "Missing permissions required by LocationManager.requestLocationUpdates: android.permission.ACCESS_COARSE_LOCATION or android.permission.ACCESS_FINE_LOCATION"
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                0L,
+                0f,
+                locationListener
+            )
+        } catch (exception: SecurityException) {
+            toastLong(exception.localizedMessage ?: exception.stackTraceToString())
         }
-        // Request location updates
-        locationManager.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER,
-            0L,
-            0f,
-            locationListener
-        )
-    } catch (exception: SecurityException) {
-        toastLong(exception.localizedMessage ?: exception.stackTraceToString())
     }
 
     private fun addLastLocation(

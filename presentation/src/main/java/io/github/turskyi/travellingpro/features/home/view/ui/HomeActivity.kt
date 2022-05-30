@@ -18,10 +18,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import io.github.turskyi.domain.models.Authorization
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
 import io.github.turskyi.travellingpro.entities.City
@@ -38,6 +40,9 @@ import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityView
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
 import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
 import io.github.turskyi.travellingpro.utils.extensions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, HomeActivityView {
@@ -46,9 +51,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     private val listAdapter: HomeAdapter by inject()
 
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var authorizationResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var internetResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -113,7 +118,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult)
         when (requestCode) {
-            resources.getInteger(R.integer.location_and_storage_request_code) -> {
+            resources.getInteger(R.integer.location_and_storage_and_network_request_code) -> {
                 if ((grantResult.isNotEmpty()
                             && grantResult.first() == PackageManager.PERMISSION_GRANTED)
                 ) {
@@ -123,6 +128,93 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 } else {
                     requestPermission(this)
                 }
+            }
+        }
+    }
+
+    /** must be open to use it in custom "circle pie chart" widget */
+    override fun setTitle() = if (viewModel.cityCount > 0) {
+        showTitleWithCitiesAndCountries()
+    } else {
+        showTitleWithOnlyCountries()
+    }
+
+    private fun registerActivitiesForResult() {
+        registerAuthorization()
+        registerInternetConnectionLauncher()
+        registerAllCountriesActivityResultLauncher()
+    }
+
+    private fun registerAuthorization() {
+        authorizationResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_IN)
+                initPersonalization()
+                return@registerForActivityResult
+            } else {
+                // Sign in failed
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                if (result.resultCode == Activity.RESULT_CANCELED && !isOnline()) {
+                    toastLong(R.string.msg_no_internet)
+                    internetResultLauncher.launch(internetSettingsIntent)
+                    return@registerForActivityResult
+                } else {
+                    val response: IdpResponse? = IdpResponse.fromResultIntent(result.data)
+                    when {
+                        response == null -> {
+                            // User pressed back button
+                            toastLong(R.string.msg_sign_in_cancelled)
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            AuthUI.getInstance().signOut(this)
+                            return@registerForActivityResult
+                        }
+                        response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
+                            toastLong(R.string.msg_bad_internet)
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            return@registerForActivityResult
+                        }
+                        response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
+                            toastLong(R.string.msg_bad_internet)
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            AuthUI.getInstance().signOut(this)
+                            return@registerForActivityResult
+                        }
+                        else -> {
+                            toastLong(
+                                response.error?.localizedMessage ?: response.error.toString()
+                            )
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            AuthUI.getInstance().signOut(this)
+                            return@registerForActivityResult
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun registerInternetConnectionLauncher() {
+        internetResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { internetResult: ActivityResult ->
+            // User pressed back button on his phone's internet settings page
+            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
+                internetResultLauncher.unregister()
+                initPersonalization()
+                return@registerForActivityResult
+            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
+                toastLong(R.string.msg_no_internet)
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                internetResultLauncher.launch(internetSettingsIntent)
+                return@registerForActivityResult
+            } else {
+                // this case is never happened before
+                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                AuthUI.getInstance().signOut(this)
+                return@registerForActivityResult
             }
         }
     }
@@ -232,6 +324,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
             val errorMessage: String? = event.getMessageIfNotHandled()
             if (errorMessage != null) {
                 toastLong(errorMessage)
+                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                 AuthUI.getInstance().signOut(this)
             }
         }
@@ -259,112 +352,48 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
             activity,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
+
+        val networkPermission: Int = ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.ACCESS_NETWORK_STATE
+        )
         if (locationPermission != PackageManager.PERMISSION_GRANTED
             && externalStoragePermission != PackageManager.PERMISSION_GRANTED
+            && networkPermission != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermission(activity)
         } else {
             /* we are getting here every time except the first time,
              * since permission is already received */
             viewModel.isPermissionGranted = true
-            initAuthentication()
-        }
-    }
-
-    private fun requestPermission(activity: AppCompatActivity) = ActivityCompat.requestPermissions(
-        activity,
-        arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-        resources.getInteger(R.integer.location_and_storage_request_code)
-    )
-
-    private fun registerActivitiesForResult() {
-        registerAuthorization()
-        registerInternetConnectionLauncher()
-        registerAllCountriesActivityResultLauncher()
-    }
-
-    private fun registerInternetConnectionLauncher() {
-        internetResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { internetResult: ActivityResult ->
-            // User pressed back button on his phone internet settings page
-            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
-                internetResultLauncher.unregister()
-                initPersonalization()
-                return@registerForActivityResult
-            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
-                toastLong(R.string.msg_no_internet)
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
-                internetResultLauncher.launch(internetSettingsIntent)
-                return@registerForActivityResult
-            } else {
-                // this case is never happened before
-                AuthUI.getInstance().signOut(this)
-                return@registerForActivityResult
-            }
-        }
-    }
-
-    /** must be open to use it in custom "circle pie chart" widget */
-    override fun setTitle() = if (viewModel.cityCount > 0) {
-        showTitleWithCitiesAndCountries()
-    } else {
-        showTitleWithOnlyCountries()
-    }
-
-    private fun registerAuthorization() {
-        authorizationResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                initPersonalization()
-                return@registerForActivityResult
-            } else {
-                // Sign in failed
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
-                if (result.resultCode == Activity.RESULT_CANCELED && !isOnline()) {
-                    toastLong(R.string.msg_no_internet)
-                    internetResultLauncher.launch(internetSettingsIntent)
-                    return@registerForActivityResult
-                } else {
-                    val response: IdpResponse? = IdpResponse.fromResultIntent(result.data)
-                    when {
-                        response == null -> {
-                            // User pressed back button
-                            toastLong(R.string.msg_sign_in_cancelled)
-                            AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
-                        }
-                        response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
-                            toastLong(R.string.msg_bad_internet)
-                            internetResultLauncher.launch(internetSettingsIntent)
-                            return@registerForActivityResult
-                        }
-                        response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
-                            toastLong(R.string.msg_bad_internet)
-                            internetResultLauncher.launch(internetSettingsIntent)
-                            AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
-                        }
-                        else -> {
-                            toastLong(
-                                response.error?.localizedMessage ?: response.error.toString()
-                            )
-                            AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
-                        }
+            lifecycleScope.launch(Dispatchers.IO) {
+//"first()" The terminal operator that returns the first element emitted by the flow and then cancels flow's collection.
+                if (viewModel.preferencesFlow.first().authorization == Authorization.IS_SIGNED_IN) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        initPersonalization()
                     }
+                } else {
+                    initAuthentication()
                 }
             }
         }
     }
 
+    private fun requestPermission(activity: AppCompatActivity) {
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+            ),
+            resources.getInteger(R.integer.location_and_storage_and_network_request_code)
+        )
+    }
+
     private fun initPersonalization() {
-        toast(R.string.msg_home_signed_in)
         authorizationResultLauncher.unregister()
+        toast(R.string.msg_home_signed_in)
         // Successfully signed in
         binding.includeAppBar.toolbarLayout.title =
             getString(R.string.home_onboarding_title_loading)

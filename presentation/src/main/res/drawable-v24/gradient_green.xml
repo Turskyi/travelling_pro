@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
-    <item
-        android:width="@dimen/width_smallest_screen"
-        android:gravity="center">
-        <shape
-            android:shape="rectangle">
+    <item android:gravity="center">
+        <shape android:shape="rectangle">
             <gradient
                 android:angle="45"
-                android:endColor="#184201"
                 android:centerColor="#006A05"
+                android:endColor="#184201"
                 android:startColor="#00ADFB" />
         </shape>
     </item>

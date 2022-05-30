@@ -6,18 +6,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import com.chad.library.adapter.base.entity.node.BaseNode
 import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.domain.interactors.PreferenceInteractor
+import io.github.turskyi.domain.models.Authorization
+import io.github.turskyi.domain.models.AuthorizationPreferences
 import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.features.home.view.ui.HomeActivity
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
+class HomeActivityViewModel(
+    private val countriesInteractor: CountriesInteractor,
+    private val preferenceInteractor: PreferenceInteractor,
+) : ViewModel() {
 
     var backPressedTiming: Long = 0
     var notVisitedCountriesCount: Float = 0F
@@ -47,25 +55,59 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
     val navigateToAllCountries: LiveData<Boolean>
         get() = _navigateToAllCountries
 
+    val preferencesFlow: Flow<AuthorizationPreferences> = preferenceInteractor.preferencesFlow
+
     /** [showListOfVisitedCountries] is the first function in [HomeActivity],
      *  which is triggered when permission and authorization is completed */
     fun showListOfVisitedCountries() {
         _visibilityLoader.postValue(VISIBLE)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // loading count of not visited countries
-            interactor.setNotVisitedCountriesNum(
-                { notVisitedCountriesNum ->
+            countriesInteractor.setNotVisitedCountriesNum(
+                onSuccess = { notVisitedCountriesNum: Int ->
                     // loading visited countries
                     setVisitedCountries(notVisitedCountriesNum)
                 },
-                { exception -> showError(exception) },
+                onError = { exception: Exception /* = java.lang.Exception */ ->
+                    showError(exception)
+                },
             )
         }
     }
 
+    fun onFloatBtnClicked() {
+        _navigateToAllCountries.value = true
+    }
+
+    fun onNavigatedToAllCountries() {
+        _navigateToAllCountries.value = false
+    }
+
+    fun removeFromVisited(country: Country) = viewModelScope.launch {
+        _visibilityLoader.postValue(VISIBLE)
+        countriesInteractor.removeCountryModelFromVisitedList(
+            country.mapToModel(),
+            { showListOfVisitedCountries() },
+            { exception -> showError(exception) },
+        )
+    }
+
+    fun removeCity(city: City) = viewModelScope.launch {
+        _visibilityLoader.postValue(VISIBLE)
+        countriesInteractor.removeCity(
+            city.mapNodeToModel(),
+            { showListOfVisitedCountries() },
+            { exception -> showError(exception) },
+        )
+    }
+
+    fun onAuthorizationSignedId(authorization: Authorization) = viewModelScope.launch {
+        preferenceInteractor.updateAuthorization(authorization)
+    }
+
     private fun setVisitedCountries(notVisitedCountriesNum: Int) {
         viewModelScope.launch {
-            interactor.setVisitedCountries(
+            countriesInteractor.setVisitedCountries(
                 { countries ->
                     val visitedCountries: List<VisitedCountry> =
                         countries.mapVisitedModelListToVisitedList()
@@ -102,7 +144,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
         for (country in visitedCountryWithCityNodes) {
             val cityList: MutableList<BaseNode> = mutableListOf()
             viewModelScope.launch {
-                interactor.setCities(
+                countriesInteractor.setCities(
                     parentId = country.id,
                     onSuccess = { cities ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
@@ -134,33 +176,7 @@ class HomeActivityViewModel(private val interactor: CountriesInteractor) : ViewM
     }
 
     private suspend fun downloadCountries() {
-        interactor.downloadCountries(
-            { showListOfVisitedCountries() },
-            { exception -> showError(exception) },
-        )
-    }
-
-    fun onFloatBtnClicked() {
-        _navigateToAllCountries.value = true
-    }
-
-    fun onNavigatedToAllCountries() {
-        _navigateToAllCountries.value = false
-    }
-
-    fun removeFromVisited(country: Country) = viewModelScope.launch {
-        _visibilityLoader.postValue(VISIBLE)
-        interactor.removeCountryModelFromVisitedList(
-            country.mapToModel(),
-            { showListOfVisitedCountries() },
-            { exception -> showError(exception) },
-        )
-    }
-
-    fun removeCity(city: City) = viewModelScope.launch {
-        _visibilityLoader.postValue(VISIBLE)
-        interactor.removeCity(
-            city.mapNodeToModel(),
+        countriesInteractor.downloadCountries(
             { showListOfVisitedCountries() },
             { exception -> showError(exception) },
         )

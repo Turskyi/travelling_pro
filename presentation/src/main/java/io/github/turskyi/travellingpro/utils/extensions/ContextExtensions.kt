@@ -1,15 +1,13 @@
 package io.github.turskyi.travellingpro.utils.extensions
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.Uri
+import android.net.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -22,7 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import io.github.turskyi.travellingpro.R
-import java.io.IOException
+
 
 fun Context.isFacebookInstalled(): Boolean {
     return try {
@@ -111,29 +109,42 @@ fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG
  * Checks if device is online or not
  */
 fun Context.isOnline(): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val connectivityManager: ConnectivityManager =
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network: Network? = connectivityManager.activeNetwork
-        return if (network != null) {
-            val networkCapabilities: NetworkCapabilities = connectivityManager.getNetworkCapabilities(network)!!
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    || networkCapabilities.hasTransport(
-                NetworkCapabilities.TRANSPORT_WIFI
-            )
-        } else false
-    } else {
-        val runtime: Runtime = Runtime.getRuntime()
-        try {
-            // Pinging to Google server
-            val ipProcess: Process = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
-            val exitValue: Int = ipProcess.waitFor()
-            return exitValue == 0
-        } catch (ioException: IOException) {
-            ioException.printStackTrace()
-        } catch (interruptedException: InterruptedException) {
-            interruptedException.printStackTrace()
+    if (this.getSystemService(Context.CONNECTIVITY_SERVICE) is ConnectivityManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val connectivityManager: ConnectivityManager =
+                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+//            TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
+            @SuppressLint("MissingPermission")
+            val network: Network? = connectivityManager.activeNetwork
+            return if (network != null) {
+                //TODO: Handle warning "Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
+                @SuppressLint("MissingPermission")
+                val networkCapabilities: NetworkCapabilities? =
+                    connectivityManager.getNetworkCapabilities(network)
+                return if (networkCapabilities != null) {
+                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                            || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                } else false
+            } else false
+        } else {
+            // Initial Value
+            var isConnected = false
+
+            val connectivityManager: ConnectivityManager =
+                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+            @Suppress("DEPRECATION")
+            //TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
+            @SuppressLint("MissingPermission")
+            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+            @Suppress("DEPRECATION")
+            if (activeNetwork != null && activeNetwork.isConnected) {
+                isConnected = true
+            }
+            return isConnected
         }
+    } else {
         return false
     }
 }

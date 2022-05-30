@@ -1,10 +1,10 @@
 package io.github.turskyi.data.util.extensions
 
-import io.github.turskyi.data.entities.local.CityEntity
-import io.github.turskyi.data.entities.local.CountryEntity
-import io.github.turskyi.data.entities.local.TravellerEntity
-import io.github.turskyi.data.entities.local.VisitedCountryEntity
-import io.github.turskyi.data.entities.remote.CountryResponse
+import io.github.turskyi.data.datasources.local.entities.CityEntity
+import io.github.turskyi.data.datasources.local.entities.CountryEntity
+import io.github.turskyi.data.datasources.local.entities.TravellerEntity
+import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
+import io.github.turskyi.data.datasources.remote.entities.CountryResponse
 import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
 import io.github.turskyi.domain.models.entities.TravellerModel

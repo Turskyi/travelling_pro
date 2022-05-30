@@ -4,15 +4,14 @@ package io.github.turskyi.travellingpro.common
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.facebook.appevents.AppEventsLogger
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
 import io.github.turskyi.di.dataProvidersModule
 import io.github.turskyi.di.repositoriesModule
 import io.github.turskyi.di.sourcesModule
 import io.github.turskyi.travellingpro.common.di.adaptersModule
 import io.github.turskyi.travellingpro.common.di.interactorsModule
 import io.github.turskyi.travellingpro.common.di.viewModelsModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class App : Application() {
 
@@ -33,8 +32,5 @@ class App : Application() {
                 )
             )
         }
-
-        /** init facebook sdk */
-        AppEventsLogger.activateApp(this)
     }
 }

@@ -1,6 +1,6 @@
 @file:Suppress("unused", "unused")
 
-package io.github.turskyi.data.entities.local
+package io.github.turskyi.data.datasources.local.entities
 
 data class TravellerEntity(
     val id: String,
