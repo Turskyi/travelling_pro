@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import io.github.turskyi.domain.interactors.TravellersInteractor
+import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.FilteredTravellersPositionalDataSource
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersPositionalDataSource
-import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
 import kotlinx.coroutines.launch
@@ -51,20 +51,18 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
         }
 
         interactor.setUserVisibility(
-            onSuccess = { isVisible ->
+            onSuccess = { isVisible: Boolean ->
                 if (isVisible) {
                     _visibilityUser.postValue(VISIBLE)
                 } else {
                     _visibilityUser.postValue(INVISIBLE)
                 }
             },
-            onError = { exception ->
+            onError = { exception: Exception /* = java.lang.Exception */ ->
                 _visibilityLoader.postValue(View.GONE)
-                _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
+                exception.message?.let { message: String ->
+                    // Trigger the event by setting a new Event as a new value
+                    _errorMessage.postValue(Event(message))
                 }
             },
         )
@@ -114,11 +112,9 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
             },
             { exception ->
                 _visibilityLoader.postValue(View.GONE)
-                _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
+                exception.message?.let { message: String ->
+                    // Trigger the event by setting a new Event as a new value
+                    _errorMessage.postValue(Event(message))
                 }
             },
         )

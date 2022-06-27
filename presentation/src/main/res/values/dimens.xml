@@ -28,6 +28,7 @@
 
     <!-- heights -->
     <dimen name="height_list_item_tablet">60dp</dimen>
+    <dimen name="height_toolbar">68dp</dimen>
     <dimen name="height_share_btn" tools:keep="@dimen/height_share_btn">120dp</dimen>
     <dimen name="height_bottom_sheet">400dp</dimen>
     <dimen name="height_app_bar">300dp</dimen>
@@ -41,7 +42,9 @@
 
     <!-- radii -->
     <dimen name="radius_card_view">4dp</dimen>
+    <dimen name="corner_radius_default">8dp</dimen>
     <dimen name="radius_dialogue_corners">12dp</dimen>
+    <dimen name="corner_radius_rounded">28dp</dimen>
 
     <!-- sizes -->
     <dimen name="size_search_fab_custom">30dp</dimen>

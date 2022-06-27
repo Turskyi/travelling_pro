@@ -52,7 +52,6 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:paddingStart">@dimen/offset_4</item>
         <item name="android:paddingEnd">@dimen/offset_4</item>
-        <item name="android:paddingTop">@dimen/offset_12</item>
         <item name="android:layoutAnimation">@anim/layout_animation_from_bottom</item>
         <item name="layout_behavior">
             com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
@@ -238,7 +237,7 @@
         <item name="layout_collapseMode">pin</item>
         <item name="titleTextColor">@android:color/white</item>
         <item name="navigationIcon">?attr/homeAsUpIndicator</item>
-        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
     <style name="ImageButtonStyle">

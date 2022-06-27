@@ -2,14 +2,15 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bg_dark_space"
     style="@style/CoordinatorLayoutStyle"
+    android:background="@drawable/bg_dark_space"
     tools:context=".features.travellers.view.TravellersActivity"
     tools:keep="@layout/activity_travellers">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_16">
 
         <!-- layout_scrollFlags cannot be added to style, because it will not work from there -->
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -20,22 +21,18 @@
                 android:id="@+id/include_toolbar"
                 layout="@layout/layout_toolbar" />
 
-            <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
-                android:id="@+id/sllSearch"
-                style="@style/ShadowLayout">
-
-                <ImageButton
-                    android:id="@+id/ib_search"
-                    style="@style/ImageButtonStyle"
-                    android:contentDescription="@string/content_description.icon_search" />
-
-                <EditText
-                    android:id="@+id/et_search"
-                    style="@style/EditTextStyle"
-                    android:autofillHints="@string/hint.search_traveller"
-                    android:hint="@string/hint.search_traveller"
-                    android:inputType="textPersonName" />
-            </io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout>
+            <io.github.turskyi.travellingpro.widgets.ExpandableSearchBar
+                android:id="@+id/expandableSearchBar"
+                style="@style/ExpandableSearchBarDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_4"
+                android:layout_marginEnd="@dimen/dp_4"
+                app:autoCollapse="true"
+                app:hint="Search"
+                app:isRounded="true"
+                app:searchBarBackgroundColor="#50ffffff"
+                app:searchBarBackgroundColorFocused="#64ffffff" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

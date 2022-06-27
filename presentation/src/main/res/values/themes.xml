@@ -14,4 +14,14 @@
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- Expandable Search Bar Dark Theme -->
+    <style name="ExpandableSearchBarDark" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="searchBarBackgroundColor">@color/searchBarPrimaryColorDark</item>
+        <item name="searchIconTint">@color/searchBarSearchIconTintColorDark</item>
+        <item name="clearIconTint">@color/searchBarClearIconTintColorDark</item>
+        <item name="backIconTint">@color/searchBarBackIconTintColorDark</item>
+        <item name="textColor">@color/searchBarTextColorDark</item>
+        <item name="hintColor">@color/searchBarHintColorDark</item>
+    </style>
 </resources>

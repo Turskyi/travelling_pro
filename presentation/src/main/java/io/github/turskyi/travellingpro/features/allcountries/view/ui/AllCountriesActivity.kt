@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -60,7 +61,7 @@ class AllCountriesActivity : AppCompatActivity() {
                 expandSearch()
             }
         }
-        binding.etSearch.addTextChangedListener { inputText ->
+        binding.etSearch.addTextChangedListener { inputText: Editable? ->
             viewModel.searchQuery = inputText.toString()
             adapter.submitList(viewModel.pagedList)
         }

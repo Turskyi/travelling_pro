@@ -85,7 +85,7 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
 
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.2.11'
@@ -100,7 +100,7 @@ dependencies {
 // performance tracing
     implementation 'com.google.firebase:firebase-perf:20.1.0'
 // to send notifications across devices from firebase console
-    implementation 'com.google.firebase:firebase-messaging:23.0.5'
+    implementation 'com.google.firebase:firebase-messaging:23.0.6'
 
     // Glide (Image caching and management)
     def glideVersion = "4.13.2"
@@ -136,17 +136,17 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     // Location
-    implementation "com.google.android.gms:play-services-location:19.0.1"
+    implementation "com.google.android.gms:play-services-location:20.0.0"
 
     // Facebook SDK
-    def facebookVersion = "13.2.0"
+    def facebookVersion = "14.0.0"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "5.0.3"
+    def lottieVersion = "5.2.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android
