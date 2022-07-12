@@ -55,6 +55,8 @@
         android:contentDescription="@string/content_description.button"
         android:tag="@drawable/btn_hide_ripple"
         android:visibility="visible"
+        android:layout_marginEnd="@dimen/offset_16"
+        android:layout_marginBottom="@dimen/fab_bottom_margin"
         app:layout_anchor="@id/rv_travellers"
         app:srcCompat="@drawable/btn_hide_ripple" />
 
