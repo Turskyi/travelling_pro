@@ -1,3 +1,4 @@
+//file:noinspection GrUnresolvedAccess
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
@@ -31,6 +32,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+    namespace 'io.github.turskyi.data'
 }
 
 dependencies {
@@ -52,6 +54,9 @@ dependencies {
     api "com.squareup.retrofit2:converter-gson:$retrofit_version"
     api "com.google.code.gson:gson:$gson_version"
     api "com.auth0:java-jwt:$jwt_version"
+
+    // Preferences DataStore (SharedPreferences like APIs)
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // test
     testImplementation "junit:junit:$junit_version"

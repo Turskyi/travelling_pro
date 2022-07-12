@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:keep="@layout/fragment_flag">
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/iv_enlarged_flag"

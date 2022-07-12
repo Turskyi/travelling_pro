@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -12,14 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityAllCountriesBinding
-import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
-import io.github.turskyi.travellingpro.utils.extensions.toastLong
+import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
 import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
-import io.github.turskyi.travellingpro.entities.Country
+import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
 import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import org.koin.android.ext.android.inject
 
 class AllCountriesActivity : AppCompatActivity() {
@@ -59,7 +61,7 @@ class AllCountriesActivity : AppCompatActivity() {
                 expandSearch()
             }
         }
-        binding.etSearch.addTextChangedListener { inputText ->
+        binding.etSearch.addTextChangedListener { inputText: Editable? ->
             viewModel.searchQuery = inputText.toString()
             adapter.submitList(viewModel.pagedList)
         }
@@ -81,17 +83,17 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun initObservers() {
         val emptyListObserver = EmptyListObserver(binding.rvAllCountries, binding.tvNoResults)
         adapter.registerAdapterDataObserver(emptyListObserver)
-        viewModel.notVisitedCountriesNumLiveData.observe(this, { notVisitedNum ->
+        viewModel.notVisitedCountriesNumLiveData.observe(this) { notVisitedNum ->
             updateTitle(notVisitedNum)
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility ->
             binding.pb.visibility = currentVisibility
-        })
-        viewModel.errorMessage.observe(this, { event ->
+        }
+        viewModel.errorMessage.observe(this) { event: Event<String> ->
             event.getMessageIfNotHandled()?.let { message ->
                 toastLong(message)
             }
-        })
+        }
     }
 
     private fun sendToGoogleMapToShowGeographicalLocation(country: Country) {
@@ -120,7 +122,8 @@ class AllCountriesActivity : AppCompatActivity() {
         binding.rvAllCountries.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
-        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int =
+            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         hideKeyboard()
         binding.etSearch.setText("")
         binding.includeToolbar.tvToolbarTitle.animate().alpha(1f).duration = 200
@@ -145,7 +148,8 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun expandSearch() {
         binding.rvAllCountries.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width: Int = binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width: Int =
+            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         binding.includeToolbar.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimaryDark">#011638</color>
     <color name="colorBrightBlue">#020DE1</color>
     <color name="colorAccent">#d50000</color>
@@ -7,4 +7,35 @@
     <color name="colorLightGrey">#EAEAEA</color>
     <color name="colorBgVisitedCountry">#090909</color>
     <color name="colorBgCity">#1B2432</color>
+    <!-- Icons Light Colors -->
+    <!-- Expandable Search Bar Light Theme Colors -->
+    <color name="searchBarIconColor">@android:color/black</color>
+    <color name="searchBarSearchIconTintColor">@color/searchBarIconColor</color>
+    <color name="searchBarClearIconTintColor">@color/searchBarIconColor</color>
+    <color name="searchBarBackIconTintColor">@color/searchBarIconColor</color>
+    <!-- Icons Dark Colors -->
+    <!-- Expandable Search Bar Dark Theme Colors -->
+    <color name="searchBarIconColorDark">@android:color/white</color>
+    <color name="searchBarSearchIconTintColorDark">@color/searchBarIconColorDark</color>
+    <color name="searchBarClearIconTintColorDark">@color/searchBarIconColorDark</color>
+    <color name="searchBarBackIconTintColorDark">@color/searchBarIconColorDark</color>
+    <!-- Text Light Colors -->
+    <color name="searchBarTextColor">#DE000000</color>
+    <color name="searchBarHintColor">#42000000</color>
+
+    <!-- Base Dark Colors -->
+    <color name="searchBarPrimaryColorDark">#303030</color>
+    <color name="searchBarCursorColorDark" tools:ignore="UnusedResources">
+        @color/searchBarIconColorDark
+    </color>
+    <color name="searchBarDividerColorDark" tools:keep="@color/searchBarDividerColorDark">
+        #1FFFFFFF
+    </color>
+    <!-- Text Dark Colors -->
+    <color name="searchBarTextColorDark">#DEFFFFFF</color>
+    <color name="searchBarHintColorDark">#42FFFFFF</color>
+    <!-- Base Light Colors -->
+    <color name="searchBarPrimaryColor" tools:ignore="UnusedResources">#FFFFFF</color>
+    <color name="searchBarCursorColor" tools:keep="@color/searchBarCursorColor">#8000a1ff</color>
+    <color name="searchBarDividerColor" tools:ignore="UnusedResources">#1F000000</color>
 </resources>

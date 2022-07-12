@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package io.github.turskyi.data.entities.local
+package io.github.turskyi.data.datasources.local.entities
 
 data class VisitedCountryEntity(
     val id: Int,

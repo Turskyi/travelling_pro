@@ -1,8 +1,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:width="70dp"
     android:height="72dp"
     android:viewportWidth="32"
-    android:viewportHeight="30">
+    android:viewportHeight="30"
+    tools:keep="@drawable/ic_use_other">
   <path
       android:pathData="M16.667,0.255C16.2873,-0.085 15.7127,-0.085 15.333,0.255L9.3329,5.6271C8.9215,5.9955 8.8866,6.6277 9.255,7.0391C9.6234,7.4506 10.2556,7.4855 10.667,7.1171L15,3.2376V22C15,22.5523 15.4477,23 16,23C16.5523,23 17,22.5523 17,22V3.2376L21.333,7.1171C21.7444,7.4855 22.3766,7.4506 22.745,7.0391C23.1134,6.6277 23.0785,5.9955 22.667,5.6271L16.667,0.255Z"
       android:fillColor="@android:color/white"/>

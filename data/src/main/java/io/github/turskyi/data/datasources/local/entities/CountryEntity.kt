@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package io.github.turskyi.data.entities.local
+package io.github.turskyi.data.datasources.local.entities
 
 /** Object to use for storing all countries in firestore database */
 data class CountryEntity(

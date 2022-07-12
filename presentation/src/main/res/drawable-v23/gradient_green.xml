@@ -5,10 +5,10 @@
         android:width="@dimen/width_smallest_screen"
         android:gravity="center">
         <shape
-            android:shape="oval">
+            android:shape="rectangle">
             <gradient
                 android:angle="45"
-                android:endColor="#CCE100"
+                android:endColor="#105508"
                 android:centerColor="#006A05"
                 android:startColor="#00ADFB" />
         </shape>

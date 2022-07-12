@@ -1,3 +1,4 @@
+//file:noinspection GrUnresolvedAccess
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -20,9 +21,9 @@ android {
         versionName rootProject.version_name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        resConfigs 'en'
 
         // to ensure that the translations of Firebase library are relevant to the application
-        resConfigs "en"
     }
     signingConfigs {
         production {
@@ -67,6 +68,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+    namespace 'io.github.turskyi.travellingpro'
 }
 
 dependencies {
@@ -83,11 +85,11 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.2.5'
-    implementation('com.google.firebase:firebase-analytics:20.0.0') {
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.11'
+    implementation('com.google.firebase:firebase-analytics:21.0.0') {
         // remove advertising dependency
         exclude module: "play-services-ads-identifier"
         exclude module: "play-services-measurement"
@@ -96,17 +98,17 @@ dependencies {
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
-    implementation 'com.google.firebase:firebase-perf:20.0.4'
+    implementation 'com.google.firebase:firebase-perf:20.1.0'
 // to send notifications across devices from firebase console
-    implementation 'com.google.firebase:firebase-messaging:23.0.0'
+    implementation 'com.google.firebase:firebase-messaging:23.0.6'
 
     // Glide (Image caching and management)
-    def glideVersion = "4.12.0"
+    def glideVersion = "4.13.2"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
 
     // ViewModel and LiveData
-    def lifecycle_version = "2.4.0"
+    def lifecycle_version = "2.5.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
@@ -116,7 +118,7 @@ dependencies {
     implementation 'com.github.corouteam:GlideToVectorYou:2.0.0'
 
     // BaseRecyclerViewAdapterHelper
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.6'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
 
     // Recyclerview
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
@@ -134,17 +136,17 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     // Location
-    implementation "com.google.android.gms:play-services-location:18.0.0"
+    implementation "com.google.android.gms:play-services-location:20.0.0"
 
     // Facebook SDK
-    def facebookVersion = "12.1.0"
+    def facebookVersion = "14.1.0"
+    implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
-    implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "4.2.2"
+    def lottieVersion = "5.2.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android

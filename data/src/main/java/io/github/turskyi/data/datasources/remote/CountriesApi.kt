@@ -1,6 +1,6 @@
-package io.github.turskyi.data.network.service
+package io.github.turskyi.data.datasources.remote
 
-import io.github.turskyi.data.entities.remote.CountryListResponse
+import io.github.turskyi.data.datasources.remote.entities.CountryListResponse
 import retrofit2.Call
 import retrofit2.http.GET
 

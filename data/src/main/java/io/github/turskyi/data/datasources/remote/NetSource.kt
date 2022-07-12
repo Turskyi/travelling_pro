@@ -1,15 +1,14 @@
-package io.github.turskyi.data.network.datasource
+package io.github.turskyi.data.datasources.remote
 
 import android.accounts.NetworkErrorException
-import io.github.turskyi.data.network.service.CountriesApi
+import io.github.turskyi.data.datasources.remote.entities.CountryListResponse
+import io.github.turskyi.data.datasources.remote.entities.CountryResponse
+import io.github.turskyi.data.util.exceptions.NotFoundException
+import io.github.turskyi.data.util.throwException
 import org.koin.core.component.KoinComponent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import io.github.turskyi.data.entities.remote.CountryListResponse
-import io.github.turskyi.data.entities.remote.CountryResponse
-import io.github.turskyi.data.util.exceptions.NotFoundException
-import io.github.turskyi.data.util.throwException
 
 class NetSource(private val countriesApi: CountriesApi) : KoinComponent {
 

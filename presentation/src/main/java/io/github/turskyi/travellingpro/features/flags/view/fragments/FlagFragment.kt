@@ -16,7 +16,10 @@ import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
-import io.github.turskyi.travellingpro.utils.extensions.*
+import io.github.turskyi.travellingpro.utils.Event
+import io.github.turskyi.travellingpro.utils.extensions.observeOnce
+import io.github.turskyi.travellingpro.utils.extensions.toast
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import org.koin.android.ext.android.inject
 
 class FlagFragment : BaseFlagFragment() {
@@ -157,14 +160,15 @@ class FlagFragment : BaseFlagFragment() {
 
     private fun initObservers() {
         lifecycle.addObserver(viewModel)
-        viewModel.errorMessage.observe(this, { event ->
-            event.getMessageIfNotHandled()?.let { message ->
+        viewModel.errorMessage.observe(this) { event: Event<String> ->
+            val message: String? = event.getMessageIfNotHandled()
+            if (message != null) {
                 toastLong(message)
             }
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility ->
             flagsActivityViewListener!!.setLoaderVisibility(currentVisibility)
-        })
+        }
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
             Observer<List<VisitedCountry>> { countries ->
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)

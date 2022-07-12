@@ -33,6 +33,7 @@ internal class CollapsingTextHelper(private val mView: View) {
          * Returns true if `value` is 'close' to it's closest decimal value. Close is currently
          * defined as it's difference being < 0.001.
          */
+        @Suppress("BooleanMethodIsAlwaysInverted")
         private fun isClose(value: Float, targetValue: Float): Boolean {
             return abs(value - targetValue) < 0.001f
         }
@@ -63,6 +64,7 @@ internal class CollapsingTextHelper(private val mView: View) {
             return AnimationUtils.lerp(startValue, endValue, lerpFraction)
         }
 
+        @Suppress("BooleanMethodIsAlwaysInverted")
         private fun rectEquals(rect: Rect, left: Int, top: Int, right: Int, bottom: Int): Boolean {
             return !((rect.left != left) || (rect.top != top) || (rect.right != right) || (rect.bottom != bottom))
         }
@@ -634,13 +636,13 @@ internal class CollapsingTextHelper(private val mView: View) {
             // collapsed text size
             val scaledDownWidth: Float = expandedWidth * textSizeRatio
             availableWidth = if (scaledDownWidth > collapsedWidth) {
-                /* If the scaled down size is larger than the actual collapsed width, we need to
+                /* If the scaled downsize is larger than the actual collapsed width, we need to
                   cap the available width so that when the expanded text scales down, it matches
                   the collapsed width */
 
                 expandedWidth
             } else {
-                // Otherwise we'll just use the expanded width
+                // Otherwise, we'll just use the expanded width
                 expandedWidth
             }
 

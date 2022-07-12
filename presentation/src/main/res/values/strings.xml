@@ -33,7 +33,9 @@
     </html>]]></string>
     <string name="default_notification_channel_id" translatable="false">Notifications from Travelling application.</string>
 
-    <!-- for face book sharing -->
+    <!--    for Facebook SDK -->
+    <string name="facebook_client_token">57499b8c06caa963b5a0be59e88db381</string>
+    <!-- for facebook sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
     <!-- for facebook auth -->
@@ -42,7 +44,9 @@
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2312394202364807</string>
     <!-- for general use of facebook auth-->
     <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
+<!--    Tags for dialogs-->
     <string name="tag_info_dialog" translatable="false">info dialog</string>
+    <string name="tag_visibility_dialog" translatable="false">visibility dialog</string>
     <!-- END of not translatable strings -->
 
     <!-- START of default  strings -->
@@ -132,6 +136,7 @@
 
     <!-- START of strings for the screen with travellers -->
     <string name="title_activity_travellers">%d%% of travellers visited more countries than you</string>
+    <string name="title_most">You visited more countries than anyone in this app</string>
     <!-- END of strings for the screen with travellers -->
 
     <!-- START of list with strings for messages -->

@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings.ACTION_WIRELESS_SETTINGS
@@ -16,28 +18,32 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import io.github.turskyi.domain.models.Authorization
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
-import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
-import io.github.turskyi.travellingpro.utils.extensions.*
-import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
-import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
-import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
-import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
-import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
 import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.features.allcountries.view.ui.AllCountriesActivity
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_ITEM_COUNT
+import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
+import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
+import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
+import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
+import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
+import io.github.turskyi.travellingpro.utils.extensions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import java.util.*
 
 class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, HomeActivityView {
 
@@ -45,9 +51,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     private val listAdapter: HomeAdapter by inject()
 
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var authorizationResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var internetResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var allCountriesResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -112,7 +118,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult)
         when (requestCode) {
-            resources.getInteger(R.integer.location_and_storage_request_code) -> {
+            resources.getInteger(R.integer.location_and_storage_and_network_request_code) -> {
                 if ((grantResult.isNotEmpty()
                             && grantResult.first() == PackageManager.PERMISSION_GRANTED)
                 ) {
@@ -126,8 +132,104 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         }
     }
 
+    /** must be open to use it in custom "circle pie chart" widget */
+    override fun setTitle() = if (viewModel.cityCount > 0) {
+        showTitleWithCitiesAndCountries()
+    } else {
+        showTitleWithOnlyCountries()
+    }
+
+    private fun registerActivitiesForResult() {
+        registerAuthorization()
+        registerInternetConnectionLauncher()
+        registerAllCountriesActivityResultLauncher()
+    }
+
+    private fun registerAuthorization() {
+        authorizationResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_IN)
+                initPersonalization()
+                return@registerForActivityResult
+            } else {
+                // Sign in failed
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                if (result.resultCode == Activity.RESULT_CANCELED && !isOnline()) {
+                    toastLong(R.string.msg_no_internet)
+                    internetResultLauncher.launch(internetSettingsIntent)
+                    return@registerForActivityResult
+                } else {
+                    val response: IdpResponse? = IdpResponse.fromResultIntent(result.data)
+                    when {
+                        response == null -> {
+                            // User pressed back button
+                            toastLong(R.string.msg_sign_in_cancelled)
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            AuthUI.getInstance().signOut(this)
+                            return@registerForActivityResult
+                        }
+                        response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
+                            toastLong(R.string.msg_bad_internet)
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            return@registerForActivityResult
+                        }
+                        response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
+                            toastLong(R.string.msg_bad_internet)
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            AuthUI.getInstance().signOut(this)
+                            return@registerForActivityResult
+                        }
+                        else -> {
+                            toastLong(
+                                response.error?.localizedMessage ?: response.error.toString()
+                            )
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            AuthUI.getInstance().signOut(this)
+                            return@registerForActivityResult
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun registerInternetConnectionLauncher() {
+        internetResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { internetResult: ActivityResult ->
+            // User pressed back button on his phone's internet settings page
+            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
+                internetResultLauncher.unregister()
+                initPersonalization()
+                return@registerForActivityResult
+            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
+                toastLong(R.string.msg_no_internet)
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                internetResultLauncher.launch(internetSettingsIntent)
+                return@registerForActivityResult
+            } else {
+                // this case is never happened before
+                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                AuthUI.getInstance().signOut(this)
+                return@registerForActivityResult
+            }
+        }
+    }
+
     private fun initView() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
+        // init animated background
+        binding.root.setBackgroundResource(R.drawable.gradient_list)
+        val layoutBackground: Drawable = binding.root.background
+        if (layoutBackground is AnimationDrawable) {
+            val animationDrawable: AnimationDrawable = binding.root.background as AnimationDrawable
+            animationDrawable.setEnterFadeDuration(2000)
+            animationDrawable.setExitFadeDuration(4000)
+            animationDrawable.start()
+        }
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
         setSupportActionBar(binding.includeAppBar.toolbar)
@@ -202,33 +304,34 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     private fun initObservers() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries ->
             initTitle()
             updateAdapterAndTitle(visitedCountries)
-        })
-        viewModel.visitedCountries.observe(this, { visitedCountries ->
+        }
+        viewModel.visitedCountries.observe(this) { visitedCountries ->
             binding.includeAppBar.circlePieChart.apply {
                 initPieChart()
                 createPieChartWith(visitedCountries, viewModel.notVisitedCountriesCount)
                 binding.includeAppBar.circlePieChart.animatePieChart()
             }
             showFloatBtn(visitedCountries)
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility ->
             binding.pb.visibility = currentVisibility
-        })
+        }
 
-        viewModel.errorMessage.observe(this, { event ->
+        viewModel.errorMessage.observe(this) { event ->
             val errorMessage: String? = event.getMessageIfNotHandled()
             if (errorMessage != null) {
                 toastLong(errorMessage)
+                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                 AuthUI.getInstance().signOut(this)
             }
-        })
+        }
 
         /*  here could be a more efficient way to handle a click to open activity,
          * but it is made on purpose of demonstration databinding */
-        viewModel.navigateToAllCountries.observe(this, { shouldNavigate ->
+        viewModel.navigateToAllCountries.observe(this) { shouldNavigate ->
             if (shouldNavigate == true) {
                 val allCountriesIntent = Intent(
                     this,
@@ -237,7 +340,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 allCountriesResultLauncher.launch(allCountriesIntent)
                 viewModel.onNavigatedToAllCountries()
             }
-        })
+        }
     }
 
     private fun checkPermissionAndInitAuthentication(activity: AppCompatActivity) {
@@ -249,112 +352,48 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
             activity,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
+
+        val networkPermission: Int = ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.ACCESS_NETWORK_STATE
+        )
         if (locationPermission != PackageManager.PERMISSION_GRANTED
             && externalStoragePermission != PackageManager.PERMISSION_GRANTED
+            && networkPermission != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermission(activity)
         } else {
             /* we are getting here every time except the first time,
              * since permission is already received */
             viewModel.isPermissionGranted = true
-            initAuthentication()
-        }
-    }
-
-    private fun requestPermission(activity: AppCompatActivity) = ActivityCompat.requestPermissions(
-        activity,
-        arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        ),
-        resources.getInteger(R.integer.location_and_storage_request_code)
-    )
-
-    private fun registerActivitiesForResult() {
-        registerAuthorization()
-        registerInternetConnectionLauncher()
-        registerAllCountriesActivityResultLauncher()
-    }
-
-    private fun registerInternetConnectionLauncher() {
-        internetResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { internetResult: ActivityResult ->
-            // User pressed back button on his phone internet settings page
-            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
-                internetResultLauncher.unregister()
-                initPersonalization()
-                return@registerForActivityResult
-            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
-                toastLong(R.string.msg_no_internet)
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
-                internetResultLauncher.launch(internetSettingsIntent)
-                return@registerForActivityResult
-            } else {
-                // this case is never happened before
-                AuthUI.getInstance().signOut(this)
-                return@registerForActivityResult
-            }
-        }
-    }
-
-    /** must be open to use it in custom "circle pie chart" widget */
-    override fun setTitle() = if (viewModel.cityCount > 0) {
-        showTitleWithCitiesAndCountries()
-    } else {
-        showTitleWithOnlyCountries()
-    }
-
-    private fun registerAuthorization() {
-        authorizationResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                initPersonalization()
-                return@registerForActivityResult
-            } else {
-                // Sign in failed
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
-                if (result.resultCode == Activity.RESULT_CANCELED && !isOnline()) {
-                    toastLong(R.string.msg_no_internet)
-                    internetResultLauncher.launch(internetSettingsIntent)
-                    return@registerForActivityResult
-                } else {
-                    val response: IdpResponse? = IdpResponse.fromResultIntent(result.data)
-                    when {
-                        response == null -> {
-                            // User pressed back button
-                            toastLong(R.string.msg_sign_in_cancelled)
-                            AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
-                        }
-                        response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
-                            toastLong(R.string.msg_bad_internet)
-                            internetResultLauncher.launch(internetSettingsIntent)
-                            return@registerForActivityResult
-                        }
-                        response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
-                            toastLong(R.string.msg_bad_internet)
-                            internetResultLauncher.launch(internetSettingsIntent)
-                            AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
-                        }
-                        else -> {
-                            toastLong(
-                                response.error?.localizedMessage ?: response.error.toString()
-                            )
-                            AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
-                        }
+            lifecycleScope.launch(Dispatchers.IO) {
+//"first()" The terminal operator that returns the first element emitted by the flow and then cancels flow's collection.
+                if (viewModel.preferencesFlow.first().authorization == Authorization.IS_SIGNED_IN) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        initPersonalization()
                     }
+                } else {
+                    initAuthentication()
                 }
             }
         }
     }
 
+    private fun requestPermission(activity: AppCompatActivity) {
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+            ),
+            resources.getInteger(R.integer.location_and_storage_and_network_request_code)
+        )
+    }
+
     private fun initPersonalization() {
-        toast(R.string.msg_home_signed_in)
         authorizationResultLauncher.unregister()
+        toast(R.string.msg_home_signed_in)
         // Successfully signed in
         binding.includeAppBar.toolbarLayout.title =
             getString(R.string.home_onboarding_title_loading)
@@ -419,7 +458,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     private fun showTitleWithCitiesAndCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountryNodes ->
             if (viewModel.cityCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(
@@ -447,19 +486,21 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                     )
                 }"
             }
-        })
+        }
     }
 
     /** [showTitleWithOnlyCountries] function must be open
      *  to use it in custom "circle pie chart" widget */
     override fun showTitleWithOnlyCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(
+            this,
+        ) { visitedCountryNodes: List<VisitedCountryNode> ->
             binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
                 R.plurals.numberOfCountriesVisited,
                 visitedCountryNodes.size,
                 visitedCountryNodes.size
             )
-        })
+        }
     }
 
     private fun initAuthentication() {

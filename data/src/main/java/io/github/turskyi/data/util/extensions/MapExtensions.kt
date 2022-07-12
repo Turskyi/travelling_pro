@@ -1,17 +1,17 @@
 package io.github.turskyi.data.util.extensions
 
-import io.github.turskyi.data.entities.remote.CountryResponse
-import io.github.turskyi.data.entities.local.CityEntity
-import io.github.turskyi.data.entities.local.CountryEntity
-import io.github.turskyi.data.entities.local.TravellerEntity
-import io.github.turskyi.data.entities.local.VisitedCountryEntity
+import io.github.turskyi.data.datasources.local.entities.CityEntity
+import io.github.turskyi.data.datasources.local.entities.CountryEntity
+import io.github.turskyi.data.datasources.local.entities.TravellerEntity
+import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
+import io.github.turskyi.data.datasources.remote.entities.CountryResponse
 import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
 import io.github.turskyi.domain.models.entities.TravellerModel
 import io.github.turskyi.domain.models.entities.VisitedCountryModel
 
 fun List<CountryModel>.mapModelListToEntityList(): MutableList<CountryEntity> {
-    return mapTo(mutableListOf(), { countryModel -> countryModel.mapModelToEntity() })
+    return mapTo(mutableListOf()) { countryModel -> countryModel.mapModelToEntity() }
 }
 
 fun CountryModel.mapModelToEntity() = CountryEntity(id, shortName, name, flag, isVisited)
@@ -24,7 +24,7 @@ fun CityEntity.mapEntityToModel(): CityModel {
 }
 
 fun List<CountryResponse>.mapNetListToModelList(): MutableList<CountryModel> {
-    return this.mapTo(mutableListOf(), { countryNet -> countryNet.mapNetToDomain() })
+    return this.mapTo(mutableListOf()) { countryNet -> countryNet.mapNetToDomain() }
 }
 
 fun CountryEntity.mapEntityToModel(): CountryModel {
@@ -46,15 +46,15 @@ fun CountryResponse.mapNetToDomain(): CountryModel {
 }
 
 fun List<CityEntity>.mapEntitiesToModelList(): MutableList<CityModel> {
-    return mapTo(mutableListOf(), { cityEntity -> cityEntity.mapEntityToModel() })
+    return mapTo(mutableListOf()) { cityEntity -> cityEntity.mapEntityToModel() }
 }
 
 fun List<CountryEntity>.mapEntityListToModelList(): MutableList<CountryModel> {
-    return mapTo(mutableListOf(), { countryEntity -> countryEntity.mapEntityToModel() })
+    return mapTo(mutableListOf()) { countryEntity -> countryEntity.mapEntityToModel() }
 }
 
 fun List<TravellerEntity>.mapFirestoreListToModelList(): MutableList<TravellerModel> {
-    return mapTo(mutableListOf(), { entity -> entity.mapEntityToModel() })
+    return mapTo(mutableListOf()) { entity -> entity.mapEntityToModel() }
 }
 
 fun CountryEntity.mapCountryToVisitedCountry(): VisitedCountryEntity {
@@ -73,9 +73,8 @@ fun VisitedCountryEntity.mapVisitedCountryEntityToVisitedCountry(): VisitedCount
 }
 
 fun List<VisitedCountryEntity>.mapVisitedCountriesToVisitedModelList(): MutableList<VisitedCountryModel> {
-    return mapTo(
-        mutableListOf(),
-        { countryEntity -> countryEntity.mapVisitedCountryEntityToVisitedCountry() },
-    )
+    return mapTo(mutableListOf()) { countryEntity ->
+        countryEntity.mapVisitedCountryEntityToVisitedCountry()
+    }
 }
 

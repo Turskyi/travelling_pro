@@ -1,9 +1,9 @@
 package io.github.turskyi.data.repository
 
-import io.github.turskyi.data.network.datasource.NetSource
+import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
+import io.github.turskyi.data.datasources.local.firestore.FirestoreDatabaseSource
+import io.github.turskyi.data.datasources.remote.NetSource
 import io.github.turskyi.data.util.extensions.*
-import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
-import io.github.turskyi.data.entities.local.VisitedCountryEntity
 import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
 import io.github.turskyi.domain.models.entities.VisitedCountryModel
@@ -23,10 +23,12 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     override suspend fun getCountNotVisitedCountries(
         onSuccess: (Int) -> Unit,
         onError: (Exception) -> Unit
-    ) = databaseSource.getCountNotVisitedCountries(
-        onSuccess = { count -> onSuccess(count) },
-        onError = { exception -> onError.invoke(exception) },
-    )
+    ) {
+        databaseSource.getCountNotVisitedCountries(
+            onSuccess = { count -> onSuccess(count) },
+            onError = { exception -> onError.invoke(exception) },
+        )
+    }
 
     override suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
         databaseSource.getCityCount(

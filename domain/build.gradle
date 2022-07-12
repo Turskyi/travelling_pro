@@ -1,3 +1,4 @@
+//file:noinspection GrUnresolvedAccess
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
 

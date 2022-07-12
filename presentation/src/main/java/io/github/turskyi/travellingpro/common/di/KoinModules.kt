@@ -1,6 +1,7 @@
 package io.github.turskyi.travellingpro.common.di
 
 import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.domain.interactors.PreferenceInteractor
 import io.github.turskyi.domain.interactors.TravellersInteractor
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
 import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
@@ -25,7 +26,7 @@ val adaptersModule = module {
 }
 
 val viewModelsModule = module {
-    factory { HomeActivityViewModel(get()) }
+    factory { HomeActivityViewModel(get(), get()) }
     factory { TravellerActivityViewModel(get()) }
     factory { AllCountriesActivityViewModel(get()) }
     factory { FlagsFragmentViewModel(get()) }
@@ -37,5 +38,6 @@ val viewModelsModule = module {
 val interactorsModule = module {
     factory { CountriesInteractor(CoroutineScope(SupervisorJob())) }
     factory { TravellersInteractor() }
+    factory { PreferenceInteractor() }
 }
 

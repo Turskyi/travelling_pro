@@ -1,7 +1,7 @@
 package io.github.turskyi.data.repository
 
+import io.github.turskyi.data.datasources.local.firestore.FirestoreDatabaseSource
 import io.github.turskyi.data.util.extensions.mapFirestoreListToModelList
-import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
 import io.github.turskyi.domain.models.entities.TravellerModel
 import io.github.turskyi.domain.repository.TravellerRepository
 import kotlinx.coroutines.CoroutineScope

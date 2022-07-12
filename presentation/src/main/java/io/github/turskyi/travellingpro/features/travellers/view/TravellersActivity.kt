@@ -2,11 +2,14 @@ package io.github.turskyi.travellingpro.features.travellers.view
 
 import android.animation.ValueAnimator
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View.VISIBLE
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
@@ -16,10 +19,12 @@ import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyL
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter
+import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
 import io.github.turskyi.travellingpro.utils.extensions.openActivityWithObject
 import io.github.turskyi.travellingpro.utils.extensions.showKeyboard
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
+import io.github.turskyi.travellingpro.widgets.ExpandableSearchBar
 import org.koin.android.ext.android.inject
 
 class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListener {
@@ -31,6 +36,16 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private val listAdapter: TravellersAdapter by inject()
 
     private lateinit var binding: ActivityTravellersBinding
+    private val textWatcher: TextWatcher = object : TextWatcher {
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            viewModel.searchQuery = s.toString()
+            listAdapter.submitList(viewModel.pagedList)
+        }
+
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+        override fun afterTextChanged(s: Editable) {}
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,26 +64,36 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private fun initView() {
         binding = ActivityTravellersBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.etSearch.isFocusableInTouchMode = true
+        binding.expandableSearchBar.isFocusableInTouchMode = true
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
         listAdapter.submitList(viewModel.pagedList)
         binding.rvTravellers.adapter = listAdapter
         val layoutManager = GridLayoutManager(this, 2)
         binding.rvTravellers.layoutManager = layoutManager
+        val w: Window = window
+        w.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
     }
 
     private fun initListeners() {
-        binding.ibSearch.setOnClickListener { search ->
-            if (search.isSelected) {
-                collapseSearch()
-            } else {
-                expandSearch()
+        binding.expandableSearchBar.addTextChangeListener(textWatcher)
+        binding.expandableSearchBar.onSearchActionListener =
+            object : ExpandableSearchBar.OnSearchActionListener {
+                override fun onSearchStateChanged(enabled: Boolean) {
+                    if (enabled) {
+                        expandSearch()
+                    } else {
+                        collapseSearch()
+                    }
+                }
+
+                override fun onSearchConfirmed(text: String?) {}
+
+                override fun onButtonClicked(buttonCode: Int) {}
+
             }
-        }
-        binding.etSearch.addTextChangedListener { inputText ->
-            viewModel.searchQuery = inputText.toString()
-            listAdapter.submitList(viewModel.pagedList)
-        }
 
         binding.includeToolbar.toolbar.setNavigationOnClickListener { onBackPressed() }
         listAdapter.onTravellerClickListener = ::showTraveller
@@ -89,7 +114,10 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
                     val infoDialog: VisibilityDialog = VisibilityDialog.newInstance(
                         getString(R.string.txt_info_all_travellers)
                     )
-                    infoDialog.show(supportFragmentManager, "visibility dialog")
+                    infoDialog.show(
+                        supportFragmentManager,
+                        resources.getString(R.string.tag_visibility_dialog),
+                    )
                 }
             }
         }
@@ -98,13 +126,13 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     private fun initObservers() {
         val observer = EmptyListObserver(binding.rvTravellers, binding.tvNoResults)
         listAdapter.registerAdapterDataObserver(observer)
-        viewModel.topTravellersPercentLiveData.observe(this, { topPercent ->
+        viewModel.topTravellersPercentLiveData.observe(this) { topPercent: Int ->
             updateTitle(topPercent)
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility: Int ->
             binding.pb.visibility = currentVisibility
-        })
-        viewModel.visibilityUser.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityUser.observe(this) { currentVisibility: Int ->
             if (currentVisibility == VISIBLE) {
                 binding.floatBtnVisibility.setImageResource(R.drawable.btn_eye_ripple)
                 binding.floatBtnVisibility.tag = R.drawable.btn_eye_ripple
@@ -114,12 +142,12 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
                 binding.floatBtnVisibility.tag = R.drawable.btn_hide_ripple
                 listAdapter.submitList(viewModel.pagedList)
             }
-        })
-        viewModel.errorMessage.observe(this, { event ->
-            event.getMessageIfNotHandled()?.let { message ->
+        }
+        viewModel.errorMessage.observe(this) { event: Event<String> ->
+            event.getMessageIfNotHandled()?.let { message: String ->
                 toastLong(message)
             }
-        })
+        }
     }
 
     private fun showTraveller(traveller: Traveller) {
@@ -128,32 +156,28 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
     }
 
     private fun updateTitle(percent: Int) {
-        binding.includeToolbar.tvToolbarTitle.text =
-            getString(R.string.title_activity_travellers, percent)
+        if (percent > 0) {
+            binding.includeToolbar.tvToolbarTitle.text =
+                getString(R.string.title_activity_travellers, percent)
+        } else {
+            binding.includeToolbar.tvToolbarTitle.text = getString(R.string.title_most)
+        }
     }
 
     private fun collapseSearch() {
         binding.rvTravellers.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
-        binding.ibSearch.isSelected = false
-        val width: Int =
-            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        binding.expandableSearchBar.isSelected = false
         hideKeyboard()
-        binding.etSearch.setText("")
-        binding.includeToolbar.tvToolbarTitle.animate().alpha(1f).duration = 200
-        binding.sllSearch.elevate(
-            resources.getDimension(R.dimen.elevation_8),
-            resources.getDimension(R.dimen.elevation_1),
-            100
-        )
+        binding.includeToolbar.toolbar.animate().alpha(1f).duration = 200
         ValueAnimator.ofInt(
-            width,
-            0
+            0,
+            binding.includeToolbar.toolbar.width
         ).apply {
             addUpdateListener {
-                binding.etSearch.layoutParams.width = animatedValue as Int
-                binding.sllSearch.requestLayout()
-                binding.sllSearch.clearFocus()
+                binding.includeToolbar.toolbar.layoutParams.width = animatedValue as Int
+                binding.includeToolbar.toolbar.requestLayout()
+                binding.includeToolbar.toolbar.clearFocus()
             }
             duration = 400
         }.start()
@@ -161,26 +185,18 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
 
     private fun expandSearch() {
         binding.rvTravellers.animate().translationY(0f)
-        binding.ibSearch.isSelected = true
-        val width: Int =
-            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
-        binding.includeToolbar.tvToolbarTitle.animate().alpha(0f).duration = 200
-        binding.sllSearch.elevate(
-            resources.getDimension(R.dimen.elevation_1),
-            resources.getDimension(R.dimen.elevation_8),
-            100
-        )
+        binding.expandableSearchBar.isSelected = true
+        binding.includeToolbar.toolbar.animate().alpha(0f).duration = 200
         ValueAnimator.ofInt(
             0,
-            width
+            binding.includeToolbar.toolbar.width
         ).apply {
             addUpdateListener {
-                binding.etSearch.layoutParams.width = animatedValue as Int
-                binding.sllSearch.requestLayout()
+                binding.includeToolbar.toolbar.layoutParams.width = animatedValue as Int
+                binding.includeToolbar.toolbar.requestLayout()
             }
             doOnEnd {
-                binding.etSearch.requestFocus()
-                binding.etSearch.setText("")
+                binding.includeToolbar.toolbar.requestFocus()
             }
             duration = 400
         }.start()

@@ -1,8 +1,11 @@
-package io.github.turskyi.data.database.firestore.datasource
+package io.github.turskyi.data.datasources.local.firestore
 
-import io.github.turskyi.data.R
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
@@ -11,12 +14,13 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
-import io.github.turskyi.data.database.firestore.service.FirestoreDatabaseSource
-import io.github.turskyi.data.entities.local.CityEntity
-import io.github.turskyi.data.entities.local.CountryEntity
-import io.github.turskyi.data.entities.local.TravellerEntity
-import io.github.turskyi.data.entities.local.VisitedCountryEntity
+import io.github.turskyi.data.R
+import io.github.turskyi.data.datasources.local.entities.CityEntity
+import io.github.turskyi.data.datasources.local.entities.CountryEntity
+import io.github.turskyi.data.datasources.local.entities.TravellerEntity
+import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
 import io.github.turskyi.data.util.exceptions.BadRequestException
+import io.github.turskyi.data.util.exceptions.NetworkErrorException
 import io.github.turskyi.data.util.exceptions.NotFoundException
 import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
 import kotlinx.coroutines.CoroutineScope
@@ -24,11 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
-import android.provider.MediaStore
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import io.github.turskyi.data.util.exceptions.NetworkErrorException
 import java.io.ByteArrayOutputStream
 
 class FirestoreDatabaseSourceImpl(
@@ -524,7 +523,7 @@ class FirestoreDatabaseSourceImpl(
                     deleteImage(
                         selfieName = previousSelfieName,
                         onSuccess = {
-                            // if deleting is successful , saving new url and new image name to model
+                            // if deleting is successful, saving new url and new image name to model
                             countryRef.update(
                                 mapOf(
                                     KEY_SELFIE to uploadedSelfieUrl,

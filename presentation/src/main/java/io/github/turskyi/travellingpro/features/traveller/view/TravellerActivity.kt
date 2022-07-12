@@ -60,15 +60,18 @@ class TravellerActivity : AppCompatActivity(), TravellerActivityView {
 
     /** [showTitleWithOnlyCountries] function is used in custom [CirclePieChart] widget */
     override fun showTitleWithOnlyCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(
+            this,
+        ) { visitedCountryNodes: List<VisitedCountryNode> ->
             binding.includeAppBar.toolbarLayout.title = resources.getString(
+                // [traveller] cannot be null since we checked it before
                 R.string.name_and_counter, traveller!!.name, resources.getQuantityString(
                     R.plurals.travellerCounter,
                     visitedCountryNodes.size,
                     visitedCountryNodes.size
                 )
             )
-        })
+        }
     }
 
     private fun initView() {
@@ -131,26 +134,26 @@ class TravellerActivity : AppCompatActivity(), TravellerActivityView {
     }
 
     private fun initObservers() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountries ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries ->
             initTitle()
             updateAdapterWith(visitedCountries)
-        })
-        viewModel.visitedCountries.observe(this, { visitedCountries ->
+        }
+        viewModel.visitedCountries.observe(this) { visitedCountries ->
             binding.includeAppBar.circlePieChart.apply {
                 initPieChart()
                 createPieChartWith(visitedCountries, viewModel.notVisitedCountriesCount)
                 binding.includeAppBar.circlePieChart.animatePieChart()
             }
-        })
-        viewModel.visibilityLoader.observe(this, { currentVisibility ->
+        }
+        viewModel.visibilityLoader.observe(this) { currentVisibility ->
             binding.pb.visibility = currentVisibility
-        })
+        }
 
-        viewModel.errorMessage.observe(this, { event ->
+        viewModel.errorMessage.observe(this) { event ->
             event.getMessageIfNotHandled()?.let { message ->
                 toastLong(message)
             }
-        })
+        }
     }
 
     private fun initGravityForTitle() {
@@ -159,7 +162,9 @@ class TravellerActivity : AppCompatActivity(), TravellerActivityView {
     }
 
     private fun showTitleWithCitiesAndCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this, { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(
+            this,
+        ) { visitedCountryNodes: List<VisitedCountryNode> ->
             if (viewModel.cityCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = resources.getString(
                     R.string.name_and_counter, traveller!!.name, "${
@@ -192,7 +197,7 @@ class TravellerActivity : AppCompatActivity(), TravellerActivityView {
                     }"
                 )
             }
-        })
+        }
     }
 
     private fun updateAdapterWith(visitedCountryNodes: List<VisitedCountryNode>) {
