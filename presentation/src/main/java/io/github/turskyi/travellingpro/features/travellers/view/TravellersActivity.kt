@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View.VISIBLE
-import android.view.Window
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -70,11 +68,6 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
         binding.rvTravellers.adapter = listAdapter
         val layoutManager = GridLayoutManager(this, 2)
         binding.rvTravellers.layoutManager = layoutManager
-        val w: Window = window
-        w.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
     }
 
     private fun initListeners() {

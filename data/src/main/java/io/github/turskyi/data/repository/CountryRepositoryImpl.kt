@@ -94,13 +94,13 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
 
     override suspend fun updateSelfie(
         shortName: String,
-        selfie: String,
+        filePath: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
     ) = databaseSource.updateSelfie(
         shortName = shortName,
-        selfie = selfie,
+        filePath = filePath,
         previousSelfieName = selfieName,
         onSuccess = {
             applicationScope.launch(Dispatchers.IO) {

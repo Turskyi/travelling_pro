@@ -5,6 +5,7 @@
     style="@style/CoordinatorLayoutStyle"
     android:background="@drawable/bg_dark_space"
     tools:context=".features.traveller.view.TravellerActivity"
+    android:fitsSystemWindows="false"
     tools:keep="@layout/activity_traveller">
 
     <include

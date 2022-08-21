@@ -21,11 +21,11 @@
             android:id="@+id/cv_avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginBottom="15dp"
-            tools:visibility="visible"
             android:layout_gravity="center"
-            card_view:cardCornerRadius="@dimen/radius_circle">
+            android:layout_marginBottom="15dp"
+            android:visibility="gone"
+            card_view:cardCornerRadius="@dimen/radius_circle"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/iv_avatar"
@@ -43,10 +43,10 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:visibility="gone"
             android:layout_marginBottom="@dimen/offset_16"
             android:contentDescription="@string/content_description.image"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             tools:src="@tools:sample/backgrounds/scenic" />
 
         <androidx.appcompat.widget.Toolbar

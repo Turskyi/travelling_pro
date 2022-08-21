@@ -1,5 +1,6 @@
 package io.github.turskyi.travellingpro.features.traveller.view
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -105,11 +106,12 @@ class TravellerActivity : AppCompatActivity(), TravellerActivityView {
             )
         }
         viewModel.showListOfVisitedCountriesById(traveller!!.id)
+        window.decorView.setBackgroundColor(Color.BLACK)
     }
 
     private fun initListeners() {
         listAdapter.apply {
-            onFlagClickListener = { country ->
+            onFlagClickListener = { country: VisitedCountryNode ->
                 // mis-clicking prevention, using threshold of 1000 ms
                 if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > resources.getInteger(
                         R.integer.click_interval

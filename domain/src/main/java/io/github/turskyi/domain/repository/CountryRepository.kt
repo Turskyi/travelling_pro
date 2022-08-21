@@ -10,7 +10,7 @@ interface CountryRepository {
 
     suspend fun updateSelfie(
         shortName: String,
-        selfie: String,
+        filePath: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit

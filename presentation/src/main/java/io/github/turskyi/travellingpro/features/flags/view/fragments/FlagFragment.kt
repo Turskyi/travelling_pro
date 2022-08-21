@@ -8,7 +8,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.view.View.*
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.lifecycle.Observer
@@ -18,9 +20,14 @@ import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Compani
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.observeOnce
+import io.github.turskyi.travellingpro.utils.extensions.showReportDialog
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import org.koin.android.ext.android.inject
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+
 
 class FlagFragment : BaseFlagFragment() {
 
@@ -43,58 +50,15 @@ class FlagFragment : BaseFlagFragment() {
     private fun initResultLauncher() {
         photoPickerResultLauncher = registerForActivityResult(
             StartActivityForResult()
-        ) { result ->
+        ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val photoChooserIntent: Intent? = result.data
-                val position: Int? = this.arguments?.getInt(EXTRA_POSITION)
-                binding.ivEnlargedFlag.visibility = VISIBLE
-                binding.wvFlag.visibility = GONE
                 val selectedImageUri: Uri? = photoChooserIntent?.data
-                if (selectedImageUri.toString().contains(getString(R.string.media_providers))) {
-                    val imageId: Int? =
-                        selectedImageUri?.lastPathSegment?.takeLastWhile { character -> character.isDigit() }
-                            ?.toInt()
-                    val visitedCountriesObserverForLocalPhotos: Observer<List<VisitedCountry>> =
-                        Observer<List<VisitedCountry>> { visitedCountries ->
-                            val contentImg: VisitedCountry? = imageId?.let { contentImgId ->
-                                position?.let {
-                                    getContentUriFromUri(
-                                        id = visitedCountries[position].id,
-                                        imageId = contentImgId,
-                                        shortName = visitedCountries[position].shortName,
-                                        name = visitedCountries[position].title,
-                                        flag = visitedCountries[position].flag
-                                    )
-                                }
-                            }
-                            contentImg?.selfie?.let { uri ->
-                                position?.let {
-                                    viewModel.updateSelfie(
-                                        shortName = visitedCountries[position].shortName,
-                                        selfie = uri,
-                                        selfieName = visitedCountries[position].selfieName,
-                                    )
-                                }
-                            }
-                        }
-                    viewModel.visitedCountries.observeOnce(
-                        viewLifecycleOwner,
-                        visitedCountriesObserverForLocalPhotos
-                    )
+                val position: Int? = this.arguments?.getInt(EXTRA_POSITION)
+                if (selectedImageUri != null && position != null) {
+                    createInputStreamAndChangeImage(selectedImageUri, position)
                 } else {
-                    val visitedCountriesObserverForCloudPhotos: Observer<List<VisitedCountry>> =
-                        Observer<List<VisitedCountry>> { visitedCountries ->
-                            position?.let {
-                                viewModel.updateSelfie(
-                                    shortName = visitedCountries[position].shortName,
-                                    selfie = selectedImageUri.toString(),
-                                    selfieName = visitedCountries[position].selfieName
-                                )
-                            }
-                        }
-                    viewModel.visitedCountries.observeOnce(
-                        viewLifecycleOwner, visitedCountriesObserverForCloudPhotos
-                    )
+                    requireContext().showReportDialog()
                 }
             } else {
                 toast(R.string.msg_did_not_choose)
@@ -102,40 +66,55 @@ class FlagFragment : BaseFlagFragment() {
         }
     }
 
-    private fun getContentUriFromUri(
-        id: Int,
-        imageId: Int,
-        shortName: String,
-        name: String,
-        flag: String
-    ): VisitedCountry {
-        val columns: Array<String> = arrayOf(MediaStore.Images.Media._ID)
-
+    private fun createInputStreamAndChangeImage(selectedImageUri: Uri, position: Int) {
         val orderBy: String =
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) MediaStore.Images.Media.DATE_TAKEN
-            else MediaStore.Images.Media._ID
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                MediaStore.Images.Media.DATE_TAKEN
+            } else {
+                MediaStore.Images.Media._ID
+            }
+        val projectionColumns: Array<String> =
+            arrayOf(MediaStore.Images.Media.DISPLAY_NAME)
+        // Constructs a selection clause with a replaceable parameter
+        val selectionClause = "var = ?"
+        // Defines a mutable list to contain the selection arguments
+        val selectionArgs: MutableList<String> = mutableListOf()
+        requireContext().contentResolver.query(
+            selectedImageUri,  // The content URI of the image table
+            projectionColumns, // The columns to return for each row
+            selectionClause, // Selection criteria
+            selectionArgs.toTypedArray(), // Selection criteria
+            "$orderBy DESC", // The sort order for the returned rows
+        )?.use { cursor: Cursor ->
+            val inputStream: InputStream? =
+                requireContext().contentResolver.openInputStream(selectedImageUri)
+            if (inputStream != null && cursor.moveToFirst()) {
+                updateFlagImage(cursor, inputStream, position)
+            }
+        }
+        binding.ivEnlargedFlag.visibility = VISIBLE
+        binding.wvFlag.visibility = GONE
+    }
 
-        /* This cursor will hold the result of the query
-        and put all data in Cursor by sorting in descending order */
-        val cursor: Cursor? = requireContext().contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            columns, null, null, "$orderBy DESC"
+    private fun updateFlagImage(cursor: Cursor, inputStream: InputStream, position: Int) {
+        val nameIndex: Int = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        val name: String = cursor.getString(nameIndex)
+        // create same file with same name
+        val file = File(requireContext().cacheDir, name)
+        val fileOutputStream: FileOutputStream = file.outputStream()
+        fileOutputStream.use { inputStream.copyTo(it) }
+        val visitedCountriesObserverForLocalPhotos: Observer<List<VisitedCountry>> =
+            Observer<List<VisitedCountry>> { visitedCountries: List<VisitedCountry> ->
+                viewModel.updateSelfie(
+                    shortName = visitedCountries[position].shortName,
+                    filePath = file.absolutePath,
+                    selfieName = visitedCountries[position].selfieName,
+                )
+            }
+        viewModel.visitedCountries.observeOnce(
+            viewLifecycleOwner,
+            visitedCountriesObserverForLocalPhotos
         )
-        cursor?.moveToFirst()
-        val uriImage: Uri = Uri.withAppendedPath(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            "" + imageId
-        )
-        val visitedCountry = VisitedCountry(
-            id = id,
-            shortName = shortName,
-            title = name,
-            flag = flag,
-            selfie = uriImage.toString(),
-            selfieName = "${System.currentTimeMillis()}",
-        )
-        cursor?.close()
-        return visitedCountry
     }
 
     private fun addSelfieLongClickListener(): OnLongClickListener = OnLongClickListener {
@@ -166,11 +145,11 @@ class FlagFragment : BaseFlagFragment() {
                 toastLong(message)
             }
         }
-        viewModel.visibilityLoader.observe(this) { currentVisibility ->
+        viewModel.visibilityLoader.observe(this) { currentVisibility: Int ->
             flagsActivityViewListener!!.setLoaderVisibility(currentVisibility)
         }
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
-            Observer<List<VisitedCountry>> { countries ->
+            Observer<List<VisitedCountry>> { countries: List<VisitedCountry> ->
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
                 mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
                 if (countries[position].selfie.isEmpty()) {

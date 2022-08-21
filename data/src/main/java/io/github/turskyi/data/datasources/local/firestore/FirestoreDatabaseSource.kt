@@ -33,7 +33,7 @@ interface FirestoreDatabaseSource {
 
     suspend fun updateSelfie(
         shortName: String,
-        selfie: String,
+        filePath: String,
         previousSelfieName: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit

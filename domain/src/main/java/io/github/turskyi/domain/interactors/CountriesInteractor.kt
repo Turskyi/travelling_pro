@@ -23,11 +23,11 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
 
     suspend fun updateSelfie(
         shortName: String,
-        selfie: String,
+        filePath: String,
         selfieName: String,
         onSuccess: (List<VisitedCountryModel>) -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.updateSelfie(shortName, selfie, selfieName, onSuccess, onError)
+    ) = countryRepository.updateSelfie(shortName, filePath, selfieName, onSuccess, onError)
 
     suspend fun setCountries(
         limit: Int,
