@@ -23,7 +23,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // to ensure that the translations of Firebase library are relevant to the application
-        resConfigs "en"
+        resConfigs 'en'
     }
     signingConfigs {
         production {
