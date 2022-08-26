@@ -21,9 +21,9 @@ android {
         versionName rootProject.version_name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        resConfigs 'en'
 
         // to ensure that the translations of Firebase library are relevant to the application
+        resConfigs "en"
     }
     signingConfigs {
         production {
