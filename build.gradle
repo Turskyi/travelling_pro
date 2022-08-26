@@ -4,12 +4,13 @@
 buildscript {
     ext {
         // sdk versions
-        compile_sdk_version = 31
+        compile_sdk_version = 32
         build_tools_version = "30.0.3"
         min_sdk_version = 21
-        target_sdk_version = 30
-        version_code = 17
-        version_name = "2.0.4"
+        target_sdk_version = 32
+        // last version is here [https://play.google.com/console/u/0/developers/6867856033872987263/app/4972072127034375090/releases/overview]
+        version_code = 18
+        version_name = "2.0.5"
     }
     repositories {
         google()
@@ -17,7 +18,7 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // Google Services plugin (used with firebase)
         classpath "com.google.gms:google-services:$google_services_version"

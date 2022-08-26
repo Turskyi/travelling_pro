@@ -2,10 +2,9 @@ package io.github.turskyi.data.datasources.local.firestore
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
+import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
@@ -381,7 +380,8 @@ class FirestoreDatabaseSourceImpl(
     ) {
         if (currentUser != null) {
             val countryRef: DocumentReference =
-                usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES).document(shortName)
+                usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES)
+                    .document(shortName)
             countryRef.update(KEY_IS_VISITED, false)
                 .addOnSuccessListener {
                     /*
@@ -462,51 +462,35 @@ class FirestoreDatabaseSourceImpl(
 
     override suspend fun updateSelfie(
         shortName: String,
-        selfie: String,
+        filePath: String,
         previousSelfieName: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-
-        val selfieImage: Uri = Uri.parse(selfie)
-
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
-
-        val bitmap: Bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val source: ImageDecoder.Source =
-                ImageDecoder.createSource(application.contentResolver, selfieImage)
-            //NOTE: this method takes a lot of time if an image is too large
-            ImageDecoder.decodeBitmap(source)
-        } else {
-            @Suppress("DEPRECATION")
-            MediaStore.Images.Media.getBitmap(application.contentResolver, selfieImage)
+        val bitmap: Bitmap = BitmapFactory.decodeFile(filePath)
+        val metadata: StorageMetadata = storageMetadata {
+            contentType = application.resources.getString(R.string.image_and_jpg_type)
         }
-        val metadata: StorageMetadata =
-            storageMetadata {
-                contentType = application.resources.getString(R.string.image_and_jpg_type)
-            }
+        val byteArrayOutputStream = ByteArrayOutputStream()
         // check if image more than 200 kb
-        val uploadTask: UploadTask = if (bitmap.byteCount > 200000) {
+        if (bitmap.byteCount > 200000) {
             // reduce size of the image to 25% of the initial quality
-            val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 25, byteArrayOutputStream)
-            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-            /* In the putBytes method,
-             * there is a TaskSnapshot which contains the details of uploaded file */
-            selfieRef.putBytes(byteArray, metadata)
         } else {
-            /* In the putFile method,
-             * there is a TaskSnapshot which contains the details of uploaded file */
-            selfieRef.putFile(selfieImage, metadata)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         }
-
-        uploadTask.continueWithTask { task ->
+        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+        /* In the putBytes method,
+             * there is a TaskSnapshot which contains the details of uploaded file */
+        val uploadTask: UploadTask = selfieRef.putBytes(byteArray, metadata)
+        uploadTask.continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
             if (!task.isSuccessful && task.exception != null) {
                 onError.invoke(task.exception!!)
             }
             selfieRef.downloadUrl
-        }.addOnCompleteListener { task ->
+        }.addOnCompleteListener { task: Task<Uri> ->
             if (task.isSuccessful) {
                 // Upload URL is needed to save it to the database
                 val downloadUri: Uri? = task.result

@@ -40,9 +40,7 @@ class AddCityDialogFragment : DialogFragment() {
 
         fun newInstance(id: Int): AddCityDialogFragment {
             val fragment = AddCityDialogFragment()
-            val bundle = Bundle().apply {
-                putInt(ARG_ID, id)
-            }
+            val bundle = Bundle().apply { putInt(ARG_ID, id) }
             fragment.arguments = bundle
             return fragment
         }
@@ -104,40 +102,33 @@ class AddCityDialogFragment : DialogFragment() {
         buttonDate: Button
     ) {
         buttonSave.setOnClickListener {
-            if (etCity.text.toString() != "") {
-                if (etMonth.text.toString() != "") {
-                    arguments?.getInt(ARG_ID)?.let { parentId ->
-                        City(
+            val parentId: Int? = arguments?.getInt(ARG_ID)
+            if (etCity.text != null && etCity.text!!.isNotBlank() && parentId != null) {
+                if (etMonth.text.isNotBlank()) {
+                    viewModel.insert(
+                        city = City(
                             name = etCity.text.toString(),
                             parentId = parentId,
                             month = etMonth.text.toString()
-                        ).apply {
-                            viewModel.insert(
-                                this, {
-                                    alertDialog.dismiss()
-                                }, { exception ->
-                                    toast(
-                                        exception.localizedMessage
-                                            ?: exception.stackTraceToString()
-                                    )
-                                }
+                        ),
+                        onSuccess = { alertDialog.dismiss() },
+                        onError = { exception: Exception /* = java.lang.Exception */ ->
+                            toastLong(
+                                exception.localizedMessage
+                                    ?: exception.stackTraceToString()
                             )
-                        }
-                    }
+                        },
+                    )
                 } else {
-                    arguments?.getInt(ARG_ID)?.let { parentId ->
-                        City(name = etCity.text.toString(), parentId = parentId).apply {
-                            viewModel.insert(
-                                this, {
-                                    alertDialog.dismiss()
-                                }, { exception ->
-                                    toastLong(
-                                        exception.localizedMessage ?: exception.stackTraceToString()
-                                    )
-                                }
+                    viewModel.insert(
+                        city = City(name = etCity.text.toString(), parentId = parentId),
+                        onSuccess = { alertDialog.dismiss() },
+                        onError = { exception: Exception /* = java.lang.Exception */ ->
+                            toastLong(
+                                exception.localizedMessage ?: exception.stackTraceToString()
                             )
                         }
-                    }
+                    )
                 }
             } else {
                 alertDialog.cancel()
@@ -152,8 +143,14 @@ class AddCityDialogFragment : DialogFragment() {
              */
             if (Build.VERSION.RELEASE == getString(R.string.android_5_1)) {
                 alertDialog.cancel()
+            } else if (!isGpsEnabled()) {
+                toastLong(R.string.dialogue_turn_on_gps)
+                /* even if we have GPS enabled, it will not work if there is no internet,
+                   so we have to check that too.*/
+            } else if (!isOnline()) {
+                toastLong(R.string.dialog_no_internet)
             } else {
-                checkIfGpsEnabled(etCity)
+                addCityTo(etCity)
             }
         }
 
@@ -184,7 +181,7 @@ class AddCityDialogFragment : DialogFragment() {
             if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
                 addCityTo(etCity)
             } else {
-                toastLong(R.string.msg_gps_permission_denied)
+                toast(R.string.msg_gps_permission_denied)
             }
         }
     }
@@ -195,28 +192,17 @@ class AddCityDialogFragment : DialogFragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
-    private fun checkIfGpsEnabled(editText: LinedEditText) {
-        val gpsEnabled: Boolean = checkIfGpsEnabled()
-        if (!gpsEnabled) {
-            toast(R.string.dialogue_turn_on_gps)
-        } else if (!isOnline()) {
-            toast(R.string.dialog_no_internet)
-        } else {
-            addCityTo(editText)
-        }
-    }
-
-    private fun checkIfGpsEnabled(): Boolean {
+    private fun isGpsEnabled(): Boolean {
         var gpsEnabled = false
         try {
             gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         } catch (exception: Exception) {
-            exception.printStackTrace()
+            toastLong(exception.localizedMessage ?: exception.stackTraceToString())
         }
         return gpsEnabled
     }
 
-    private fun addCityTo(editText: LinedEditText) {
+    private fun checkPermission(onPermissionGranted: () -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -234,18 +220,25 @@ class AddCityDialogFragment : DialogFragment() {
                 resources.getInteger(R.integer.location_access_request_code)
             )
         } else {
-//TODO: Handle "Missing permissions required by FusedLocationProviderClient.getLastLocation: android.permission.ACCESS_COARSE_LOCATION or android.permission.ACCESS_FINE_LOCATION"
-            @SuppressLint("MissingPermission")
-            val findLastLocationTask: Task<Location> = fusedLocationClient.lastLocation
-            findLastLocationTask.addOnSuccessListener { location ->
-                if (location != null) {
-                    addLastLocation(location, editText)
-                } else {
-                    toast(R.string.dialog_hold_on)
-                    addChangedLocation(editText)
-                }
-            }
+            onPermissionGranted()
         }
+    }
+
+    private fun addCityTo(editText: LinedEditText) {
+        checkPermission(
+            onPermissionGranted = {
+                @SuppressLint("MissingPermission")
+                val findLastLocationTask: Task<Location> = fusedLocationClient.lastLocation
+                findLastLocationTask.addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        addLastLocation(location, editText)
+                    } else {
+                        toastLong(R.string.dialog_hold_on)
+                        addChangedLocation(editText)
+                    }
+                }
+            },
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -254,14 +247,12 @@ class AddCityDialogFragment : DialogFragment() {
             val locationListener: LocationListener = object : LocationListener {
                 override fun onLocationChanged(location: Location) {
                     val geoCoder = Geocoder(requireContext(), Locale.getDefault())
-                    val addressesChanged: MutableList<Address>? =
-                        location.latitude.let { latitude ->
-                            geoCoder.getFromLocation(
-                                latitude,
-                                location.longitude, 1
-                            )
-                        }
-                    val cityChanged: String? = addressesChanged?.get(0)?.locality
+                    val addressesChanged: MutableList<Address>? = geoCoder.getFromLocation(
+                        location.latitude,
+                        location.longitude, 1
+                    )
+
+                    val cityChanged: String? = addressesChanged?.first()?.locality
                     editText.setText(cityChanged)
                 }
 
@@ -269,12 +260,15 @@ class AddCityDialogFragment : DialogFragment() {
                 override fun onProviderDisabled(provider: String) {}
             }
             // Request location updates
-            //  TODO: Handle "Missing permissions required by LocationManager.requestLocationUpdates: android.permission.ACCESS_COARSE_LOCATION or android.permission.ACCESS_FINE_LOCATION"
-            locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER,
-                0L,
-                0f,
-                locationListener
+            checkPermission(
+                onPermissionGranted = {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        0L,
+                        0f,
+                        locationListener
+                    )
+                },
             )
         } catch (exception: SecurityException) {
             toastLong(exception.localizedMessage ?: exception.stackTraceToString())

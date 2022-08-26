@@ -3,7 +3,7 @@
     <string name="share_massage" translatable="false">#travelling_the_world \n https://play.google.com/store/apps/details?id=%1$s</string>
     <string name="picture_file_name" translatable="false">piechart_%1$s.jpg</string>
     <string name="picture_name" translatable="false">piechart_%1$s</string>
-    <string name="home_dialog_date_format" translatable="false">MMMM yyyy</string>
+    <string name="home_dialog_date_format" translatable="false">yyyy MMMM dd</string>
     <string name="file_provider" translatable="false">.fileprovider</string>
     <string name="dir_screenshots" translatable="false">screenshots</string>
     <string name="day_month_year" translatable="false">dd.MM.yyyy</string>

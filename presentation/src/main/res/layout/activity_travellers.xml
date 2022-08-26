@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/CoordinatorLayoutStyle"
     android:background="@drawable/bg_dark_space"
+    android:statusBarColor="@color/colorPrimaryDark"
     tools:context=".features.travellers.view.TravellersActivity"
     tools:keep="@layout/activity_travellers">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_16">
+        android:layout_marginTop="@dimen/offset_4">
 
         <!-- layout_scrollFlags cannot be added to style, because it will not work from there -->
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -52,11 +53,11 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/float_btn_visibility"
         style="@style/FloatingActionButtonStyle"
+        android:layout_marginEnd="@dimen/offset_16"
+        android:layout_marginBottom="@dimen/fab_bottom_margin"
         android:contentDescription="@string/content_description.button"
         android:tag="@drawable/btn_hide_ripple"
         android:visibility="visible"
-        android:layout_marginEnd="@dimen/offset_16"
-        android:layout_marginBottom="@dimen/fab_bottom_margin"
         app:layout_anchor="@id/rv_travellers"
         app:srcCompat="@drawable/btn_hide_ripple" />
 

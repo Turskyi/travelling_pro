@@ -164,8 +164,9 @@
         <item name="android:fontFamily">casual</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowDx">2</item>
-        <item name="android:shadowRadius">10</item>
-        <item name="android:shadowColor">@android:color/black</item>
+        <!--  shadowRadius must be in a range of 0-25 pixel bound-->
+        <item name="android:shadowRadius">25</item>
+        <item name="android:shadowColor">@android:color/transparent</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 

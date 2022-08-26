@@ -38,6 +38,7 @@ import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
 import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
 import io.github.turskyi.travellingpro.features.home.viewmodels.HomeActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivity
+import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
 import io.github.turskyi.travellingpro.utils.extensions.*
 import kotlinx.coroutines.Dispatchers
@@ -259,7 +260,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
     private fun initListeners() {
         listAdapter.apply {
-            onFlagClickListener = { country ->
+            onFlagClickListener = { country: VisitedCountryNode ->
                 // mis-clicking prevention, using threshold of 1000 ms
                 if (SystemClock.elapsedRealtime() - viewModel.mLastClickTime > resources.getInteger(
                         R.integer.click_interval
@@ -274,7 +275,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 }
                 viewModel.mLastClickTime = SystemClock.elapsedRealtime()
             }
-            onLongClickListener = { countryNode ->
+            onLongClickListener = { countryNode: VisitedCountryNode ->
                 val country: Country = countryNode.mapVisitedCountryNodeToCountry()
 
                 binding.root.showSnackWithAction(getString(R.string.delete_it, country.name)) {
@@ -285,14 +286,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 }
             }
 
-            onCountryNameClickListener = { countryNode ->
+            onCountryNameClickListener = { countryNode: VisitedCountryNode ->
                 // Creating the new Fragment with the Country id passed in.
                 val fragment: AddCityDialogFragment = AddCityDialogFragment.newInstance(
                     countryNode.id,
                 )
                 fragment.show(supportFragmentManager, null)
             }
-            onCityLongClickListener = { city ->
+            onCityLongClickListener = { city: City ->
                 binding.root.showSnackWithAction(getString(R.string.delete_it, city.name)) {
                     action(R.string.yes) {
                         removeCityOnLongClick(city)
@@ -304,11 +305,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     private fun initObservers() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries: List<VisitedCountryNode> ->
             initTitle()
             updateAdapterAndTitle(visitedCountries)
         }
-        viewModel.visitedCountries.observe(this) { visitedCountries ->
+        viewModel.visitedCountries.observe(this) { visitedCountries: List<VisitedCountry> ->
             binding.includeAppBar.circlePieChart.apply {
                 initPieChart()
                 createPieChartWith(visitedCountries, viewModel.notVisitedCountriesCount)
@@ -316,11 +317,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
             }
             showFloatBtn(visitedCountries)
         }
-        viewModel.visibilityLoader.observe(this) { currentVisibility ->
+        viewModel.visibilityLoader.observe(this) { currentVisibility: Int ->
             binding.pb.visibility = currentVisibility
         }
 
-        viewModel.errorMessage.observe(this) { event ->
+        viewModel.errorMessage.observe(this) { event: Event<String> ->
             val errorMessage: String? = event.getMessageIfNotHandled()
             if (errorMessage != null) {
                 toastLong(errorMessage)
@@ -331,8 +332,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
         /*  here could be a more efficient way to handle a click to open activity,
          * but it is made on purpose of demonstration databinding */
-        viewModel.navigateToAllCountries.observe(this) { shouldNavigate ->
-            if (shouldNavigate == true) {
+        viewModel.navigateToAllCountries.observe(this) { shouldNavigate: Boolean ->
+            if (shouldNavigate) {
                 val allCountriesIntent = Intent(
                     this,
                     AllCountriesActivity::class.java,
@@ -366,6 +367,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
             /* we are getting here every time except the first time,
              * since permission is already received */
             viewModel.isPermissionGranted = true
+            // access to [preferencesFlow] must be in background thread
             lifecycleScope.launch(Dispatchers.IO) {
 //"first()" The terminal operator that returns the first element emitted by the flow and then cancels flow's collection.
                 if (viewModel.preferencesFlow.first().authorization == Authorization.IS_SIGNED_IN) {
@@ -373,7 +375,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                         initPersonalization()
                     }
                 } else {
-                    initAuthentication()
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        initAuthentication()
+                    }
                 }
             }
         }
@@ -458,7 +462,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
     }
 
     private fun showTitleWithCitiesAndCountries() {
-        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountryNodes ->
+        viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountryNodes: List<VisitedCountryNode> ->
             if (viewModel.cityCount > visitedCountryNodes.size) {
                 binding.includeAppBar.toolbarLayout.title = "${
                     resources.getQuantityString(

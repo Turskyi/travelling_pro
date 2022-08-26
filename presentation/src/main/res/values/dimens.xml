@@ -53,7 +53,7 @@
     <dimen name="size_max_float_btn">60dp</dimen>
     <dimen name="fab_bottom_margin">32dp</dimen>
     <dimen name="size_avatar" tools:keep="@dimen/size_avatar">150dp</dimen>
-    <dimen name="size_face">181dp</dimen>
+    <dimen name="size_face">185dp</dimen>
     <dimen name="size_home_fab_max_image">192dp</dimen>
     <dimen name="size_home_fab_custom">224dp</dimen>
     <dimen name="radius_circle">250dp</dimen>

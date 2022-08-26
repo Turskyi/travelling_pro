@@ -4,6 +4,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import io.github.turskyi.domain.interactors.CountriesInteractor
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.travellingpro.entities.VisitedCountry
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.mapVisitedModelListToVisitedList
@@ -32,43 +33,52 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
         }
     }
 
-    fun updateSelfie(shortName: String, selfie: String, selfieName: String) {
+    fun updateSelfie(shortName: String, filePath: String, selfieName: String) {
         _visibilityLoader.postValue(VISIBLE)
         viewModelScope.launch(IO) {
-            interactor.updateSelfie(shortName, selfie, selfieName, { countries ->
-                _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
-                _visibilityLoader.postValue(GONE)
-            }, { exception ->
-                _visibilityLoader.postValue(GONE)
-                _errorMessage.run {
-                    // Trigger the event by setting a new Event as a new value
-                    postValue(
-                        Event(
-                            exception.localizedMessage ?: exception.stackTraceToString()
+            interactor.updateSelfie(
+                shortName = shortName,
+                filePath = filePath,
+                selfieName = selfieName,
+                onSuccess = { countries: List<VisitedCountryModel> ->
+                    _visitedCountries.postValue(countries.mapVisitedModelListToVisitedList())
+                    _visibilityLoader.postValue(GONE)
+                },
+                onError = { exception: Exception /* = java.lang.Exception */ ->
+                    _visibilityLoader.postValue(GONE)
+                    _errorMessage.run {
+                        // Trigger the event by setting a new Event as a new value
+                        postValue(
+                            Event(
+                                exception.localizedMessage ?: exception.stackTraceToString()
+                            )
                         )
-                    )
-                }
-            })
+                    }
+                },
+            )
         }
     }
 
     private fun getVisitedCountries() {
         viewModelScope.launch {
-            interactor.setVisitedCountries({ countries ->
-                visitedCount = countries.size
-                _visitedCountries.run { postValue(countries.mapVisitedModelListToVisitedList()) }
-                _visibilityLoader.postValue(GONE)
-            }, { exception ->
-                _visibilityLoader.postValue(GONE)
-                _errorMessage.run {
-                    // Trigger the event by setting a new Event as a new value
-                    postValue(
-                        Event(
-                            exception.localizedMessage ?: exception.stackTraceToString()
+            interactor.setVisitedCountries(
+                onSuccess = { countries: List<VisitedCountryModel> ->
+                    visitedCount = countries.size
+                    _visitedCountries.postValue(countries.mapVisitedModelListToVisitedList())
+                    _visibilityLoader.postValue(GONE)
+                },
+                onError = { exception: Exception /* = java.lang.Exception */ ->
+                    _visibilityLoader.postValue(GONE)
+                    _errorMessage.run {
+                        // Trigger the event by setting a new Event as a new value
+                        postValue(
+                            Event(
+                                exception.localizedMessage ?: exception.stackTraceToString()
+                            )
                         )
-                    )
-                }
-            })
+                    }
+                },
+            )
         }
     }
 }
