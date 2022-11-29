@@ -24,6 +24,7 @@ class SectionAverageGapItemDecoration(
         val count: Int
             get() = endPos - startPos + 1
 
+        @Suppress("BooleanMethodIsAlwaysInverted")
         operator fun contains(pos: Int): Boolean {
             return pos in startPos..endPos
         }
@@ -168,11 +169,9 @@ class SectionAverageGapItemDecoration(
     }
 
     private fun findSectionLastItemPos(curPos: Int): Section? {
-        for (section in mSectionList) {
-            section?.contains(curPos)?.let {
-                if (section.contains(curPos)) {
-                    return section
-                }
+        for (section: Section? in mSectionList) {
+            if (section?.contains(curPos) != null && section.contains(curPos)) {
+                return section
             }
         }
         return null

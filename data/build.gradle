@@ -43,9 +43,9 @@ dependencies {
     implementation project(':domain')
 
     // Koin for Android
-    api ("io.insert-koin:koin-android:$insert_koin_version")
+    api("io.insert-koin:koin-android:$koin_android_version")
     // Koin core features
-    api ("io.insert-koin:koin-core:$insert_koin_version")
+    api("io.insert-koin:koin-core:$koin_core_version")
 
     // network
     api "com.squareup.okhttp3:okhttp:$okhttp_version"

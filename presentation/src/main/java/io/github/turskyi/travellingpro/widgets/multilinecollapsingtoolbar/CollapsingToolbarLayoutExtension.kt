@@ -139,6 +139,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
+    @Suppress("SameReturnValue")
     private fun onWindowInsetChanged(insets: WindowInsetsCompat): WindowInsetsCompat {
         var newInsets: WindowInsetsCompat? = null
         if (ViewCompat.getFitsSystemWindows(this)) {
@@ -406,7 +407,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
      * @see .getTitle
      * @attr ref R.styleable#CollapsingToolbarLayout_title
      */
-    @get:Nullable
     var title: CharSequence?
         get() = if (mCollapsingTitleEnabled) mCollapsingTextHelper?.text else null
         set(title) {
@@ -495,7 +495,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
      * @attr ref R.styleable#CollapsingToolbarLayout_contentScrim
      * @see .getContentScrim
      */
-    @get:Nullable
+    @Suppress("MemberVisibilityCanBePrivate")
     var contentScrim: Drawable?
         get() = mContentScrim
         set(drawable) {
@@ -565,7 +565,6 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
      * @attr ref R.styleable#CollapsingToolbarLayout_statusBarScrim
      * @see .getStatusBarScrim
      */
-    @get:Nullable
     var statusBarScrim: Drawable?
         get() = mStatusBarScrim
         set(drawable) {
@@ -686,7 +685,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
          */
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @IntDef(COLLAPSE_MODE_OFF, COLLAPSE_MODE_PIN, COLLAPSE_MODE_PARALLAX)
-        @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+        @Retention(AnnotationRetention.SOURCE)
         internal annotation class CollapseMode
         /**
          * Returns the requested collapse mode.
@@ -800,6 +799,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
                     LayoutParams.COLLAPSE_MODE_PARALLAX -> offsetHelper.setTopAndBottomOffset(
                         (-verticalOffset * layoutParams.parallaxMultiplier).roundToInt()
                     )
+                    LayoutParams.COLLAPSE_MODE_OFF -> {}
                 }
                 i++
             }
@@ -821,7 +821,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
 
     companion object {
         private const val DEFAULT_SCRIM_ANIMATION_DURATION = 600
-        private fun getHeightWithMargins(@NonNull view: View?): Int {
+        private fun getHeightWithMargins(view: View?): Int {
             val lp = view!!.layoutParams
             if (lp is MarginLayoutParams) {
                 return view.height + lp.topMargin + lp.bottomMargin

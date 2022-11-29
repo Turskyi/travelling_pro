@@ -2,6 +2,7 @@ package io.github.turskyi.travellingpro.features.flags.view.fragments
 
 import android.content.Context
 import android.graphics.Color.TRANSPARENT
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +11,12 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.webkit.WebViewClient
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Priority
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideApp
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
@@ -108,9 +114,19 @@ open class BaseFlagFragment : Fragment() {
             ivEnlargedFlag.visibility = VISIBLE
             wvFlag.visibility = GONE
         }
-        com.github.twocoffeesoneteam.glidetovectoryou.GlideApp.with(this@BaseFlagFragment)
+        val thumbnailBuilder: RequestBuilder<Drawable> =
+            GlideApp.with(binding.ivEnlargedFlag.context)
+                .asDrawable()
+                .sizeMultiplier(ResourcesCompat.getFloat(resources, R.dimen.thumbnail))
+        GlideApp.with(this@BaseFlagFragment)
             .load(countries[position].selfie)
-            .placeholder(R.drawable.anim_loading)
+            .thumbnail(thumbnailBuilder)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.anim_loading)
+                    .error(R.drawable.ic_broken_image)
+                    .priority(Priority.IMMEDIATE)
+            )
             .into(binding.ivEnlargedFlag)
     }
 

@@ -30,5 +30,5 @@ java {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // Koin core features
-    api "io.insert-koin:koin-core:$insert_koin_version"
+    api "io.insert-koin:koin-core:$koin_core_version"
 }

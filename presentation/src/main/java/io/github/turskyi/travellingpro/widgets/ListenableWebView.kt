@@ -26,6 +26,7 @@ class ListenableWebView : WebView, View.OnTouchListener {
     constructor(context: Context) : super(context)
 
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
+        @Suppress("KotlinConstantConditions")
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
                 fingerState = if (fingerState == FINGER_RELEASED) {

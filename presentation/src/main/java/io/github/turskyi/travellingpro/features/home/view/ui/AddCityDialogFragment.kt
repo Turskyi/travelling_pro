@@ -150,7 +150,7 @@ class AddCityDialogFragment : DialogFragment() {
             } else if (!isOnline()) {
                 toastLong(R.string.dialog_no_internet)
             } else {
-                addCityTo(etCity)
+                insertCityIntoAnEmptyField(etCity)
             }
         }
 
@@ -179,7 +179,7 @@ class AddCityDialogFragment : DialogFragment() {
     ) {
         if (requestCode == resources.getInteger(R.integer.location_access_request_code)) {
             if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-                addCityTo(etCity)
+                insertCityIntoAnEmptyField(etCity)
             } else {
                 toast(R.string.msg_gps_permission_denied)
             }
@@ -224,18 +224,21 @@ class AddCityDialogFragment : DialogFragment() {
         }
     }
 
-    private fun addCityTo(editText: LinedEditText) {
+    private fun insertCityIntoAnEmptyField(editText: LinedEditText) {
         checkPermission(
             onPermissionGranted = {
                 @SuppressLint("MissingPermission")
                 val findLastLocationTask: Task<Location> = fusedLocationClient.lastLocation
                 findLastLocationTask.addOnSuccessListener { location: Location? ->
                     if (location != null) {
-                        addLastLocation(location, editText)
+                        setCityName(location, editText)
                     } else {
                         toastLong(R.string.dialog_hold_on)
                         addChangedLocation(editText)
                     }
+                }.addOnFailureListener { exception: java.lang.Exception ->
+                    toastLong(exception.localizedMessage ?: exception.stackTraceToString())
+                    addChangedLocation(editText)
                 }
             },
         )
@@ -245,17 +248,7 @@ class AddCityDialogFragment : DialogFragment() {
     private fun addChangedLocation(editText: LinedEditText) {
         try {
             val locationListener: LocationListener = object : LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    val geoCoder = Geocoder(requireContext(), Locale.getDefault())
-                    val addressesChanged: MutableList<Address>? = geoCoder.getFromLocation(
-                        location.latitude,
-                        location.longitude, 1
-                    )
-
-                    val cityChanged: String? = addressesChanged?.first()?.locality
-                    editText.setText(cityChanged)
-                }
-
+                override fun onLocationChanged(location: Location) = setCityName(location, editText)
                 override fun onProviderEnabled(provider: String) {}
                 override fun onProviderDisabled(provider: String) {}
             }
@@ -275,18 +268,20 @@ class AddCityDialogFragment : DialogFragment() {
         }
     }
 
-    private fun addLastLocation(
+    private fun setCityName(
         location: Location,
         editText: LinedEditText
     ) {
         val geoCoder = Geocoder(requireContext(), Locale.getDefault())
         try {
-            val addresses: MutableList<Address> = geoCoder.getFromLocation(
+            @Suppress("DEPRECATION")
+            val addresses: MutableList<Address>? = geoCoder.getFromLocation(
                 location.latitude,
-                location.longitude, 1
+                location.longitude,
+                1,
             )
 
-            val cityName: String = addresses.first().locality
+            val cityName: String? = addresses?.first()?.locality
             editText.setText(cityName)
         } catch (exception: IOException) {
             toastLong(exception.localizedMessage ?: exception.stackTraceToString())

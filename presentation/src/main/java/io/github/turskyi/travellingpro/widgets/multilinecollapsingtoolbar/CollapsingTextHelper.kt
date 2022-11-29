@@ -595,6 +595,7 @@ internal class CollapsingTextHelper(private val mView: View) {
         ViewCompat.postInvalidateOnAnimation(mView)
     }
 
+    @Suppress("BooleanMethodIsAlwaysInverted")
     private fun areTypefacesDifferent(first: Typeface?, second: Typeface?): Boolean {
         return (first != null && first != second) || (first == null && second != null)
     }

@@ -58,4 +58,5 @@
     <dimen name="size_home_fab_custom">224dp</dimen>
     <dimen name="radius_circle">250dp</dimen>
 
+    <item name="thumbnail" format="float" type="dimen">0.5</item>
 </resources>
