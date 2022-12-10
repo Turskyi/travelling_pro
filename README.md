@@ -27,7 +27,7 @@ after every push to the **dev** branch,
 release app bundle to **Google Play** after every push to **master** branch;
 
 • Architectural pattern: [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
-wrapped with
+and
 [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html);
 
 • Architecture Components:
@@ -37,15 +37,15 @@ wrapped with
 
 • Database: [Firestore](https://firebase.google.com/docs/firestore);
 
+• Dependency injection: [Koin](https://insert-koin.io/docs/reference/introduction);
+
+• Asynchronous programming: [Coroutines](https://developer.android.com/kotlin/coroutines);
+
 • Object storage service: [Cloud Storage for Firebase](https://firebase.google.com/docs/storage);
 
 • Authentication: [FirebaseUI for Auth](https://firebase.google.com/docs/auth/android/firebaseui);
 
 • Cloud services: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging);
-
-• Dependency injection: [Koin](https://insert-koin.io/docs/reference/introduction);
-
-• Asynchronous programming: [Coroutines](https://developer.android.com/kotlin/coroutines);
 
 • HTTP client: [Retrofit](https://square.github.io/retrofit/);
 

@@ -40,7 +40,7 @@ dependencies {
     implementation project(path: ':data')
 
     // Koin core features
-    api "io.insert-koin:koin-core:$insert_koin_version"
+    api "io.insert-koin:koin-core:$koin_core_version"
 
     // test
     testImplementation "junit:junit:$junit_version"

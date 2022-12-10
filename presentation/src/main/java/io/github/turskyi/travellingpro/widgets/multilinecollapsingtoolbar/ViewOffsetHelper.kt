@@ -39,6 +39,7 @@ class ViewOffsetHelper(private val mView: View) {
      * @param offset the offset in px.
      * @return true if the offset has changed
      */
+    @Suppress("BooleanMethodIsAlwaysInverted")
     fun setTopAndBottomOffset(offset: Int): Boolean {
         if (topAndBottomOffset != offset) {
             topAndBottomOffset = offset

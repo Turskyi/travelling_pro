@@ -171,7 +171,7 @@ class HomeActivityViewModel(
         visitedCountries: List<VisitedCountry>
     ) {
         _visitedCountriesWithCitiesNode.run { postValue(visitedCountryNodes) }
-        _visitedCountries.run { postValue(visitedCountries) }
+        _visitedCountries.postValue(visitedCountries)
         _visibilityLoader.postValue(GONE)
     }
 

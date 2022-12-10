@@ -9,7 +9,6 @@
     <string name="day_month_year" translatable="false">dd.MM.yyyy</string>
     <string name="privacy_web_page" translatable="false">https://travelling-the-countries.web.app</string>
     <string name="geo_location" translatable="false">geo:0,0?q=%1$s</string>
-    <string name="media_providers" translatable="false">com.android.providers.media</string>
     <string name="android_5_1" translatable="false">5.1</string>
     <string name="image_and_jpeg_type" translatable="false">image/jpeg</string>
     <string name="image_type" translatable="false">image/*</string>
@@ -44,7 +43,7 @@
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2312394202364807</string>
     <!-- for general use of facebook auth-->
     <string name="fb_login_protocol_scheme" translatable="false">fb2312394202364807</string>
-<!--    Tags for dialogs-->
+    <!--    Tags for dialogs-->
     <string name="tag_info_dialog" translatable="false">info dialog</string>
     <string name="tag_visibility_dialog" translatable="false">visibility dialog</string>
     <!-- END of not translatable strings -->
@@ -107,7 +106,7 @@
 
     <!-- START screen with all countries -->
     <string name="hint.search_country">country</string>
-    <string name="hint.search_traveller">name</string>
+    <string name="hint.search_traveller" tools:keep="@string/hint_search_traveller">name</string>
     <string name="no_results">no results</string>
     <string name="txt_info_all_countries">• If you press on a country, you will be able to see
         the geographical location of it

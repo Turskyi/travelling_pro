@@ -29,7 +29,7 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event == Lifecycle.Event.ON_CREATE) {
-            getVisitedCountries()
+            setVisitedCountries()
         }
     }
 
@@ -59,7 +59,7 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
         }
     }
 
-    private fun getVisitedCountries() {
+    private fun setVisitedCountries() {
         viewModelScope.launch {
             interactor.setVisitedCountries(
                 onSuccess = { countries: List<VisitedCountryModel> ->

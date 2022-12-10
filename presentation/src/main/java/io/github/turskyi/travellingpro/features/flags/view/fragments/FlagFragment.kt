@@ -146,12 +146,16 @@ class FlagFragment : BaseFlagFragment() {
             }
         }
         viewModel.visibilityLoader.observe(this) { currentVisibility: Int ->
-            flagsActivityViewListener!!.setLoaderVisibility(currentVisibility)
+            if (flagsActivityViewListener != null) {
+                flagsActivityViewListener!!.setLoaderVisibility(currentVisibility)
+            }
         }
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
             Observer<List<VisitedCountry>> { countries: List<VisitedCountry> ->
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
-                mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
+                if (mChangeFlagListener != null) {
+                    mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
+                }
                 if (countries[position].selfie.isEmpty()) {
                     showTheFlag(countries, position)
                 } else {

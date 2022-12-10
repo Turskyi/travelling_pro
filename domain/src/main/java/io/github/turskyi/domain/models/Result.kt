@@ -1,5 +1,6 @@
 package io.github.turskyi.domain.models
 
+@Suppress("unused")
 sealed class Result<out T : Any> {
 
     data class Success<out T : Any>(val data: T? = null, val responseCode: Int? = null) :

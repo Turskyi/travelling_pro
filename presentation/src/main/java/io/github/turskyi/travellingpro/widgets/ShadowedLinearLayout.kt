@@ -37,7 +37,7 @@ class ShadowedLinearLayout @JvmOverloads constructor(
      * @param to end value with
      * @param duration in milliseconds*/
     fun elevate(from: Float, to: Float, duration: Long) {
-        if(containerElevation != to) {
+        if (containerElevation != to) {
             containerElevation = to
             ValueAnimator.ofFloat(from, to).apply {
                 addUpdateListener {
@@ -100,6 +100,7 @@ class ShadowedLinearLayout @JvmOverloads constructor(
      * @param shadowRadius  radius of shadow.
      * @param gravity shadow will be visible from view side
      * @param elevation describes shadow size*/
+    @Suppress("KotlinConstantConditions")
     private fun generateBackgroundWithShadow(
         backgroundColor: Int,
         shadowRadius: Float = 1f,
@@ -146,7 +147,12 @@ class ShadowedLinearLayout @JvmOverloads constructor(
         }
 
         if (elevation > resources.getDimension(R.dimen.elevation_1) * 2) {
-            shapeDrawable.paint.setShadowLayer(shadowRadius, elevation / 5, shadowOffset, shadowColor)
+            shapeDrawable.paint.setShadowLayer(
+                shadowRadius,
+                elevation / 5,
+                shadowOffset,
+                shadowColor
+            )
         }
         y = (-(elevationValue * 2)).toFloat()
         shapeDrawable.shape = RoundRectShape(outerRadius, null, null)
