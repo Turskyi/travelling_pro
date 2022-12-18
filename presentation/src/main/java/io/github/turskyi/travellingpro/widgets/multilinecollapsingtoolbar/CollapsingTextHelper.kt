@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package io.github.turskyi.travellingpro.widgets.multilinecollapsingtoolbar
 
 import android.content.res.ColorStateList
@@ -23,7 +21,7 @@ import kotlin.math.roundToInt
 
 internal class CollapsingTextHelper(private val mView: View) {
     companion object {
-        /* Pre-JB-MR2 doesn't support HW accelerated canvas scaled text so we will workaround it
+        /* Pre-JB-MR2 doesn't support HW accelerated canvas scaled text, so we will work around it
          * by using our own texture */
         private const val USE_SCALING_TEXTURE: Boolean = false
         private const val DEBUG_DRAW: Boolean = false
@@ -456,7 +454,7 @@ internal class CollapsingTextHelper(private val mView: View) {
             else -> mExpandedBounds.left.toFloat()
         }
 
-        // The bounds have changed so we need to clear the texture
+        // The bounds have changed, so we need to clear the texture
         clearTexture()
         // Now reset the text size back to the original
         setInterpolatedTextSize(currentTextSize)
@@ -577,7 +575,7 @@ internal class CollapsingTextHelper(private val mView: View) {
         if (mUseTexture) {
             // Make sure we have an expanded texture if needed
             ensureExpandedTexture()
-            // added collapsed and cross section textures
+            // added collapsed and cross-section textures
             ensureCollapsedTexture()
             ensureCrossSectionTexture()
         }

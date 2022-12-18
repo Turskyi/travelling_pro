@@ -5,9 +5,12 @@ plugins {
 }
 
 android {
+    //noinspection GroovyAssignabilityCheck
     compileSdkVersion rootProject.compile_sdk_version
+    //noinspection GroovyAssignabilityCheck
     buildToolsVersion rootProject.build_tools_version
 
+    //noinspection GroovyAssignabilityCheck
     defaultConfig {
         minSdkVersion rootProject.min_sdk_version
         targetSdkVersion rootProject.target_sdk_version
@@ -16,6 +19,7 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    //noinspection GroovyAssignabilityCheck
     buildTypes {
         release {
             minifyEnabled false
@@ -23,6 +27,7 @@ android {
                     'proguard-rules.pro'
         }
     }
+    //noinspection GroovyAssignabilityCheck
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11

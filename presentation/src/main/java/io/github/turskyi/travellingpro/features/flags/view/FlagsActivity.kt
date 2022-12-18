@@ -9,11 +9,12 @@ import androidx.core.content.ContextCompat
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityFlagsBinding
 import io.github.turskyi.travellingpro.entities.Traveller
-import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
-import io.github.turskyi.travellingpro.features.flags.view.callbacks.FlagsActivityView
-import io.github.turskyi.travellingpro.features.flags.view.callbacks.OnChangeFlagFragmentListener
 import io.github.turskyi.travellingpro.features.flags.view.adapter.FlagsAdapter
 import io.github.turskyi.travellingpro.features.flags.view.adapter.ZoomOutPageTransformer
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.FlagsActivityView
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.OnChangeFlagFragmentListener
+import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog
+import io.github.turskyi.travellingpro.utils.extensions.parcelable
 import io.github.turskyi.travellingpro.utils.extensions.toast
 
 class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFragmentListener,
@@ -53,8 +54,8 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (getBundle != null && getBundle!!.getParcelable<Traveller>(EXTRA_USER) != null) {
-            val traveller: Traveller = getBundle!!.getParcelable(EXTRA_USER)!!
+        if (getBundle != null && getBundle!!.parcelable<Traveller>(EXTRA_USER) != null) {
+            val traveller: Traveller = getBundle!!.parcelable(EXTRA_USER)!!
             openInfoDialog(
                 R.string.txt_info_user_flags,
                 traveller.name,
@@ -88,7 +89,7 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
     }
 
     private fun initAdapter() {
-        /* flagsAdapter cannot by implemented in dependency injection module
+        /* flagsAdapter cannot be implemented in dependency injection module
          * since "view pager 2" required exact context */
         flagsAdapter = FlagsAdapter(this)
         binding.pager.apply {
@@ -102,7 +103,9 @@ class FlagsActivity : AppCompatActivity(R.layout.activity_flags), OnChangeFlagFr
         }
     }
 
-    private fun initListener() = binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+    private fun initListener() {
+        binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+    }
 
     private fun initObserver() = lifecycle.addObserver(flagsAdapter)
 }

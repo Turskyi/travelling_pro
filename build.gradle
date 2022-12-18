@@ -97,6 +97,6 @@ ext {
     SIGNING_KEY_RELEASE_KEY_PASSWORD = getParam("SIGNING_KEY_RELEASE_KEY_PASSWORD")
 }
 
-task clean(type: Delete) {
+tasks.register('clean') {
     delete rootProject.buildDir
 }

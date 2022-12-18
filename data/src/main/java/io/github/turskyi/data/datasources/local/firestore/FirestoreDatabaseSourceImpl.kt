@@ -763,7 +763,7 @@ class FirestoreDatabaseSourceImpl(
                 .addOnSuccessListener { queryDocumentSnapshots ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
                     if (queryDocumentSnapshots.size() == 0) {
-// if there are no countries in local database, than there is no visited countries too
+// if there are no countries in local database, then there is no visited countries too
                         onSuccess(0, 0)
                     } else {
                         for (documentSnapshot in queryDocumentSnapshots) {
