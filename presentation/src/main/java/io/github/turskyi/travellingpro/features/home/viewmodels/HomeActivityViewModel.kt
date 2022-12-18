@@ -27,7 +27,7 @@ class HomeActivityViewModel(
     private val preferenceInteractor: PreferenceInteractor,
 ) : ViewModel() {
 
-    var backPressedTiming: Long = 0
+    var isDoubleBackToExitPressed = false
     var notVisitedCountriesCount: Float = 0F
     var cityCount: Int = 0
     var mLastClickTime: Long = 0

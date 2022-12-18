@@ -149,7 +149,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:21.0.1"
 
     // Facebook SDK
-    def facebookVersion = "15.1.0"
+    def facebookVersion = "15.2.0"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
