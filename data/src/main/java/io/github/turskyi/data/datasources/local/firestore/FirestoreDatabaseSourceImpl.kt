@@ -921,25 +921,32 @@ class FirestoreDatabaseSourceImpl(
     ) {
         if (currentUser != null) {
             // getting number of visited Countries by current user
-            val visitedCountriesRef: CollectionReference =
-                usersRef.document(currentUser.uid).collection(COLLECTION_VISITED_COUNTRIES)
+            val visitedCountriesRef: CollectionReference = usersRef.document(
+                currentUser.uid,
+            ).collection(COLLECTION_VISITED_COUNTRIES)
+
             visitedCountriesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     val travellerCounter: Int = queryDocumentSnapshots.size()
                     // getting total number of all users
-                    val usersRef: Query = usersRef
-                    usersRef.get().addOnSuccessListener { snapshots ->
+                    usersRef.get().addOnSuccessListener { snapshots: QuerySnapshot ->
                         val userCount: Int = snapshots.size()
                         //   getting number of users with bigger counter
                         usersRef.whereGreaterThan(KEY_COUNTER, travellerCounter).get()
-                            .addOnSuccessListener { documents ->
+                            .addOnSuccessListener { documents: QuerySnapshot ->
                                 val countOfTopTravellers: Int = documents.size()
                                 /* getting percent of travellers who visited more countries
                                  * than current user */
                                 onSuccess(countOfTopTravellers * 100 / userCount)
-                            }.addOnFailureListener { exception -> onError.invoke(exception) }
-                    }.addOnFailureListener { exception -> onError.invoke(exception) }
-                }.addOnFailureListener { exception -> onError.invoke(exception) }
+                            }.addOnFailureListener { exception: java.lang.Exception ->
+                                onError.invoke(exception)
+                            }
+                    }.addOnFailureListener { exception: java.lang.Exception ->
+                        onError.invoke(exception)
+                    }
+                }.addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())

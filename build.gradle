@@ -59,7 +59,9 @@ subprojects {
             implementation "com.google.firebase:firebase-storage-ktx"
 
             // authentication (to get current user etc.)
-            implementation "com.google.firebase:firebase-auth"
+            implementation('com.google.firebase:firebase-auth-ktx') {
+                exclude module: "browser"
+            }
 
             // avoids "Service not registered" exception
             implementation "com.google.android.gms:play-services-basement:$play_services_basement_version"

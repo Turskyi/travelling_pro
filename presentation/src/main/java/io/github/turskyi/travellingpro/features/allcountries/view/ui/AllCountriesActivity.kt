@@ -98,7 +98,7 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun initObservers() {
         val emptyListObserver = EmptyListObserver(binding.rvAllCountries, binding.tvNoResults)
         adapter.registerAdapterDataObserver(emptyListObserver)
-        viewModel.notVisitedCountriesNumLiveData.observe(this) { notVisitedNum ->
+        viewModel.notVisitedCountriesNumLiveData.observe(this) { notVisitedNum: Int ->
             updateTitle(notVisitedNum)
         }
         viewModel.visibilityLoader.observe(this) { currentVisibility ->

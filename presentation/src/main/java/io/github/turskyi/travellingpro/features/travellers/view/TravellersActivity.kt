@@ -83,12 +83,12 @@ class TravellersActivity : AppCompatActivity(), VisibilityDialog.VisibilityListe
                 }
 
                 override fun onSearchConfirmed(text: String?) {}
-
                 override fun onButtonClicked(buttonCode: Int) {}
-
             }
 
-        binding.includeToolbar.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.includeToolbar.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         listAdapter.onTravellerClickListener = ::showTraveller
         binding.rvTravellers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
