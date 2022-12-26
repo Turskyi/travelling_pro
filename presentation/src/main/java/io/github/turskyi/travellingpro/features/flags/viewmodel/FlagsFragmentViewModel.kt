@@ -69,14 +69,12 @@ class FlagsFragmentViewModel(private val interactor: CountriesInteractor) : View
                 },
                 onError = { exception: Exception /* = java.lang.Exception */ ->
                     _visibilityLoader.postValue(GONE)
-                    _errorMessage.run {
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(
-                            Event(
-                                exception.localizedMessage ?: exception.stackTraceToString()
-                            )
-                        )
-                    }
+                    // Trigger the event by setting a new Event as a new value
+                    _errorMessage.postValue(
+                        Event(
+                            exception.localizedMessage ?: exception.stackTraceToString()
+                        ),
+                    )
                 },
             )
         }

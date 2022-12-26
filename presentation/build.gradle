@@ -12,8 +12,10 @@ plugins {
 
 android {
     //noinspection GroovyAssignabilityCheck
+    //noinspection GrDeprecatedAPIUsage
     compileSdkVersion rootProject.compile_sdk_version
     //noinspection GroovyAssignabilityCheck
+    //noinspection GrDeprecatedAPIUsage
     buildToolsVersion rootProject.build_tools_version
 
     //noinspection GroovyAssignabilityCheck
@@ -70,6 +72,7 @@ android {
         viewBinding true
     }
     //noinspection GroovyAssignabilityCheck
+    //noinspection GroovyMissingReturnStatement
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11

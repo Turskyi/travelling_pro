@@ -103,7 +103,7 @@ class FirestoreDatabaseSourceImpl(
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
             userRef.update(KEY_IS_VISIBLE, visible)
                 .addOnSuccessListener { onSuccess.invoke() }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -117,14 +117,15 @@ class FirestoreDatabaseSourceImpl(
         if (currentUser != null) {
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
             userRef.get()
-                .addOnSuccessListener { document ->
-                    if (document?.getBoolean(KEY_IS_VISIBLE) != null) {
-                        val isVisible: Boolean = document.getBoolean(KEY_IS_VISIBLE)!!
-                        onSuccess(isVisible)
+                .addOnSuccessListener { document: DocumentSnapshot ->
+                    if (document.getBoolean(KEY_IS_VISIBLE) != null) {
+                        val isVisible: Boolean? = document.getBoolean(KEY_IS_VISIBLE)
+                        onSuccess(isVisible ?: false)
                     } else {
                         onError.invoke(NotFoundException())
                     }
-                }.addOnFailureListener { exception -> onError.invoke(exception) }
+                }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -140,16 +141,16 @@ class FirestoreDatabaseSourceImpl(
             .document(id)
             .collection(COLLECTION_COUNTRIES)
         countriesRef.whereEqualTo(KEY_IS_VISITED, false).get()
-            .addOnCompleteListener { task ->
+            .addOnCompleteListener { task: Task<QuerySnapshot> ->
                 if (task.isSuccessful) {
-                    task.result?.let { notVisitedCountries ->
+                    task.result?.let { notVisitedCountries: QuerySnapshot ->
                         onSuccess(notVisitedCountries.size())
                     }
                 } else {
-                    task.exception?.let { exception -> onError.invoke(exception) }
+                    task.exception?.let { exception: java.lang.Exception -> onError.invoke(exception) }
                 }
             }
-            .addOnFailureListener { exception -> onError.invoke(exception) }
+            .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
     }
 
     override suspend fun getCountNotVisitedCountries(
@@ -161,16 +162,20 @@ class FirestoreDatabaseSourceImpl(
                 .document(currentUser.uid)
                 .collection(COLLECTION_COUNTRIES)
             countriesRef.whereEqualTo(KEY_IS_VISITED, false).get()
-                .addOnCompleteListener { task ->
+                .addOnCompleteListener { task: Task<QuerySnapshot> ->
                     if (task.isSuccessful) {
-                        task.result?.let { notVisitedCountries ->
+                        task.result?.let { notVisitedCountries: QuerySnapshot ->
                             onSuccess(notVisitedCountries.size())
                         }
                     } else {
-                        task.exception?.let { exception -> onError.invoke(exception) }
+                        task.exception?.let { exception: java.lang.Exception ->
+                            onError.invoke(
+                                exception,
+                            )
+                        }
                     }
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -183,7 +188,7 @@ class FirestoreDatabaseSourceImpl(
                 .document(currentUser.uid)
                 .collection(COLLECTION_CITIES)
             countriesRef.get()
-                .addOnCompleteListener { task ->
+                .addOnCompleteListener { task: Task<QuerySnapshot> ->
                     if (task.isSuccessful) {
                         if (task.result != null) {
                             onSuccess(task.result!!.size())
@@ -198,7 +203,7 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -214,7 +219,7 @@ class FirestoreDatabaseSourceImpl(
             .document(userId)
             .collection(COLLECTION_CITIES)
         citiesRef.get()
-            .addOnCompleteListener { task ->
+            .addOnCompleteListener { task: Task<QuerySnapshot> ->
                 if (task.isSuccessful) {
                     if (task.result != null) {
                         onSuccess(task.result!!.size())
@@ -274,10 +279,10 @@ class FirestoreDatabaseSourceImpl(
                         mapOf(KEY_FLAG to countryEntity.flag)
                     )
                     .addOnSuccessListener {
-                        if (index == countries.size - 1) {
+                        if (index == countries.lastIndex) {
                             onSuccess.invoke()
                         }
-                    }.addOnFailureListener { exception ->
+                    }.addOnFailureListener { exception: java.lang.Exception ->
                         onError.invoke(exception)
                     }
             } else {
@@ -302,7 +307,8 @@ class FirestoreDatabaseSourceImpl(
             countryRef.update(KEY_IS_VISITED, true)
                 .addOnSuccessListener {
                     addToListOfVisited(userDocRef, countryEntity, onSuccess, onError)
-                }.addOnFailureListener { exception -> onError.invoke(exception) }
+                }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -320,35 +326,31 @@ class FirestoreDatabaseSourceImpl(
             .collection(COLLECTION_VISITED_COUNTRIES)
             .document(countryEntity.shortName)
             .set(countryEntity.mapCountryToVisitedCountry())
-            .addOnSuccessListener { incrementUserVisitedCounter(userDocRef, onSuccess, onError) }
+            .addOnSuccessListener { updateCountryCounter(userDocRef, onSuccess, onError) }
             .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
-    private fun incrementUserVisitedCounter(
+    private fun updateCountryCounter(
         userDocRef: DocumentReference,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        userDocRef.get()
-            .addOnSuccessListener { document ->
-                if (document?.toObject(TravellerEntity::class.java) != null) {
-                    val traveller: TravellerEntity =
-                        document.toObject(TravellerEntity::class.java)!!
-                    // getting current number of visited countries by user
-                    var countOfVisitedCountries: Long = traveller.counter
-                    // incrementing this value by one
-                    countOfVisitedCountries += 1
-                    // updating this value in database
-                    userDocRef
-                        .update(KEY_COUNTER, countOfVisitedCountries)
-                        .addOnSuccessListener { onSuccess.invoke() }
-                        .addOnFailureListener { e -> onError.invoke(e) }
-                } else {
-                    mFirebaseAuth.signOut()
-                    onError.invoke(NotFoundException())
-                }
+        // getting number of visited Countries by current user
+        val visitedCountriesRef: CollectionReference = userDocRef.collection(
+            COLLECTION_VISITED_COUNTRIES,
+        )
+
+        visitedCountriesRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
+                val countOfVisitedCountries: Int = queryDocumentSnapshots.size()
+                // updating this value in database
+                userDocRef
+                    .update(KEY_COUNTER, countOfVisitedCountries)
+                    .addOnSuccessListener { onSuccess.invoke() }
+                    .addOnFailureListener { e: java.lang.Exception -> onError.invoke(e) }
+            }.addOnFailureListener { exception: java.lang.Exception ->
+                onError.invoke(exception)
             }
-            .addOnFailureListener { exception -> onError.invoke(exception) }
     }
 
     override suspend fun removeCountryFromVisited(
@@ -563,7 +565,7 @@ class FirestoreDatabaseSourceImpl(
             userDocRef.collection(COLLECTION_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId)
                 .get()
                 .addOnSuccessListener { documents: QuerySnapshot ->
-                    for (document in documents) {
+                    for (document: QueryDocumentSnapshot in documents) {
                         val country: VisitedCountryEntity =
                             document.toObject(VisitedCountryEntity::class.java)
                         if (country.id == city.parentId) {
@@ -574,11 +576,15 @@ class FirestoreDatabaseSourceImpl(
                             cityRef
                                 .set(city)
                                 .addOnSuccessListener { onSuccess.invoke() }
-                                .addOnFailureListener { exception -> onError.invoke(exception) }
+                                .addOnFailureListener { exception: java.lang.Exception ->
+                                    onError.invoke(
+                                        exception
+                                    )
+                                }
                         }
                     }
                 }
-                .addOnFailureListener { exception ->
+                .addOnFailureListener { exception: java.lang.Exception ->
                     onError.invoke(exception)
                 }
         } else {
@@ -597,7 +603,7 @@ class FirestoreDatabaseSourceImpl(
                 .collection(COLLECTION_CITIES).document(id)
                 .delete()
                 .addOnSuccessListener { onSuccess() }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -613,7 +619,7 @@ class FirestoreDatabaseSourceImpl(
                 .document(currentUser.uid)
                 .collection(COLLECTION_VISITED_COUNTRIES)
             countriesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
@@ -628,7 +634,7 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             onError.invoke(NotFoundException())
         }
@@ -643,22 +649,23 @@ class FirestoreDatabaseSourceImpl(
             .document(id)
             .collection(COLLECTION_VISITED_COUNTRIES)
         countriesRef.get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
-                if (queryDocumentSnapshots.size() == 0) {
+            .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
+                if (queryDocumentSnapshots.isEmpty) {
                     onSuccess(emptyList())
                 } else {
                     val countries: MutableList<VisitedCountryEntity> = mutableListOf()
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: VisitedCountryEntity =
-                            documentSnapshot.toObject(VisitedCountryEntity::class.java)
+                        val country: VisitedCountryEntity = documentSnapshot.toObject(
+                            VisitedCountryEntity::class.java,
+                        )
                         countries.add(country)
                         if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
-                            onSuccess(countries.sortedBy { listItem -> listItem.name })
+                            onSuccess(countries.sortedBy { listItem: VisitedCountryEntity -> listItem.name })
                         }
                     }
                 }
             }
-            .addOnFailureListener { exception -> onError.invoke(exception) }
+            .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
     }
 
     override suspend fun setAllVisitedCities(
@@ -669,22 +676,23 @@ class FirestoreDatabaseSourceImpl(
             val citiesRef: CollectionReference =
                 usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
             citiesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
                         val cities: MutableList<CityEntity> = mutableListOf()
-                        for (documentSnapshot in queryDocumentSnapshots) {
-                            val cityEntity: CityEntity =
-                                documentSnapshot.toObject(CityEntity::class.java)
+                        for (documentSnapshot: QueryDocumentSnapshot in queryDocumentSnapshots) {
+                            val cityEntity: CityEntity = documentSnapshot.toObject(
+                                CityEntity::class.java,
+                            )
                             cities.add(cityEntity)
                             if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
-                                onSuccess(cities.sortedBy { city -> city.name })
+                                onSuccess(cities.sortedBy { city: CityEntity -> city.name })
                             }
                         }
                     }
                 }
-                .addOnFailureListener { exception ->
+                .addOnFailureListener { exception: java.lang.Exception ->
                     onError.invoke(exception)
                 }
         } else {
@@ -699,24 +707,24 @@ class FirestoreDatabaseSourceImpl(
         onSuccess: (List<CityEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val citiesRef: Query =
-            usersRef.document(userId).collection(COLLECTION_CITIES)
-                .whereEqualTo(KEY_PARENT_ID, countryId)
+        val citiesRef: Query = usersRef.document(userId).collection(COLLECTION_CITIES)
+            .whereEqualTo(KEY_PARENT_ID, countryId)
         citiesRef.get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
+            .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                 if (queryDocumentSnapshots.isEmpty) {
                     onSuccess(emptyList())
                 } else {
                     val cities: MutableList<CityEntity> = mutableListOf()
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val cityEntity: CityEntity =
-                            documentSnapshot.toObject(CityEntity::class.java)
+                        val cityEntity: CityEntity = documentSnapshot.toObject(
+                            CityEntity::class.java,
+                        )
                         cities.add(cityEntity)
                     }
-                    onSuccess(cities.sortedBy { city -> city.name })
+                    onSuccess(cities.sortedBy { city: CityEntity -> city.name })
                 }
             }
-            .addOnFailureListener { exception ->
+            .addOnFailureListener { exception: java.lang.Exception ->
                 onError.invoke(exception)
             }
     }
@@ -727,11 +735,10 @@ class FirestoreDatabaseSourceImpl(
         onError: (Exception) -> Unit
     ) {
         if (currentUser != null) {
-            val citiesRef: Query =
-                usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
-                    .whereEqualTo(KEY_PARENT_ID, parentId)
+            val citiesRef: Query = usersRef.document(currentUser.uid).collection(COLLECTION_CITIES)
+                .whereEqualTo(KEY_PARENT_ID, parentId)
             citiesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
@@ -742,10 +749,10 @@ class FirestoreDatabaseSourceImpl(
                             )
                             cities.add(cityEntity)
                         }
-                        onSuccess(cities.sortedBy { city -> city.name })
+                        onSuccess(cities.sortedBy { city: CityEntity -> city.name })
                     }
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -760,30 +767,33 @@ class FirestoreDatabaseSourceImpl(
             val countriesRef: CollectionReference =
                 usersRef.document(currentUser.uid).collection(COLLECTION_COUNTRIES)
             countriesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
-                    if (queryDocumentSnapshots.size() == 0) {
+                    if (queryDocumentSnapshots.isEmpty) {
 // if there are no countries in local database, then there is no visited countries too
                         onSuccess(0, 0)
                     } else {
                         for (documentSnapshot in queryDocumentSnapshots) {
-                            val country: CountryEntity =
-                                documentSnapshot.toObject(CountryEntity::class.java)
+                            val country: CountryEntity = documentSnapshot.toObject(
+                                CountryEntity::class.java,
+                            )
                             countries.add(country)
                             // check if it is the last document in list, filter and send success
                             if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
-                                val notVisitedCount: Int = countries.filter { countryEntity ->
-                                    !countryEntity.isVisited
-                                }.size
-                                val visitedCount: Int = countries.filter { countryEntity ->
-                                    countryEntity.isVisited
-                                }.size
+                                val notVisitedCount: Int =
+                                    countries.filter { countryEntity: CountryEntity ->
+                                        !countryEntity.isVisited
+                                    }.size
+                                val visitedCount: Int =
+                                    countries.filter { countryEntity: CountryEntity ->
+                                        countryEntity.isVisited
+                                    }.size
                                 onSuccess(notVisitedCount, visitedCount)
                             }
                         }
                     }
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -803,7 +813,7 @@ class FirestoreDatabaseSourceImpl(
                 .orderBy(KEY_ID)
             // sorting countries by number given in [KEY_ID]
             countriesRef.startAt(from).endBefore(to).get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
                     for (documentSnapshot in queryDocumentSnapshots) {
                         val country: CountryEntity = documentSnapshot.toObject(
@@ -813,7 +823,7 @@ class FirestoreDatabaseSourceImpl(
                     }
                     onSuccess(countries)
                 }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -829,19 +839,21 @@ class FirestoreDatabaseSourceImpl(
             val countriesRef: Query = usersRef.document(currentUser.uid)
                 .collection(COLLECTION_COUNTRIES).orderBy(KEY_ID)
             countriesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots ->
+                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     val countries: MutableList<CountryEntity> = mutableListOf()
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: CountryEntity =
-                            documentSnapshot.toObject(CountryEntity::class.java)
-                        if (country.name.startsWith(nameQuery, ignoreCase = true)) {
+                        val country: CountryEntity = documentSnapshot.toObject(
+                            CountryEntity::class.java,
+                        )
+                        if (country.name.startsWith(prefix = nameQuery, ignoreCase = true)) {
                             countries.add(country)
                         }
                         if (documentSnapshot == queryDocumentSnapshots.last()) {
                             onSuccess(countries)
                         }
                     }
-                }.addOnFailureListener { exception -> onError.invoke(exception) }
+                }
+                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -875,9 +887,9 @@ class FirestoreDatabaseSourceImpl(
                         )
                     )
                 }
-                travellers.sortByDescending { traveller -> traveller.counter }
+                travellers.sortByDescending { traveller: TravellerEntity -> traveller.counter }
                 onSuccess(travellers)
-            }.addOnFailureListener { exception -> onError.invoke(exception) }
+            }.addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
     }
 
     override suspend fun setTravellersByName(
@@ -908,7 +920,7 @@ class FirestoreDatabaseSourceImpl(
                         travellers.add(traveller)
                     }
                     if (snapshot == queryDocumentSnapshots.last()) {
-                        travellers.sortBy { item -> item.name }
+                        travellers.sortBy { item: TravellerEntity -> item.name }
                         onSuccess(travellers)
                     }
                 }
@@ -927,12 +939,12 @@ class FirestoreDatabaseSourceImpl(
 
             visitedCountriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
-                    val travellerCounter: Int = queryDocumentSnapshots.size()
+                    val countOfVisitedCountries: Int = queryDocumentSnapshots.size()
                     // getting total number of all users
                     usersRef.get().addOnSuccessListener { snapshots: QuerySnapshot ->
                         val userCount: Int = snapshots.size()
                         //   getting number of users with bigger counter
-                        usersRef.whereGreaterThan(KEY_COUNTER, travellerCounter).get()
+                        usersRef.whereGreaterThan(KEY_COUNTER, countOfVisitedCountries).get()
                             .addOnSuccessListener { documents: QuerySnapshot ->
                                 val countOfTopTravellers: Int = documents.size()
                                 /* getting percent of travellers who visited more countries

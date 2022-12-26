@@ -11,6 +11,8 @@ import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.domain.interactors.PreferenceInteractor
 import io.github.turskyi.domain.models.Authorization
 import io.github.turskyi.domain.models.AuthorizationPreferences
+import io.github.turskyi.domain.models.entities.CityModel
+import io.github.turskyi.domain.models.entities.VisitedCountryModel
 import io.github.turskyi.travellingpro.entities.City
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.entities.VisitedCountry
@@ -86,18 +88,18 @@ class HomeActivityViewModel(
     fun removeFromVisited(country: Country) = viewModelScope.launch {
         _visibilityLoader.postValue(VISIBLE)
         countriesInteractor.removeCountryModelFromVisitedList(
-            country.mapToModel(),
-            { showListOfVisitedCountries() },
-            { exception -> showError(exception) },
+            country = country.mapToModel(),
+            onSuccess = { showListOfVisitedCountries() },
+            onError = { exception: Exception -> showError(exception) },
         )
     }
 
     fun removeCity(city: City) = viewModelScope.launch {
         _visibilityLoader.postValue(VISIBLE)
         countriesInteractor.removeCity(
-            city.mapNodeToModel(),
-            { showListOfVisitedCountries() },
-            { exception -> showError(exception) },
+            city = city.mapNodeToModel(),
+            onSuccess = { showListOfVisitedCountries() },
+            onError = { exception: Exception -> showError(exception) },
         )
     }
 
@@ -108,7 +110,7 @@ class HomeActivityViewModel(
     private fun setVisitedCountries(notVisitedCountriesNum: Int) {
         viewModelScope.launch {
             countriesInteractor.setVisitedCountries(
-                { countries ->
+                onSuccess = { countries: List<VisitedCountryModel> ->
                     val visitedCountries: List<VisitedCountry> =
                         countries.mapVisitedModelListToVisitedList()
                     // checking if database of visited and not visited countries is empty
@@ -131,7 +133,7 @@ class HomeActivityViewModel(
                         }
                     }
                 },
-                { exception -> showError(exception) },
+                onError = { exception: Exception -> showError(exception) },
             )
         }
     }
@@ -146,7 +148,7 @@ class HomeActivityViewModel(
             viewModelScope.launch {
                 countriesInteractor.setCities(
                     parentId = country.id,
-                    onSuccess = { cities ->
+                    onSuccess = { cities: List<CityModel> ->
                         cityList.addAll(cities.mapModelListToBaseNodeList())
                         country.childNode = cityList
                         /* since [setCitiesById] function is launched inside a separate thread,
@@ -155,12 +157,12 @@ class HomeActivityViewModel(
                         if (country.id == visitedCountryWithCityNodes.last().id) {
                             // showing countries with included cities
                             showVisitedCountryNodes(
-                                visitedCountryWithCityNodes,
-                                visitedCountries
+                                visitedCountryNodes = visitedCountryWithCityNodes,
+                                visitedCountries = visitedCountries,
                             )
                         }
                     },
-                    onError = { exception -> showError(exception) },
+                    onError = { exception: Exception -> showError(exception) },
                 )
             }
         }
@@ -170,25 +172,25 @@ class HomeActivityViewModel(
         visitedCountryNodes: MutableList<VisitedCountryNode>,
         visitedCountries: List<VisitedCountry>
     ) {
-        _visitedCountriesWithCitiesNode.run { postValue(visitedCountryNodes) }
+        _visitedCountriesWithCitiesNode.postValue(visitedCountryNodes)
         _visitedCountries.postValue(visitedCountries)
         _visibilityLoader.postValue(GONE)
     }
 
     private suspend fun downloadCountries() {
         countriesInteractor.downloadCountries(
-            { showListOfVisitedCountries() },
-            { exception -> showError(exception) },
+            onSuccess = { showListOfVisitedCountries() },
+            onError = { exception: Exception -> showError(exception) },
         )
     }
 
     private fun showError(exception: Exception) {
         _visibilityLoader.postValue(GONE)
-        _errorMessage.run {
-            exception.message?.let { message ->
-                // Trigger the event by setting a new Event as a new value
-                postValue(Event(message))
-            }
-        }
+        // Trigger the event by setting a new Event as a new value
+        _errorMessage.postValue(
+            Event(
+                exception.localizedMessage ?: exception.stackTraceToString()
+            ),
+        )
     }
 }

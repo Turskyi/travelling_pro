@@ -425,6 +425,7 @@ class ExpandableSearchBar(context: Context, attrs: AttributeSet) : ConstraintLay
          *
          * @param text search input
          */
+        @Suppress("EmptyMethod")
         fun onSearchConfirmed(text: String?)
 
         /**

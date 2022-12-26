@@ -13,18 +13,18 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import java.io.IOException
 
-class DataStoreDatabaseSourceImpl(application: Application) : KoinComponent,
+class DataStoreDatabaseSourceImpl(private val application: Application) : KoinComponent,
     DataStoreDatabaseSource {
 
     companion object {
         // constants for datastore
         private const val KEY_AUTHORIZATION = "authorization"
+        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+            name = "user_preferences",
+        )
     }
 
-    private val Context.dataStore by preferencesDataStore("user_preferences")
-    private val dataStore: DataStore<Preferences> = application.dataStore
-
-    override val preferencesFlow: Flow<AuthorizationPreferences> = dataStore.data
+    override val preferencesFlow: Flow<AuthorizationPreferences> = application.dataStore.data
         .catch { exception: Throwable ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -40,7 +40,7 @@ class DataStoreDatabaseSourceImpl(application: Application) : KoinComponent,
         }
 
     override suspend fun updateAuthorization(authorization: Authorization) {
-        dataStore.edit { preferences: MutablePreferences ->
+        application.dataStore.edit { preferences: MutablePreferences ->
             preferences[PreferencesKeys.AUTHORIZATION] = authorization.name
         }
     }

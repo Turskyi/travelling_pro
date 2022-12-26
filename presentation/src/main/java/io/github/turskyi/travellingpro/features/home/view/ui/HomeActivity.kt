@@ -12,6 +12,7 @@ import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings.ACTION_WIRELESS_SETTINGS
 import android.view.*
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -97,10 +98,12 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 openInfoDialog(R.string.txt_info_home)
                 true
             }
+
             R.id.action_travellers -> {
                 openActivity(TravellersActivity::class.java)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -131,25 +134,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         showTitleWithCitiesAndCountries()
     } else {
         showTitleWithOnlyCountries()
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (viewModel.isDoubleBackToExitPressed) {
-                finish()
-                return true
-            } else {
-                binding.root.showSnackBar(R.string.tap_back_button_in_order_to_exit)
-            }
-            viewModel.isDoubleBackToExitPressed = true
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    viewModel.isDoubleBackToExitPressed = false
-                },
-                resources.getInteger(R.integer.desired_time_interval).toLong(),
-            )
-            return false
-        } else super.onKeyDown(keyCode, event)
     }
 
     private fun registerActivitiesForResult() {
@@ -183,11 +167,13 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
+
                         response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
                             toastLong(R.string.msg_bad_internet)
                             internetResultLauncher.launch(internetSettingsIntent)
                             return@registerForActivityResult
                         }
+
                         response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
                             toastLong(R.string.msg_bad_internet)
                             internetResultLauncher.launch(internetSettingsIntent)
@@ -195,6 +181,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
+
                         else -> {
                             toastLong(
                                 response.error?.localizedMessage ?: response.error.toString()
@@ -312,6 +299,22 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                         toastLong(getString(R.string.deleted, city.name))
                     }
                 }
+            }
+        }
+        if (BuildCompat.isAtLeastT()) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+                if (viewModel.isDoubleBackToExitPressed) {
+                    finish()
+                } else {
+                    binding.root.showSnackBar(R.string.tap_back_button_in_order_to_exit)
+                }
+                viewModel.isDoubleBackToExitPressed = true
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { viewModel.isDoubleBackToExitPressed = false },
+                    resources.getInteger(R.integer.desired_time_interval).toLong(),
+                )
             }
         }
     }
