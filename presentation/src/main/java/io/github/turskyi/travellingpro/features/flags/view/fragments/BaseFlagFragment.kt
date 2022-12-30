@@ -30,7 +30,7 @@ import io.github.turskyi.travellingpro.widgets.ListenableWebView
 open class BaseFlagFragment : Fragment() {
 
     private var _binding: FragmentFlagBinding? = null
-    val binding get() = _binding!!
+    val binding: FragmentFlagBinding get() = _binding!!
 
     var mChangeFlagListener: OnChangeFlagFragmentListener? = null
     var flagsActivityViewListener: FlagsActivityView? = null
