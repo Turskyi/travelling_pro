@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package io.github.turskyi.travellingpro.widgets
 
 import android.content.Context
@@ -170,7 +168,6 @@ class ExpandableSearchBar(context: Context, attrs: AttributeSet) : ConstraintLay
     /**
      * The listener for search actions.
      */
-    @Suppress("MemberVisibilityCanBePrivate")
     var onSearchActionListener: OnSearchActionListener? = null
 
 
@@ -428,6 +425,7 @@ class ExpandableSearchBar(context: Context, attrs: AttributeSet) : ConstraintLay
          *
          * @param text search input
          */
+        @Suppress("EmptyMethod")
         fun onSearchConfirmed(text: String?)
 
         /**

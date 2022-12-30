@@ -24,10 +24,17 @@ import io.github.turskyi.travellingpro.R
 
 fun Context.isFacebookInstalled(): Boolean {
     return try {
-        packageManager.getPackageInfo(
-            getString(R.string.facebook_package),
-            PackageManager.GET_META_DATA
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(
+                getString(R.string.facebook_package),
+                PackageManager.PackageInfoFlags.of(PackageManager.GET_META_DATA.toLong()),
+            )
+        } else {
+            @Suppress("DEPRECATION") packageManager.getPackageInfo(
+                getString(R.string.facebook_package),
+                PackageManager.GET_META_DATA
+            )
+        }
         true
     } catch (e: PackageManager.NameNotFoundException) {
         false
@@ -108,6 +115,7 @@ fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG
  * @Description
  * Checks if device is online or not
  */
+@Suppress("BooleanMethodIsAlwaysInverted")
 fun Context.isOnline(): Boolean {
     if (this.getSystemService(Context.CONNECTIVITY_SERVICE) is ConnectivityManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

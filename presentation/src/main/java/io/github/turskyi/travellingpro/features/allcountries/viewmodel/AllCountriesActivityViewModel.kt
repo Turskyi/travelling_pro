@@ -7,16 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import io.github.turskyi.domain.interactors.CountriesInteractor
-import io.github.turskyi.travellingpro.utils.extensions.mapToModel
+import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.CountriesPositionalDataSource
 import io.github.turskyi.travellingpro.features.allcountries.view.adapter.FilteredCountriesPositionalDataSource
-import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
+import io.github.turskyi.travellingpro.utils.extensions.mapToModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class AllCountriesActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
@@ -98,17 +98,23 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
     fun markAsVisited(country: Country, onSuccess: () -> Unit): Job {
         return viewModelScope.launch(Dispatchers.Main) {
             _visibilityLoader.postValue(VISIBLE)
-            interactor.markAsVisitedCountryModel(country.mapToModel(), {
-                onSuccess()
-            }, { exception ->
-                _visibilityLoader.postValue(GONE)
-                _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
-                }
-            })
+            interactor.markAsVisitedCountryModel(
+                country = country.mapToModel(),
+                onSuccess = { onSuccess() },
+                onError = { exception: Exception /* = java.lang.Exception */ ->
+                    showError(exception)
+                },
+            )
         }
+    }
+
+    private fun showError(exception: Exception) {
+        _visibilityLoader.postValue(GONE)
+        // Trigger the event by setting a new Event as a new value
+        _errorMessage.postValue(
+            Event(
+                exception.localizedMessage ?: exception.stackTraceToString()
+            ),
+        )
     }
 }

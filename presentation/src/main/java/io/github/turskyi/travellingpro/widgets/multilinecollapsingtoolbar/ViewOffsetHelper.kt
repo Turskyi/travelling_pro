@@ -9,7 +9,7 @@ import androidx.core.view.ViewCompat
  * [android.view.View.offsetTopAndBottom].
  *
  *
- * Also the setting of absolute offsets (similar to translationX/Y), rather than additive
+ * Also, the setting of absolute offsets (similar to translationX/Y), rather than additive
  * offsets.
  */
 class ViewOffsetHelper(private val mView: View) {

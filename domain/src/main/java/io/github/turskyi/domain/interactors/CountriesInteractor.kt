@@ -88,7 +88,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         country: CountryModel,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
-    ) = countryRepository.markAsVisited(country, onSuccess = onSuccess, onError = onError)
+    ) = countryRepository.markAsVisited(country = country, onSuccess = onSuccess, onError = onError)
 
     suspend fun removeCountryModelFromVisitedList(
         country: CountryModel,

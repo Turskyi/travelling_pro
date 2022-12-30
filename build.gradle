@@ -9,8 +9,8 @@ buildscript {
         min_sdk_version = 21
         target_sdk_version = 33
         // last version is here [https://play.google.com/console/u/0/developers/6867856033872987263/app/4972072127034375090/releases/overview]
-        version_code = 19
-        version_name = "2.0.6"
+        version_code = 20
+        version_name = "2.0.7"
     }
     repositories {
         google()
@@ -59,7 +59,9 @@ subprojects {
             implementation "com.google.firebase:firebase-storage-ktx"
 
             // authentication (to get current user etc.)
-            implementation "com.google.firebase:firebase-auth"
+            implementation('com.google.firebase:firebase-auth-ktx') {
+                exclude module: "browser"
+            }
 
             // avoids "Service not registered" exception
             implementation "com.google.android.gms:play-services-basement:$play_services_basement_version"
@@ -97,6 +99,6 @@ ext {
     SIGNING_KEY_RELEASE_KEY_PASSWORD = getParam("SIGNING_KEY_RELEASE_KEY_PASSWORD")
 }
 
-task clean(type: Delete) {
+tasks.register('clean') {
     delete rootProject.buildDir
 }

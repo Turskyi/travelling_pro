@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
  *
  * <h4>Collapsing title</h4>
  * A title which is larger when the layout is fully visible but collapses and becomes smaller as
- * the layout is scrolled off screen. You can set the title to display via
+ * the layout is scrolled off-screen. You can set the title to display via
  * [.setTitle]. The title appearance can be tweaked via the
  * `collapsedTextAppearance` and `expandedTextAppearance` attributes.
  *
@@ -73,6 +73,7 @@ import kotlin.math.roundToInt
  * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_statusBarScrim
  * @attr ref android.support.design.R.styleable#CollapsingToolbarLayout_toolbarId
  */
+@Suppress("MemberVisibilityCanBePrivate")
 @SuppressLint("CustomViewStyleable")
 class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
     context: Context,
@@ -221,7 +222,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         mToolbar = null
         mToolbarDirectChild = null
         if (mToolbarId != -1) {
-            // If we have an ID set, try and find it and it's direct parent to us
+            // If we have an ID set, try and find it, and it's direct parent to us
             mToolbar = findViewById(mToolbarId)
             if (mToolbar != null) {
                 mToolbarDirectChild = findDirectChild(mToolbar)
@@ -273,7 +274,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
 
     private fun updateDummyView() {
         if (!mCollapsingTitleEnabled && mDummyView != null) {
-            // If we have a dummy view and we have our title disabled, remove it from its parent
+            // If we have a dummy view, and we have our title disabled, remove it from its parent
             val parent = mDummyView!!.parent
             if (parent is ViewGroup) {
                 parent.removeView(mDummyView)
@@ -304,7 +305,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             0
         }
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
-            /* If we have a top inset and we're set to wrap_content height we need to make sure
+            /* If we have a top inset, and we're set to wrap_content height we need to make sure
              * we add the top inset to our height, therefore we re-measure */
             mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
                 measuredHeight + topInset, MeasureSpec.EXACTLY
@@ -372,7 +373,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
         }
 
         /* Update our child view offset helpers. This needs to be done after the title has been
-         * setup, so that any Toolbars are in their original position */
+         * set up, so that any Toolbars are in their original position */
         var i = 0
         val z = childCount
         while (i < z) {
@@ -607,7 +608,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
             mCollapsingTextHelper?.expandedTextGravity = gravity
         }
 
-    /* If we reach here then we don't have a min height set. Instead we'll take a
+    /* If we reach here then we don't have a min height set. Instead, we'll take a
      * guess at 1/3 of our height being visible.
      * If we have one explicitly set, return it
      * Otherwise we'll use the default computed value.
@@ -648,7 +649,7 @@ class CollapsingToolbarLayoutExtension @JvmOverloads constructor(
                 // If we have a minHeight set, lets use 2 * minHeight (capped at our height)
                 (minHeight * 2 + insetTop).coerceAtMost(height)
             } else {
-                /* If we reach here then we don't have a min height set. Instead we'll take a
+                /* If we reach here then we don't have a min height set. Instead, we'll take a
                  * guess at 1/3 of our height being visible */
                 height / 3
             }

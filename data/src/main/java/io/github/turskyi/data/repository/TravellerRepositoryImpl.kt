@@ -33,8 +33,8 @@ class TravellerRepositoryImpl(private val applicationScope: CoroutineScope) : Tr
     override fun setTopTravellersPercent(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
         applicationScope.launch {
             databaseSource.setTopTravellersPercent(
-                { percent -> onSuccess(percent) },
-                { exception -> onError.invoke(exception) },
+                onSuccess = { percent: Int -> onSuccess(percent) },
+                onError = { exception: Exception -> onError.invoke(exception) },
             )
         }
     }

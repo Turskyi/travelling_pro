@@ -3,8 +3,11 @@ package io.github.turskyi.travellingpro.features.allcountries.view.ui
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -37,11 +40,6 @@ class AllCountriesActivity : AppCompatActivity() {
         initObservers()
     }
 
-    override fun onBackPressed() {
-        setResult(RESULT_CANCELED)
-        super.onBackPressed()
-    }
-
     private fun initView() {
         binding = ActivityAllCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -66,7 +64,9 @@ class AllCountriesActivity : AppCompatActivity() {
             adapter.submitList(viewModel.pagedList)
         }
 
-        binding.includeToolbar.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.includeToolbar.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         adapter.onCountryClickListener = ::addToVisited
         adapter.onCountryLongClickListener = ::sendToGoogleMapToShowGeographicalLocation
         binding.rvAllCountries.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -78,12 +78,27 @@ class AllCountriesActivity : AppCompatActivity() {
             }
         })
         binding.floatBtnInfo.setOnClickListener { openInfoDialog(getString(R.string.txt_info_all_countries)) }
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) { exitOnBackPressed() }
+        } else {
+            onBackPressedDispatcher.addCallback(
+                this,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        exitOnBackPressed()
+                    }
+                },
+            )
+        }
     }
 
     private fun initObservers() {
         val emptyListObserver = EmptyListObserver(binding.rvAllCountries, binding.tvNoResults)
         adapter.registerAdapterDataObserver(emptyListObserver)
-        viewModel.notVisitedCountriesNumLiveData.observe(this) { notVisitedNum ->
+        viewModel.notVisitedCountriesNumLiveData.observe(this) { notVisitedNum: Int ->
             updateTitle(notVisitedNum)
         }
         viewModel.visibilityLoader.observe(this) { currentVisibility ->
@@ -171,5 +186,9 @@ class AllCountriesActivity : AppCompatActivity() {
             duration = 400
         }.start()
         showKeyboard()
+    }
+
+    fun exitOnBackPressed() {
+        setResult(RESULT_CANCELED)
     }
 }

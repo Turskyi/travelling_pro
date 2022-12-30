@@ -227,7 +227,6 @@ class AddCityDialogFragment : DialogFragment() {
     private fun insertCityIntoAnEmptyField(editText: LinedEditText) {
         checkPermission(
             onPermissionGranted = {
-                @SuppressLint("MissingPermission")
                 val findLastLocationTask: Task<Location> = fusedLocationClient.lastLocation
                 findLastLocationTask.addOnSuccessListener { location: Location? ->
                     if (location != null) {

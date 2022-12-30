@@ -1,8 +1,11 @@
 package io.github.turskyi.data.repository
 
+import io.github.turskyi.data.datasources.local.entities.CityEntity
+import io.github.turskyi.data.datasources.local.entities.CountryEntity
 import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
 import io.github.turskyi.data.datasources.local.firestore.FirestoreDatabaseSource
 import io.github.turskyi.data.datasources.remote.NetSource
+import io.github.turskyi.data.datasources.remote.entities.CountryResponse
 import io.github.turskyi.data.util.extensions.*
 import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
@@ -25,15 +28,15 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onError: (Exception) -> Unit
     ) {
         databaseSource.getCountNotVisitedCountries(
-            onSuccess = { count -> onSuccess(count) },
-            onError = { exception -> onError.invoke(exception) },
+            onSuccess = { count: Int -> onSuccess(count) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
     override suspend fun setCityCount(onSuccess: (Int) -> Unit, onError: (Exception) -> Unit) {
         databaseSource.getCityCount(
-            onSuccess = { count -> onSuccess(count) },
-            onError = { exception -> onError.invoke(exception) },
+            onSuccess = { count: Int -> onSuccess(count) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
@@ -44,8 +47,8 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) {
         databaseSource.getCityCount(
             userId = userId,
-            onSuccess = { count -> onSuccess(count) },
-            onError = { exception -> onError.invoke(exception) },
+            onSuccess = { count: Int -> onSuccess(count) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
@@ -55,8 +58,8 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onError: (Exception) -> Unit
     ) = databaseSource.getCountNotVisitedCountriesById(
         id = id,
-        onSuccess = { count -> onSuccess(count) },
-        onError = { exception -> onError.invoke(exception) },
+        onSuccess = { count: Int -> onSuccess(count) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
 
@@ -65,14 +68,14 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onError: (Exception) -> Unit
     ) {
         netSource.getCountryNetList(
-            onComplete = { countryNetList ->
+            onComplete = { countryNetList: List<CountryResponse> ->
                 addResponseListToDb(
                     countries = countryNetList.mapNetListToModelList(),
                     onSuccess = { onSuccess() },
-                    onError = { exception -> onError.invoke(exception) },
+                    onError = { exception: Exception -> onError.invoke(exception) },
                 )
             },
-            onError = { exception -> onError.invoke(exception) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
@@ -81,14 +84,14 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onError: (Exception) -> Unit
     ) {
         netSource.getCountryNetList(
-            onComplete = { countryNetList ->
+            onComplete = { countryNetList: List<CountryResponse> ->
                 addResponseFlagsToDb(
                     countries = countryNetList.mapNetListToModelList(),
                     onSuccess = { onSuccess() },
                     onError = { exception -> onError.invoke(exception) },
                 )
             },
-            onError = { exception -> onError.invoke(exception) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
@@ -105,13 +108,14 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onSuccess = {
             applicationScope.launch(Dispatchers.IO) {
                 databaseSource.setVisitedCountries(
-                    onSuccess = { countries ->
+                    onSuccess = { countries: List<VisitedCountryEntity> ->
                         onSuccess(countries.mapVisitedCountriesToVisitedModelList())
                     },
-                    onError = { exception -> onError.invoke(exception) })
+                    onError = { exception: Exception -> onError.invoke(exception) },
+                )
             }
         },
-        onError = { exception -> onError.invoke(exception) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun markAsVisited(
@@ -121,7 +125,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) = databaseSource.markAsVisited(
         countryEntity = country.mapModelToEntity(),
         onSuccess = { onSuccess() },
-        onError = { exception -> onError.invoke(exception) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun removeFromVisited(
@@ -132,7 +136,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         shortName = country.shortName,
         parentId = country.id,
         onSuccess = { onSuccess() },
-        onError = { exception -> onError?.invoke(exception) },
+        onError = { exception: Exception -> onError?.invoke(exception) },
     )
 
     override suspend fun insertCity(
@@ -142,7 +146,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) = databaseSource.insertCity(
         city = city.mapModelToEntity(),
         onSuccess = { onSuccess() },
-        onError = { exception -> onError.invoke(exception) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun removeCity(
@@ -152,7 +156,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) = databaseSource.removeCityById(
         id = city.id,
         onSuccess = { onSuccess() },
-        onError = { exception -> onError.invoke(exception) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     private fun addResponseListToDb(
@@ -164,7 +168,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
             databaseSource.insertAllCountries(
                 countries = countries.mapModelListToEntityList(),
                 onSuccess = { onSuccess() },
-                onError = { exception -> onError.invoke(exception) },
+                onError = { exception: Exception -> onError.invoke(exception) },
             )
         }
     }
@@ -193,13 +197,13 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
                 if (countries.any { it.flag.contains("restcountries.eu") }) {
                     refreshFlagsInDb(
                         onSuccess = { onSuccess(countries.mapVisitedCountriesToVisitedModelList()) },
-                        onError = { exception -> onError.invoke(exception) },
+                        onError = { exception: Exception -> onError.invoke(exception) },
                     )
                 } else {
                     onSuccess(countries.mapVisitedCountriesToVisitedModelList())
                 }
             },
-            onError = { exception -> onError.invoke(exception) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
@@ -213,7 +217,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
             onSuccess = { countries: List<VisitedCountryEntity> ->
                 onSuccess(countries.mapVisitedCountriesToVisitedModelList())
             },
-            onError = { exception -> onError.invoke(exception) },
+            onError = { exception: Exception -> onError.invoke(exception) },
         )
     }
 
@@ -221,8 +225,8 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onSuccess: (List<CityModel>) -> Unit,
         onError: (Exception) -> Unit
     ) = databaseSource.setAllVisitedCities(
-        onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
-        onError = { exception -> onError.invoke(exception) },
+        onSuccess = { cities: List<CityEntity> -> onSuccess(cities.mapEntitiesToModelList()) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun setCities(
@@ -233,8 +237,8 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) = databaseSource.setCities(
         userId = userId,
         countryId = countryId,
-        onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
-        onError = { exception -> onError.invoke(exception) },
+        onSuccess = { cities: List<CityEntity> -> onSuccess(cities.mapEntitiesToModelList()) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun setCitiesById(
@@ -243,16 +247,21 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
         onError: (Exception) -> Unit
     ) = databaseSource.setCitiesByParentId(
         parentId = parentId,
-        onSuccess = { cities -> onSuccess(cities.mapEntitiesToModelList()) },
-        onError = { exception -> onError.invoke(exception) },
+        onSuccess = { cities: List<CityEntity> -> onSuccess(cities.mapEntitiesToModelList()) },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun setCountNotVisitedAndVisitedCountries(
         onSuccess: (notVisited: Int, visited: Int) -> Unit,
         onError: (Exception) -> Unit
     ) = databaseSource.setCountNotVisitedAndVisitedCountries(
-        onSuccess = { notVisitedCount, visitedCount -> onSuccess(notVisitedCount, visitedCount) },
-        onError = { exception -> onError.invoke(exception) },
+        onSuccess = { notVisitedCount: Int, visitedCount: Int ->
+            onSuccess(
+                notVisitedCount,
+                visitedCount,
+            )
+        },
+        onError = { exception: Exception -> onError.invoke(exception) },
     )
 
     override suspend fun setCountriesByRange(
@@ -263,7 +272,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) = databaseSource.setCountriesByRange(
         to = to,
         from = from,
-        onSuccess = { list -> onSuccess(list.mapEntityListToModelList()) },
+        onSuccess = { list: List<CountryEntity> -> onSuccess(list.mapEntityListToModelList()) },
         onError = { onError.invoke(it) },
     )
 
@@ -274,7 +283,7 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
     ) {
         databaseSource.setCountriesByName(
             nameQuery = name,
-            onSuccess = { list -> onSuccess(list.mapEntityListToModelList()) },
+            onSuccess = { list: List<CountryEntity> -> onSuccess(list.mapEntityListToModelList()) },
             onError = { onError.invoke(it) },
         )
     }

@@ -60,10 +60,12 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
             },
             onError = { exception: Exception /* = java.lang.Exception */ ->
                 _visibilityLoader.postValue(View.GONE)
-                exception.message?.let { message: String ->
-                    // Trigger the event by setting a new Event as a new value
-                    _errorMessage.postValue(Event(message))
-                }
+                // Trigger the event by setting a new Event as a new value
+                _errorMessage.postValue(
+                    Event(
+                        exception.localizedMessage ?: exception.stackTraceToString()
+                    ),
+                )
             },
         )
 
@@ -107,15 +109,17 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
 
     private fun setTopTravellersPercent() = viewModelScope.launch {
         interactor.setTopTravellersPercent(
-            { percent ->
+            onSuccess = { percent: Int ->
                 _topTravellersPercentLiveData.postValue(percent)
             },
-            { exception ->
+            onError = { exception: Exception ->
                 _visibilityLoader.postValue(View.GONE)
-                exception.message?.let { message: String ->
-                    // Trigger the event by setting a new Event as a new value
-                    _errorMessage.postValue(Event(message))
-                }
+                // Trigger the event by setting a new Event as a new value
+                _errorMessage.postValue(
+                    Event(
+                        exception.localizedMessage ?: exception.stackTraceToString()
+                    ),
+                )
             },
         )
     }
@@ -127,14 +131,14 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
                 pagedList = getUserList(searchQuery)
                 _visibilityUser.postValue(VISIBLE)
             },
-            onError = { exception ->
+            onError = { exception: Exception ->
                 _visibilityLoader.postValue(View.GONE)
-                _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
-                }
+                // Trigger the event by setting a new Event as a new value
+                _errorMessage.postValue(
+                    Event(
+                        exception.localizedMessage ?: exception.stackTraceToString()
+                    ),
+                )
             },
         )
     }
@@ -146,14 +150,14 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
                 pagedList = getUserList(searchQuery)
                 _visibilityUser.postValue(INVISIBLE)
             },
-            onError = { exception ->
+            onError = { exception: Exception ->
                 _visibilityLoader.postValue(View.GONE)
-                _errorMessage.run {
-                    exception.message?.let { message ->
-                        // Trigger the event by setting a new Event as a new value
-                        postValue(Event(message))
-                    }
-                }
+                // Trigger the event by setting a new Event as a new value
+                _errorMessage.postValue(
+                    Event(
+                        exception.localizedMessage ?: exception.stackTraceToString()
+                    ),
+                )
             })
     }
 }
