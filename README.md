@@ -63,13 +63,13 @@ and
 • Api: https://restcountries.com/#api-endpoints-v2-all;
 
 • Screenshots:  
-<img src="/screenshots/device-2020-06-05-085243.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-06-05-085456.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-06-05-090524.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-06-28-164528.png?raw=true" width="300" >
-<img src="/screenshots/device-2020-10-18-103522.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-10-18-103111.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-06-05-090129.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-06-05-091508.png?raw=true" width="200" >
-<img src="/screenshots/device-2020-06-05-094730.png?raw=true" width="300" >
-<img src="/screenshots/device-2020-06-28-162902.png?raw=true" width="400" >
+<img src="screenshots/device-2020-06-05-085243.png" width="200" >
+<img src="screenshots/device-2020-06-05-085456.png" width="200" >
+<img src="screenshots/device-2020-06-05-090524.png" width="200" >
+<img src="screenshots/device-2020-06-28-164528.png" width="300" >
+<img src="screenshots/device-2020-10-18-103522.png" width="200" >
+<img src="screenshots/device-2020-10-18-103111.png" width="200" >
+<img src="screenshots/device-2020-06-05-090129.png" width="200" >
+<img src="screenshots/device-2020-06-05-091508.png" width="200" >
+<img src="screenshots/device-2020-06-05-094730.png" width="300" >
+<img src="screenshots/device-2020-06-28-162902.png" width="400" >
