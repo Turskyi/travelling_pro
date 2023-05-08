@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.allcountries.view.ui
+package io.github.turskyi.travellingpro.features.countries.view.ui
 
 import android.animation.ValueAnimator
 import android.content.Intent
@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityAllCountriesBinding
 import io.github.turskyi.travellingpro.entities.Country
-import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
-import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
-import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
+import io.github.turskyi.travellingpro.features.countries.view.adapter.AllCountriesAdapter
+import io.github.turskyi.travellingpro.features.countries.view.adapter.EmptyListObserver
+import io.github.turskyi.travellingpro.features.countries.viewmodel.AllCountriesActivityViewModel
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.extensions.hideKeyboard
 import io.github.turskyi.travellingpro.utils.extensions.openInfoDialog

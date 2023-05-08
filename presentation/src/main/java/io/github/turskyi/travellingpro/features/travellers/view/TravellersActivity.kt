@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityTravellersBinding
 import io.github.turskyi.travellingpro.entities.Traveller
-import io.github.turskyi.travellingpro.features.allcountries.view.adapter.EmptyListObserver
+import io.github.turskyi.travellingpro.features.countries.view.adapter.EmptyListObserver
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivity
 import io.github.turskyi.travellingpro.features.travellers.TravellersActivityViewModel
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersAdapter

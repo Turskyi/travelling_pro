@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.allcountries.viewmodel
+package io.github.turskyi.travellingpro.features.countries.viewmodel
 
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.travellingpro.entities.Country
-import io.github.turskyi.travellingpro.features.allcountries.view.adapter.CountriesPositionalDataSource
-import io.github.turskyi.travellingpro.features.allcountries.view.adapter.FilteredCountriesPositionalDataSource
+import io.github.turskyi.travellingpro.features.countries.view.adapter.CountriesPositionalDataSource
+import io.github.turskyi.travellingpro.features.countries.view.adapter.FilteredCountriesPositionalDataSource
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
 import io.github.turskyi.travellingpro.utils.extensions.mapToModel

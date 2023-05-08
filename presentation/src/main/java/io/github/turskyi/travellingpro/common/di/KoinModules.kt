@@ -3,8 +3,8 @@ package io.github.turskyi.travellingpro.common.di
 import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.domain.interactors.PreferenceInteractor
 import io.github.turskyi.domain.interactors.TravellersInteractor
-import io.github.turskyi.travellingpro.features.allcountries.view.adapter.AllCountriesAdapter
-import io.github.turskyi.travellingpro.features.allcountries.viewmodel.AllCountriesActivityViewModel
+import io.github.turskyi.travellingpro.features.countries.view.adapter.AllCountriesAdapter
+import io.github.turskyi.travellingpro.features.countries.viewmodel.AllCountriesActivityViewModel
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FlagsFragmentViewModel
 import io.github.turskyi.travellingpro.features.flags.viewmodel.FriendFlagsFragmentViewModel
 import io.github.turskyi.travellingpro.features.home.view.HomeAdapter
