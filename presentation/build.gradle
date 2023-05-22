@@ -8,6 +8,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
     id 'com.google.firebase.firebase-perf'
     id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -28,7 +29,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // to ensure that the translations of Firebase library are relevant to the application
-        resConfigs 'en'
+        resourceConfigurations += ['en']
     }
     //noinspection GroovyAssignabilityCheck
     signingConfigs {
@@ -74,11 +75,11 @@ android {
     //noinspection GroovyAssignabilityCheck
     //noinspection GroovyMissingReturnStatement
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
     }
     namespace 'io.github.turskyi.travellingpro'
 }
@@ -89,6 +90,8 @@ dependencies {
     implementation project(":domain")
     implementation project(":di")
 
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.21"))
+
     // design components
     implementation "com.google.android.material:material:$material_version"
 
@@ -97,11 +100,11 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
 
     // firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.3.2'
-    implementation('com.google.firebase:firebase-analytics:21.2.0') {
+    implementation 'com.google.firebase:firebase-crashlytics:18.3.7'
+    implementation('com.google.firebase:firebase-analytics:21.2.2') {
         // remove advertising dependency
         exclude module: "play-services-ads-identifier"
         exclude module: "play-services-measurement"
@@ -110,18 +113,20 @@ dependencies {
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
-    implementation 'com.google.firebase:firebase-perf:20.3.0'
+    implementation 'com.google.firebase:firebase-perf:20.3.2'
 // to send notifications across devices from firebase console
-    implementation 'com.google.firebase:firebase-messaging:23.1.1'
-    implementation 'com.google.android.gms:play-services-cast-framework:21.2.0'
+    implementation 'com.google.firebase:firebase-messaging:23.1.2'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.3.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
 
     // Glide (Image caching and management)
-    def glideVersion = "4.14.2"
+    def glideVersion = "4.15.1"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
 
     // ViewModel and LiveData
-    def lifecycle_version = "2.5.1"
+    def lifecycle_version = "2.6.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
@@ -134,7 +139,7 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
 
     // Recyclerview
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
 
     // CardView
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -152,14 +157,14 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:21.0.1"
 
     // Facebook SDK
-    def facebookVersion = "15.2.0"
+    def facebookVersion = "16.0.1"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "5.2.0"
+    def lottieVersion = "6.0.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android

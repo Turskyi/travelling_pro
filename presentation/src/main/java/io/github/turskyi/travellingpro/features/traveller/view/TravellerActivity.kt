@@ -20,6 +20,7 @@ import io.github.turskyi.travellingpro.features.travellers.view.TravellersActivi
 import io.github.turskyi.travellingpro.utils.decoration.SectionAverageGapItemDecoration
 import io.github.turskyi.travellingpro.utils.extensions.getScreenWidth
 import io.github.turskyi.travellingpro.utils.extensions.openActivityWithArgs
+import io.github.turskyi.travellingpro.utils.extensions.parcelable
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
 import io.github.turskyi.travellingpro.widgets.CirclePieChart
@@ -33,7 +34,7 @@ class TravellerActivity : AppCompatActivity(), TravellerActivityView {
     private var traveller: Traveller? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        traveller = intent.getParcelableExtra(EXTRA_TRAVELLER)
+        traveller = intent.parcelable(EXTRA_TRAVELLER)
         if (traveller != null) {
             initView()
             initObservers()

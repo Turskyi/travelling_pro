@@ -2,6 +2,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -49,6 +50,7 @@ dependencies {
 
     // Koin core features
     api "io.insert-koin:koin-core:$koin_core_version"
+    implementation 'androidx.core:core-ktx:1.10.1'
 
     // test
     testImplementation "junit:junit:$junit_version"

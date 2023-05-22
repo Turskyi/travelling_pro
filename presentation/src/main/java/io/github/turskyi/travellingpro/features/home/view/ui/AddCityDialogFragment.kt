@@ -33,6 +33,7 @@ import org.koin.android.ext.android.inject
 import java.io.IOException
 import java.util.*
 
+@Suppress("unused")
 class AddCityDialogFragment : DialogFragment() {
 
     companion object {

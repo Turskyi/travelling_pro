@@ -10,11 +10,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.turskyi.travellingpro.entities.Traveller
-import io.github.turskyi.travellingpro.features.flags.view.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_POSITION
 import io.github.turskyi.travellingpro.features.flags.view.FlagsActivity.Companion.EXTRA_USER
+import io.github.turskyi.travellingpro.features.flags.view.callbacks.FlagsActivityView
 import io.github.turskyi.travellingpro.features.flags.view.fragments.FlagFragment
 import io.github.turskyi.travellingpro.features.flags.view.fragments.FriendFlagsFragment
+import io.github.turskyi.travellingpro.utils.extensions.parcelable
 import io.github.turskyi.travellingpro.utils.extensions.showReportDialog
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
 
@@ -43,11 +44,11 @@ class FlagsAdapter(private val activity: AppCompatActivity) :
     override fun getItemCount(): Int = flagsActivityViewListener?.getItemCount() ?: 0
 
     override fun createFragment(position: Int): Fragment {
-        return if (activity.intent.extras != null && activity.intent.extras!!.getParcelable<Traveller>(
+        return if (activity.intent.extras != null && activity.intent.extras!!.parcelable<Traveller>(
                 EXTRA_USER
             ) != null
         ) {
-            val traveller: Traveller = activity.intent.extras!!.getParcelable(EXTRA_USER)!!
+            val traveller: Traveller = activity.intent.extras!!.parcelable(EXTRA_USER)!!
             FriendFlagsFragment().apply {
                 arguments = bundleOf(
                     EXTRA_POSITION to position,

@@ -104,7 +104,7 @@ class FlagFragment : BaseFlagFragment() {
         val fileOutputStream: FileOutputStream = file.outputStream()
         fileOutputStream.use { inputStream.copyTo(it) }
         val visitedCountriesObserverForLocalPhotos: Observer<List<VisitedCountry>> =
-            Observer<List<VisitedCountry>> { visitedCountries: List<VisitedCountry> ->
+            Observer { visitedCountries: List<VisitedCountry> ->
                 viewModel.updateSelfie(
                     shortName = visitedCountries[position].shortName,
                     filePath = file.absolutePath,
@@ -151,7 +151,7 @@ class FlagFragment : BaseFlagFragment() {
             }
         }
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
-            Observer<List<VisitedCountry>> { countries: List<VisitedCountry> ->
+            Observer { countries: List<VisitedCountry> ->
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
                 if (mChangeFlagListener != null) {
                     mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)

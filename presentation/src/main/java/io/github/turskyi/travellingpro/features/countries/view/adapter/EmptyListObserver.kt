@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.allcountries.view.adapter
+package io.github.turskyi.travellingpro.features.countries.view.adapter
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

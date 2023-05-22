@@ -1,4 +1,4 @@
-package io.github.turskyi.travellingpro.features.allcountries.view.adapter
+package io.github.turskyi.travellingpro.features.countries.view.adapter
 
 import android.graphics.Color
 import android.graphics.Paint
