@@ -26,9 +26,7 @@ after every push to the **dev** branch,
 [Visual Studio App Center](https://docs.microsoft.com/en-us/appcenter/) is used to deliver new
 release app bundle to **Google Play** after every push to **master** branch;
 
-• Architectural pattern: [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
-and
-[Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html);
+• Architectural pattern: [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel);
 
 • Architecture Components:
 [Paging](https://developer.android.com/topic/libraries/architecture/paging),
@@ -61,6 +59,11 @@ and
 [Data Binding](https://developer.android.com/topic/libraries/data-binding);
 
 • Api: https://restcountries.com/#api-endpoints-v2-all;
+
+• **Code Readability:** code is easily readable such that a fellow programmer can understand the
+purpose of the app, all variables, methods, and resource IDs are descriptively named such that
+another developer reading the code can easily understand their function, no unnecessary blank lines,
+no unused variables or methods, no commented out code.
 
 • Screenshots:  
 <img src="screenshots/device-2020-06-05-085243.png" width="200" >

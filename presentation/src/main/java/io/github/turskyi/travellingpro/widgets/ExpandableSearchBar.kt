@@ -433,6 +433,7 @@ class ExpandableSearchBar(context: Context, attrs: AttributeSet) : ConstraintLay
          *
          * @param buttonCode [.BUTTON_NAVIGATION], [.BUTTON_SPEECH] or [.BUTTON_BACK] will be passed
          */
+        @Suppress("EmptyMethod")
         fun onButtonClicked(buttonCode: Int)
     }
 }

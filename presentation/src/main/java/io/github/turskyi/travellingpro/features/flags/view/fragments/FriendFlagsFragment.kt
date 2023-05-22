@@ -46,7 +46,7 @@ class FriendFlagsFragment : BaseFlagFragment() {
             flagsActivityViewListener?.setLoaderVisibility(currentVisibility)
         }
         val visitedCountriesObserver: Observer<List<VisitedCountry>> =
-            Observer<List<VisitedCountry>> { countries ->
+            Observer { countries: List<VisitedCountry> ->
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
                 if (mChangeFlagListener != null) {
                     mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)

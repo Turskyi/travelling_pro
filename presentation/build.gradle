@@ -90,7 +90,7 @@ dependencies {
     implementation project(":domain")
     implementation project(":di")
 
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.21"))
 
     // design components
     implementation "com.google.android.material:material:$material_version"
@@ -100,7 +100,7 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
 
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.3.7'
@@ -117,11 +117,11 @@ dependencies {
 // to send notifications across devices from firebase console
     implementation 'com.google.firebase:firebase-messaging:23.1.2'
     implementation 'com.google.android.gms:play-services-cast-framework:21.3.0'
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
 
     // Glide (Image caching and management)
-    def glideVersion = "4.14.2"
+    def glideVersion = "4.15.1"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
 
@@ -157,14 +157,14 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:21.0.1"
 
     // Facebook SDK
-    def facebookVersion = "15.2.0"
+    def facebookVersion = "16.0.1"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"
     implementation "com.facebook.android:facebook-login:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "5.2.0"
+    def lottieVersion = "6.0.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android
