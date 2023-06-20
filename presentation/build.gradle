@@ -104,7 +104,7 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.3.7'
-    implementation('com.google.firebase:firebase-analytics:21.2.2') {
+    implementation('com.google.firebase:firebase-analytics:21.3.0') {
         // remove advertising dependency
         exclude module: "play-services-ads-identifier"
         exclude module: "play-services-measurement"
@@ -113,7 +113,7 @@ dependencies {
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
-    implementation 'com.google.firebase:firebase-perf:20.3.2'
+    implementation 'com.google.firebase:firebase-perf:20.3.3'
 // to send notifications across devices from firebase console
     implementation 'com.google.firebase:firebase-messaging:23.1.2'
     implementation 'com.google.android.gms:play-services-cast-framework:21.3.0'
@@ -164,7 +164,7 @@ dependencies {
     implementation "com.facebook.android:facebook-login:$facebookVersion"
 
     // used for animation
-    def lottieVersion = "6.0.0"
+    def lottieVersion = "6.0.1"
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Koin for Android
