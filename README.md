@@ -71,7 +71,7 @@ release app bundle to **Google Play** after every push to **master** branch;
 
 • Architectural pattern:
 <br>
-<a href="https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)">
+<a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/">
 <img src="documentation/onion_architecture_with_di.jpeg" width="800" >
 </a>
 </br>
