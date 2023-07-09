@@ -88,9 +88,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(":domain")
-    implementation project(":di")
+    implementation project(':data')
 
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.21"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.0"))
 
     // design components
     implementation "com.google.android.material:material:$material_version"
@@ -157,7 +157,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:21.0.1"
 
     // Facebook SDK
-    def facebookVersion = "16.0.1"
+    def facebookVersion = "16.1.2"
     implementation "com.facebook.android:facebook-android-sdk:$facebookVersion"
     implementation "com.facebook.android:facebook-share:$facebookVersion"
     implementation "com.facebook.android:facebook-applinks:$facebookVersion"

@@ -31,7 +31,8 @@ countries visited other members of the app.
 • CI/CD: [GitHub Actions](https://docs.github.com/en/actions) is used to deliver new Android
 Package (APK) to [Firebase App Distribution](https://firebase.google.com/docs/app-distribution)
 after every push to the **dev** branch,
-[Visual Studio App Center](https://docs.microsoft.com/en-us/appcenter/) is used to deliver new
+[Visual Studio App Center](https://docs.microsoft.com/en-us/appcenter/) is used to
+[deliver](https://appcenter.ms/users/Turskyi/apps/Travelling-Pro/build/branches/master)  new
 release app bundle to **Google Play** after every push to **master** branch;
 
 • App testing platforms:
@@ -71,8 +72,8 @@ release app bundle to **Google Play** after every push to **master** branch;
 
 • Architectural pattern:
 <br>
-<a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/">
-<img src="documentation/onion_architecture_with_di.jpeg" width="800" >
+<a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel">
+<img src="documentation/android_model_view_viewmodel.jpeg" width="800" >
 </a>
 </br>
 
