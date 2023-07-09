@@ -1,5 +1,6 @@
 package io.github.turskyi.travellingpro.features.travellers.view.adapter
 
+import android.content.res.ColorStateList
 import android.os.Build
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -32,11 +33,9 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
                 override fun areContentsTheSame(
                     oldItem: Traveller,
                     newItem: Traveller
-                ): Boolean {
-                    return oldItem.name == newItem.name &&
-                            oldItem.avatar == newItem.avatar &&
-                            oldItem.id == newItem.id
-                }
+                ): Boolean = oldItem.name == newItem.name &&
+                        oldItem.avatar == newItem.avatar &&
+                        oldItem.id == newItem.id
             }
     }
 
@@ -53,7 +52,7 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
 
     override fun onBindViewHolder(holderTraveller: TravellerViewHolder, position: Int) {
         val currentItem: Traveller? = getItem(position)
-        if (currentItem != null && currentItem.isVisible) {
+        if (currentItem != null) {
             holderTraveller.bind(currentItem)
         }
     }
@@ -72,6 +71,16 @@ class TravellersAdapter : PagedListAdapter<Traveller, TravellersAdapter.Travelle
             binding.apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     Glide.with(itemView).load(traveller.avatar).into(ivAvatar)
+                    if (!traveller.isVisible) {
+                        val tint: ColorStateList = ColorStateList.valueOf(
+                            itemView.context.resources.getColor(
+                                android.R.color.background_dark,
+                                itemView.context.theme,
+                            )
+                        ).withAlpha(100)
+                        cvTraveller.setCardBackgroundColor(tint)
+                        ivAvatar.alpha = 0.4f
+                    }
                 } else {
                     cvAvatar.visibility = GONE
                     ivSquareAvatar.visibility = VISIBLE

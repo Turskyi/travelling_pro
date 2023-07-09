@@ -72,8 +72,8 @@ release app bundle to **Google Play** after every push to **master** branch;
 
 • Architectural pattern:
 <br>
-<a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/">
-<img src="documentation/onion_architecture_with_di.jpeg" width="800" >
+<a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel">
+<img src="documentation/android_model_view_viewmodel.jpeg" width="800" >
 </a>
 </br>
 

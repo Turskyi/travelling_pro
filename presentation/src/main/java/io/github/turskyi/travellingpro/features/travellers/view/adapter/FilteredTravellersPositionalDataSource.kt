@@ -2,6 +2,7 @@ package io.github.turskyi.travellingpro.features.travellers.view.adapter
 
 import androidx.paging.PositionalDataSource
 import io.github.turskyi.domain.interactors.TravellersInteractor
+import io.github.turskyi.domain.models.entities.TravellerModel
 import io.github.turskyi.travellingpro.entities.Traveller
 import io.github.turskyi.travellingpro.utils.extensions.mapModelListToTravellerList
 
@@ -18,16 +19,17 @@ internal class FilteredTravellersPositionalDataSource(
             userName,
             params.requestedLoadSize.toLong(),
             params.requestedStartPosition,
-            { travellers ->
+            { travellers: List<TravellerModel> ->
                 callback.onResult(
                     travellers.mapModelListToTravellerList(),
                     params.requestedStartPosition
                 )
             },
-            { exception ->
+            { exception: Exception ->
                 exception.printStackTrace()
                 callback.onResult(emptyList(), params.requestedStartPosition)
-            })
+            },
+        )
     }
 
     override fun loadRange(
@@ -38,10 +40,10 @@ internal class FilteredTravellersPositionalDataSource(
             name = userName,
             requestedLoadSize = params.loadSize.toLong(),
             requestedStartPosition = params.startPosition,
-            onSusses = { travellers ->
+            onSusses = { travellers: List<TravellerModel> ->
                 callback.onResult(travellers.mapModelListToTravellerList())
             },
-            onError = { exception ->
+            onError = { exception: Exception ->
                 exception.printStackTrace()
                 callback.onResult(emptyList())
             },

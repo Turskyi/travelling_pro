@@ -7,7 +7,14 @@ import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
@@ -51,6 +58,7 @@ class FirestoreDatabaseSourceImpl(
         private const val KEY_PARENT_ID = "parentId"
         private const val KEY_COUNTER = "counter"
         private const val KEY_FLAG = "flag"
+        private const val KEY_IS_ADMIN = "isAdmin"
     }
 
     // init Authentication
@@ -103,7 +111,9 @@ class FirestoreDatabaseSourceImpl(
             val userRef: DocumentReference = usersRef.document(currentUser.uid)
             userRef.update(KEY_IS_VISIBLE, visible)
                 .addOnSuccessListener { onSuccess.invoke() }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -125,7 +135,9 @@ class FirestoreDatabaseSourceImpl(
                         onError.invoke(NotFoundException())
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -147,7 +159,9 @@ class FirestoreDatabaseSourceImpl(
                         onSuccess(notVisitedCountries.size())
                     }
                 } else {
-                    task.exception?.let { exception: java.lang.Exception -> onError.invoke(exception) }
+                    task.exception?.let { exception: java.lang.Exception ->
+                        onError.invoke(exception)
+                    }
                 }
             }
             .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
@@ -175,7 +189,9 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -203,7 +219,9 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -252,7 +270,8 @@ class FirestoreDatabaseSourceImpl(
             )
             if (currentUser != null) {
                 usersRef.document(currentUser.uid)
-                    .collection(COLLECTION_COUNTRIES).document(countryEntity.shortName).set(country)
+                    .collection(COLLECTION_COUNTRIES).document(countryEntity.shortName)
+                    .set(country)
                     .addOnSuccessListener {
                         if (index == countries.lastIndex) {
                             onSuccess.invoke()
@@ -308,7 +327,9 @@ class FirestoreDatabaseSourceImpl(
                 .addOnSuccessListener {
                     addToListOfVisited(userDocRef, countryEntity, onSuccess, onError)
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -562,7 +583,8 @@ class FirestoreDatabaseSourceImpl(
     ) {
         if (currentUser != null) {
             val userDocRef: DocumentReference = usersRef.document(currentUser.uid)
-            userDocRef.collection(COLLECTION_VISITED_COUNTRIES).whereEqualTo(KEY_ID, city.parentId)
+            userDocRef.collection(COLLECTION_VISITED_COUNTRIES)
+                .whereEqualTo(KEY_ID, city.parentId)
                 .get()
                 .addOnSuccessListener { documents: QuerySnapshot ->
                     for (document: QueryDocumentSnapshot in documents) {
@@ -603,7 +625,9 @@ class FirestoreDatabaseSourceImpl(
                 .collection(COLLECTION_CITIES).document(id)
                 .delete()
                 .addOnSuccessListener { onSuccess() }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -634,7 +658,9 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             onError.invoke(NotFoundException())
         }
@@ -660,7 +686,11 @@ class FirestoreDatabaseSourceImpl(
                         )
                         countries.add(country)
                         if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
-                            onSuccess(countries.sortedBy { listItem: VisitedCountryEntity -> listItem.name })
+                            onSuccess(
+                                countries.sortedBy { listItem: VisitedCountryEntity ->
+                                    listItem.name
+                                },
+                            )
                         }
                     }
                 }
@@ -752,7 +782,9 @@ class FirestoreDatabaseSourceImpl(
                         onSuccess(cities.sortedBy { city: CityEntity -> city.name })
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -793,7 +825,9 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -823,7 +857,9 @@ class FirestoreDatabaseSourceImpl(
                     }
                     onSuccess(countries)
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -853,7 +889,9 @@ class FirestoreDatabaseSourceImpl(
                         }
                     }
                 }
-                .addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -866,30 +904,63 @@ class FirestoreDatabaseSourceImpl(
         onSuccess: (List<TravellerEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val usersRef: CollectionReference = usersRef
-        usersRef
-            // getting only users who allowed to be visible
-            .whereEqualTo(KEY_IS_VISIBLE, true)
-            // getting part of the list for pagination
-            .limit(to)
-            .get()
-            .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
-                val travellers: MutableList<TravellerEntity> = mutableListOf()
-                for (i in from until queryDocumentSnapshots.size()) {
-                    val snapshot: DocumentSnapshot = queryDocumentSnapshots.documents[i]
-                    travellers.add(
-                        TravellerEntity(
-                            id = snapshot.id,
-                            name = snapshot[KEY_NAME] as String,
-                            avatar = snapshot[KEY_AVATAR] as String,
-                            counter = snapshot[KEY_COUNTER] as Long,
-                            isVisible = snapshot[KEY_IS_VISIBLE] as Boolean,
-                        )
-                    )
+        if (currentUser != null) {
+            val userRef: DocumentReference = usersRef.document(currentUser.uid)
+            userRef.get()
+                .addOnSuccessListener { document: DocumentSnapshot ->
+                    val isAdmin = document.getBoolean(KEY_IS_ADMIN) ?: false
+
+                    val visibleQuery: Query = usersRef
+                        // getting only users who allowed to be visible
+                        .whereEqualTo(KEY_IS_VISIBLE, true)
+
+                    val taskWithAllTravellers: Task<QuerySnapshot> = usersRef
+                        // getting part of the list for pagination
+                        .limit(to)
+                        .get()
+
+                    val taskWithVisibleTravellers: Task<QuerySnapshot> = visibleQuery
+                        // getting part of the list for pagination
+                        .limit(to)
+                        .get()
+
+                    val taskWithTravellers = if (isAdmin) {
+                        taskWithAllTravellers
+                    } else {
+                        taskWithVisibleTravellers
+                    }
+                    taskWithTravellers
+                        .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
+                            val travellers: MutableList<TravellerEntity> = mutableListOf()
+                            for (i in from until queryDocumentSnapshots.size()) {
+                                val snapshot: DocumentSnapshot =
+                                    queryDocumentSnapshots.documents[i]
+                                travellers.add(
+                                    TravellerEntity(
+                                        id = snapshot.id,
+                                        name = snapshot[KEY_NAME] as String,
+                                        avatar = snapshot[KEY_AVATAR] as String,
+                                        counter = snapshot[KEY_COUNTER] as Long,
+                                        isVisible = snapshot[KEY_IS_VISIBLE] as Boolean,
+                                    )
+                                )
+                            }
+
+                            travellers.sortByDescending { traveller: TravellerEntity ->
+                                traveller.counter
+                            }
+                            onSuccess(travellers)
+                        }.addOnFailureListener { exception: java.lang.Exception ->
+                            onError.invoke(exception)
+                        }
                 }
-                travellers.sortByDescending { traveller: TravellerEntity -> traveller.counter }
-                onSuccess(travellers)
-            }.addOnFailureListener { exception: java.lang.Exception -> onError.invoke(exception) }
+                .addOnFailureListener { exception: java.lang.Exception ->
+                    onError.invoke(exception)
+                }
+        } else {
+            mFirebaseAuth.signOut()
+            onError.invoke(NotFoundException())
+        }
     }
 
     override suspend fun setTravellersByName(
