@@ -1011,21 +1011,29 @@ class FirestoreDatabaseSourceImpl(
             visitedCountriesRef.get()
                 .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
                     val countOfVisitedCountries: Int = queryDocumentSnapshots.size()
-                    // getting total number of all users
-                    usersRef.get().addOnSuccessListener { snapshots: QuerySnapshot ->
-                        val userCount: Int = snapshots.size()
-                        //   getting number of users with bigger counter
-                        usersRef.whereGreaterThan(KEY_COUNTER, countOfVisitedCountries).get()
-                            .addOnSuccessListener { documents: QuerySnapshot ->
-                                val countOfTopTravellers: Int = documents.size()
-                                /* getting percent of travellers who visited more countries
-                                 * than current user */
-                                onSuccess(countOfTopTravellers * 100 / userCount)
-                            }.addOnFailureListener { exception: java.lang.Exception ->
-                                onError.invoke(exception)
-                            }
-                    }.addOnFailureListener { exception: java.lang.Exception ->
-                        onError.invoke(exception)
+                    if (countOfVisitedCountries == 0) {
+                        onSuccess(100)
+                    } else {
+                        // getting total number of all users
+                        usersRef.get().addOnSuccessListener { snapshots: QuerySnapshot ->
+                            val userCount: Int = snapshots.size()
+                            //   getting number of users with bigger counter
+                            usersRef.whereGreaterThan(KEY_COUNTER, countOfVisitedCountries).get()
+                                .addOnSuccessListener { documents: QuerySnapshot ->
+                                    if (userCount == 0) {
+                                        onSuccess(100)
+                                    } else {
+                                        val countOfTopTravellers: Int = documents.size()
+                                        /* getting percent of travellers who visited more countries
+                                         * than current user */
+                                        onSuccess(countOfTopTravellers * 100 / userCount)
+                                    }
+                                }.addOnFailureListener { exception: java.lang.Exception ->
+                                    onError.invoke(exception)
+                                }
+                        }.addOnFailureListener { exception: java.lang.Exception ->
+                            onError.invoke(exception)
+                        }
                     }
                 }.addOnFailureListener { exception: java.lang.Exception ->
                     onError.invoke(exception)

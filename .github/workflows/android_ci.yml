@@ -2,8 +2,8 @@ name: Build & upload to Firebase App Distribution
 
 on:
   push:
-    branches:
-      - dev
+    branches-ignore:
+      - master
 
 jobs:
   build:
