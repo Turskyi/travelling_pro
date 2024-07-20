@@ -41,7 +41,7 @@ release app bundle to **Google Play** after every push to **master** branch;
 • App testing platforms:
 [Firebase App Distribution](https://appdistribution.firebase.dev/i/95a4a3bcea0281c7);
 
-• App store:
+• App Store:
 [Google Play](https://play.google.com/store/apps/details?id=io.github.turskyi.travellingpro);
 
 • Operating system: [Android](https://www.android.com/);
