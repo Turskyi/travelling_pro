@@ -1,6 +1,9 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
+[![Build status](https://build.appcenter.ms/v0.1/apps/add3e42d-20e7-466d-9300-e42abf3e6b76/branches/master/badge)](https://appcenter.ms)
+[![Build & upload to Firebase App Distribution](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml/badge.svg?event=push)](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml)
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/travelling_pro">
 
-# Travelling Pro [![Build status](https://build.appcenter.ms/v0.1/apps/add3e42d-20e7-466d-9300-e42abf3e6b76/branches/master/badge)](https://appcenter.ms)
+# Travelling Pro
 
 An Android mobile application to help collect all countries that you have visited and see how many
 countries visited other members of the app.
@@ -79,17 +82,23 @@ release app bundle to **Google Play** after every push to **master** branch;
 
 • Screenshots:
 <!--suppress CheckImageSize -->
-<img src="screenshots/device-2020-06-05-085243.png" width="200" >
-<img src="screenshots/device-2020-06-05-085456.png" width="200" >
-<img src="screenshots/device-2020-06-05-090524.png" width="200" >
-<img src="screenshots/device-2020-06-28-164528.png" width="300" >
-<img src="screenshots/device-2020-10-18-103522.png" width="200" >
-<img src="screenshots/device-2020-10-18-103111.png" width="200" >
-<img src="screenshots/device-2020-06-05-090129.png" width="200" >
-<img src="screenshots/device-2020-06-05-091508.png" width="200" >
-<img src="screenshots/device-2020-06-05-094730.png" width="300" >
-<img src="screenshots/device-2020-06-28-162902.png" width="400" >
+<img src="screenshots/device-2020-06-05-085243.png" width="200"  alt="screenshot">
+<img src="screenshots/device-2020-06-05-085456.png" width="200" alt="screenshot">
+<img src="screenshots/device-2020-06-05-090524.png" width="200" alt="screenshot">
+<img src="screenshots/device-2020-06-28-164528.png" width="300" alt="screenshot">
+<img src="screenshots/device-2020-10-18-103522.png" width="200" alt="screenshot">
+<img src="screenshots/device-2020-10-18-103111.png" width="200" alt="screenshot">
+<img src="screenshots/device-2020-06-05-090129.png" width="200" alt="screenshot">
+<img src="screenshots/device-2020-06-05-091508.png" width="200" alt="screenshot">
+<img src="screenshots/device-2020-06-05-094730.png" width="300" alt="screenshot">
+<img src="screenshots/device-2020-06-28-162902.png" width="400" alt="screenshot">
 
 • **Code Readability:** code is easily readable with no unnecessary blank lines, no unused variables
 or methods, and no commented-out code, all variables, methods, and resource IDs are descriptively
 named such that another developer reading the code can easily understand their function.
+
+## Download
+
+<a href="https://play.google.com/store/apps/details?id=io.github.turskyi.travellingpro" target="_blank">
+<img src="https://play.google.com/intl/en_gb/badges/static/images/badges/en_badge_web_generic.png" width=240  alt="google play badge"/>
+</a>
