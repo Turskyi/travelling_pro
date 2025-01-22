@@ -97,11 +97,11 @@ dependencies {
 
     // android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.core:core-ktx:1.15.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.3.7'
-    implementation('com.google.firebase:firebase-analytics:21.3.0') {
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation('com.google.firebase:firebase-analytics') {
         // remove advertising dependency
         exclude module: "play-services-ads-identifier"
         exclude module: "play-services-measurement"
@@ -110,9 +110,9 @@ dependencies {
     // To show authentication page with pre-implemented authentication
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
 // performance tracing
-    implementation 'com.google.firebase:firebase-perf:20.3.3'
+    implementation 'com.google.firebase:firebase-perf'
 // to send notifications across devices from firebase console
-    implementation 'com.google.firebase:firebase-messaging:23.1.2'
+    implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.android.gms:play-services-cast-framework:21.3.0'
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
