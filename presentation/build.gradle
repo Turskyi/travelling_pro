@@ -15,13 +15,10 @@ android {
     //noinspection GroovyAssignabilityCheck
     //noinspection GrDeprecatedAPIUsage
     compileSdkVersion rootProject.compile_sdk_version
-    //noinspection GroovyAssignabilityCheck
-    //noinspection GrDeprecatedAPIUsage
-    buildToolsVersion rootProject.build_tools_version
 
     //noinspection GroovyAssignabilityCheck
     defaultConfig {
-        applicationId "io.github.turskyi.travellingpro"
+        applicationId rootProject.applicationId
         minSdkVersion rootProject.min_sdk_version
         targetSdkVersion rootProject.target_sdk_version
         versionCode rootProject.version_code
@@ -122,6 +119,7 @@ dependencies {
 
     // Glide (Image caching and management)
     def glideVersion = "4.15.1"
+    //noinspection KaptUsageInsteadOfKsp
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:glide:$glideVersion"
 

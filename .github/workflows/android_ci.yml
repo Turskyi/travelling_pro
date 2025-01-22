@@ -19,11 +19,12 @@ jobs:
           distribution: 'temurin' # Eclipse Temurin https://adoptium.net/
       - name: Generate Release APK
         run: ./gradlew assembleRelease
-      - name: Upload artifact to Firebase App Distribution
+
+      - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_ANDROID_APPID }}
-          token: ${{secrets.FIREBASE_TOKEN}}
           groups: testers
+          token: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           releaseNotes: "Travelling Pro App Build"
           file: presentation/build/outputs/apk/release/presentation-release.apk
