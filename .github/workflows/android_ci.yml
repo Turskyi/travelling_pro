@@ -23,7 +23,7 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_ANDROID_APPID }}
+          serviceCredentialsFileContent: ${( secrets.CREDENTIAL_FILE_CONTENT }}
           groups: testers
-          token: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}  # Use service account key
           releaseNotes: "Travelling Pro App Build"
           file: presentation/build/outputs/apk/release/presentation-release.apk
