@@ -7,7 +7,7 @@ buildscript {
         compile_sdk_version = 35
         skd_preview = "UpsideDownCake"
         build_tools_version = "35.0.0"
-        min_sdk_version = 21
+        min_sdk_version = 23
         target_sdk_version = 35
         // last version is here [https://play.google.com/console/u/0/developers/6867856033872987263/app/4972072127034375090/releases/overview]
         version_code = 25
@@ -20,7 +20,7 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.8.0'
+        classpath 'com.android.tools.build:gradle:8.11.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // Google Services plugin (used with firebase)
         classpath "com.google.gms:google-services:$google_services_version"
@@ -36,14 +36,14 @@ subprojects {
         dependencies {
             // (Asynchronous programming) coroutines
             implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-            implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+            implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
 
             // Retrofit2
             implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
             implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-            // Paging
-            implementation "androidx.paging:paging-runtime:$paging_version"
+            // Tried to upgrade to 3.3.6 and all versions between - does not compile.
+            implementation "androidx.paging:paging-runtime:2.1.2"
 
             /* Bill of Materials for the Firebase platform.
              * When using the BoM, no need to specify versions in Firebase library dependencies */

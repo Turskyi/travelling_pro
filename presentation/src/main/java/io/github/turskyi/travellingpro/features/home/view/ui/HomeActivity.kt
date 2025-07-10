@@ -554,9 +554,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         )
         return AuthUI.getInstance()
             .createSignInIntentBuilder()
-            /* SmartLock = true -> allows the phone to automatically save the
-                    user`s  credentials and try to log them in. */
-            .setIsSmartLockEnabled(true)
             .setAvailableProviders(providers)
             // Setting logo drawable for authentication page
             .setLogo(R.drawable.pic_logo)
