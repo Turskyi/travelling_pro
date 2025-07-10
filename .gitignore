@@ -17,3 +17,4 @@ local.properties
 .idea
 /presentation/release/
 presentation/release
+.kotlin/errors

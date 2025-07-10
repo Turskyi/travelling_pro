@@ -31,6 +31,8 @@
 
     <!-- AppTheme for firebase authentication -->
     <style name="AuthTheme" parent="FirebaseUI">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <!-- app bar -->
         <item name="colorControlNormal">@android:color/transparent</item>
@@ -45,6 +47,7 @@
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <!-- Hyperlink color -->
         <item name="colorAccent">@android:color/white</item>
+        <item name="android:paddingTop">16dp</item>
     </style>
 
     <style name="RecyclerViewStyle">
