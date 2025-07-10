@@ -64,7 +64,8 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 @BuildCompat.PrereleaseSdkCheck
-class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, HomeActivityView {
+class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
+    HomeActivityView {
 
     private val viewModel: HomeActivityViewModel by inject()
     private val listAdapter: HomeAdapter by inject()
@@ -172,7 +173,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                     internetResultLauncher.launch(internetSettingsIntent)
                     return@registerForActivityResult
                 } else {
-                    val response: IdpResponse? = IdpResponse.fromResultIntent(result.data)
+                    val response: IdpResponse? = IdpResponse.fromResultIntent(
+                        result.data,
+                    )
                     when {
                         response == null -> {
                             // User pressed back button
@@ -198,7 +201,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
                         else -> {
                             toastLong(
-                                response.error?.localizedMessage ?: response.error.toString()
+                                response.error?.localizedMessage
+                                    ?: response.error.toString()
                             )
                             viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                             AuthUI.getInstance().signOut(this)
@@ -239,7 +243,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         binding.root.setBackgroundResource(R.drawable.gradient_list)
         val layoutBackground: Drawable = binding.root.background
         if (layoutBackground is AnimationDrawable) {
-            val animationDrawable: AnimationDrawable = binding.root.background as AnimationDrawable
+            val animationDrawable: AnimationDrawable =
+                binding.root.background as AnimationDrawable
             animationDrawable.setEnterFadeDuration(2000)
             animationDrawable.setExitFadeDuration(4000)
             animationDrawable.start()
@@ -282,16 +287,25 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                     openActivityWithArgs(FlagsActivity::class.java) {
                         putInt(EXTRA_POSITION, getItemPosition(country))
                         if (viewModel.visitedCountries.value != null) {
-                            putInt(EXTRA_ITEM_COUNT, viewModel.visitedCountries.value!!.size)
+                            putInt(
+                                EXTRA_ITEM_COUNT,
+                                viewModel.visitedCountries.value!!.size
+                            )
                         }
                     }
                 }
                 viewModel.mLastClickTime = SystemClock.elapsedRealtime()
             }
             onLongClickListener = { countryNode: VisitedCountryNode ->
-                val country: Country = countryNode.mapVisitedCountryNodeToCountry()
+                val country: Country =
+                    countryNode.mapVisitedCountryNodeToCountry()
 
-                binding.root.showSnackWithAction(getString(R.string.delete_it, country.name)) {
+                binding.root.showSnackWithAction(
+                    getString(
+                        R.string.delete_it,
+                        country.name
+                    )
+                ) {
                     action(R.string.yes) {
                         viewModel.removeFromVisited(country)
                         toastLong(getString(R.string.deleted, country.name))
@@ -301,13 +315,19 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
 
             onCountryNameClickListener = { countryNode: VisitedCountryNode ->
                 // Creating the new Fragment with the Country id passed in.
-                val fragment: AddCityDialogFragment = AddCityDialogFragment.newInstance(
-                    countryNode.id,
-                )
+                val fragment: AddCityDialogFragment =
+                    AddCityDialogFragment.newInstance(
+                        countryNode.id,
+                    )
                 fragment.show(supportFragmentManager, null)
             }
             onCityLongClickListener = { city: City ->
-                binding.root.showSnackWithAction(getString(R.string.delete_it, city.name)) {
+                binding.root.showSnackWithAction(
+                    getString(
+                        R.string.delete_it,
+                        city.name
+                    )
+                ) {
                     action(R.string.yes) {
                         removeCityOnLongClick(city)
                         toastLong(getString(R.string.deleted, city.name))
@@ -327,7 +347,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                 viewModel.isDoubleBackToExitPressed = true
                 Handler(Looper.getMainLooper()).postDelayed(
                     { viewModel.isDoubleBackToExitPressed = false },
-                    resources.getInteger(R.integer.desired_time_interval).toLong(),
+                    resources.getInteger(R.integer.desired_time_interval)
+                        .toLong(),
                 )
             }
         }
@@ -341,7 +362,10 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         viewModel.visitedCountries.observe(this) { visitedCountries: List<VisitedCountry> ->
             binding.includeAppBar.circlePieChart.apply {
                 initPieChart()
-                createPieChartWith(visitedCountries, viewModel.notVisitedCountriesCount)
+                createPieChartWith(
+                    visitedCountries,
+                    viewModel.notVisitedCountriesCount
+                )
                 binding.includeAppBar.circlePieChart.animatePieChart()
             }
             showFloatBtn(visitedCountries)
@@ -476,7 +500,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         // makes all list items collapsed
         for (countryNode: VisitedCountryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
-            viewModel.cityCount = viewModel.cityCount + countryNode.childNode.size
+            viewModel.cityCount =
+                viewModel.cityCount + countryNode.childNode.size
         }
         listAdapter.setList(visitedCountryNodes)
         initTitle()
@@ -501,7 +526,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                     )
                 } ${
                     resources.getQuantityString(
-                        R.plurals.numberOfCountriesOfCitiesVisited, visitedCountryNodes.size,
+                        R.plurals.numberOfCountriesOfCitiesVisited,
+                        visitedCountryNodes.size,
                         visitedCountryNodes.size
                     )
                 }"
@@ -514,7 +540,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
                     )
                 } ${
                     resources.getQuantityString(
-                        R.plurals.numberOfCountriesOfCitiesVisited, visitedCountryNodes.size,
+                        R.plurals.numberOfCountriesOfCitiesVisited,
+                        visitedCountryNodes.size,
                         visitedCountryNodes.size
                     )
                 }"
@@ -528,11 +555,12 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         viewModel.visitedCountriesWithCitiesNode.observe(
             this,
         ) { visitedCountryNodes: List<VisitedCountryNode> ->
-            binding.includeAppBar.toolbarLayout.title = resources.getQuantityString(
-                R.plurals.numberOfCountriesVisited,
-                visitedCountryNodes.size,
-                visitedCountryNodes.size
-            )
+            binding.includeAppBar.toolbarLayout.title =
+                resources.getQuantityString(
+                    R.plurals.numberOfCountriesVisited,
+                    visitedCountryNodes.size,
+                    visitedCountryNodes.size
+                )
         }
     }
 
@@ -555,7 +583,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener, Hom
         return AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
-            // Setting logo drawable for authentication page
+            // Setting logo drawable for authentication page.
             .setLogo(R.drawable.pic_logo)
             .setTheme(R.style.AuthTheme)
             .setTosAndPrivacyPolicyUrls(
