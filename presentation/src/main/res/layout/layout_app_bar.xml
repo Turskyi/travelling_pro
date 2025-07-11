@@ -13,6 +13,7 @@
 
             <io.github.turskyi.travellingpro.widgets.CirclePieChart
                 android:id="@+id/circle_pie_chart"
+                android:layout_marginTop="30dp"
                 style="@style/CirclePieChartStyle" />
 
         </FrameLayout>
