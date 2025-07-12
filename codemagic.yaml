@@ -1,0 +1,28 @@
+workflows:
+  release-workflow:
+    name: Publish to Google Play
+    max_build_duration: 60
+    environment:
+      android_signing:
+        - travelling_pro_keystore_reference
+      groups:
+        - google-play
+      vars:
+        PACKAGE_NAME: "io.github.turskyi.travellingpro"
+        # Path to Java 17.
+        JAVA_HOME: /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+          source: true
+    scripts:
+      ./gradlew bundleRelease
+    artifacts:
+      - presentation/build/outputs/bundle/release/presentation-release.aab
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: production

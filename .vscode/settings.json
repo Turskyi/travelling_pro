@@ -1,0 +1,32 @@
+{
+  "editor.formatOnSave": true,
+  "prettier.singleQuote": true,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 80,
+  "prettier.printWidth": 80,
+  "java.compile.nullAnalysis.mode": "automatic",
+  "prettier.trailingComma": "all",
+  "editor.rulers": [80],
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "spellright.language": ["en"],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext",
+    "jsonc",
+    "Log",
+    "dart",
+    "typescriptreact",
+    "typescript"
+  ],
+  "spellright.parserByClass": {
+    "Log": {
+      "parser": "code"
+    },
+    "dart": {
+      "parser": "code"
+    }
+  }
+}
