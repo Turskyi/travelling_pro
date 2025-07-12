@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -30,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.tasks.Task
 import io.github.turskyi.domain.models.Authorization
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
@@ -159,7 +161,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
 
     private fun registerAuthorization() {
         authorizationResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            contract = ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_IN)
@@ -167,10 +169,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 return@registerForActivityResult
             } else {
                 // Sign in failed
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                val internetSettingsIntent = Intent(
+                    ACTION_WIRELESS_SETTINGS,
+                )
                 if (result.resultCode == RESULT_CANCELED && !isOnline()) {
                     toastLong(R.string.msg_no_internet)
-                    internetResultLauncher.launch(internetSettingsIntent)
+                    internetResultLauncher.launch(
+                        input = internetSettingsIntent,
+                    )
                     return@registerForActivityResult
                 } else {
                     val response: IdpResponse? = IdpResponse.fromResultIntent(
@@ -178,33 +184,54 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                     )
                     when {
                         response == null -> {
-                            // User pressed back button
+                            // For example when user pressed back button.
                             toastLong(R.string.msg_sign_in_cancelled)
-                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
-                            AuthUI.getInstance().signOut(this)
+                            viewModel.onAuthorizationSignedId(
+                                Authorization.IS_SIGNED_OUT,
+                            )
+                            AuthUI.getInstance().signOut(this@HomeActivity)
+                                .addOnCompleteListener { task: Task<Void> ->
+                                    if (task.isSuccessful) {
+                                        launchSignInFlow()
+                                    } else {
+                                        toastLong(
+                                            msg = "Sign-out failed: " +
+                                                    "${task.exception?.localizedMessage}",
+                                        )
+                                    }
+                                }
+
                             return@registerForActivityResult
                         }
 
                         response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
-                            toastLong(R.string.msg_bad_internet)
-                            internetResultLauncher.launch(internetSettingsIntent)
+                            toastLong(msg = R.string.msg_bad_internet)
+                            internetResultLauncher.launch(
+                                input = internetSettingsIntent,
+                            )
                             return@registerForActivityResult
                         }
 
                         response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
-                            toastLong(R.string.msg_bad_internet)
-                            internetResultLauncher.launch(internetSettingsIntent)
-                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            toastLong(msg = R.string.msg_bad_internet)
+                            internetResultLauncher.launch(
+                                input = internetSettingsIntent,
+                            )
+                            viewModel.onAuthorizationSignedId(
+                                Authorization.IS_SIGNED_OUT,
+                            )
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
 
                         else -> {
                             toastLong(
-                                response.error?.localizedMessage
+                                msg = response.error?.localizedMessage
                                     ?: response.error.toString()
                             )
-                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                            viewModel.onAuthorizationSignedId(
+                                Authorization.IS_SIGNED_OUT,
+                            )
                             AuthUI.getInstance().signOut(this)
                             return@registerForActivityResult
                         }
@@ -212,6 +239,19 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 }
             }
         }
+    }
+
+    private fun launchSignInFlow() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
+
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .build()
+
+        authorizationResultLauncher.launch(signInIntent)
     }
 
     private fun registerInternetConnectionLauncher() {
@@ -335,7 +375,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 }
             }
         }
-        if (BuildCompat.isAtLeastT()) {
+        if (SDK_INT >= 33) {
             onBackInvokedDispatcher.registerOnBackInvokedCallback(
                 OnBackInvokedDispatcher.PRIORITY_DEFAULT
             ) {
@@ -566,7 +606,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
 
     private fun initAuthentication() {
         if (isOnline()) {
-            authorizationResultLauncher.launch(getAuthorizationIntent())
+            authorizationResultLauncher.launch(input = getAuthorizationIntent())
         } else {
             toastLong(R.string.msg_no_internet)
             val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
