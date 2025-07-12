@@ -18,3 +18,4 @@ local.properties
 /presentation/release/
 presentation/release
 .kotlin/errors
+domain/bin/

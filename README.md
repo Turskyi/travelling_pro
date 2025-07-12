@@ -1,11 +1,12 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
 [![Build & upload to Firebase App Distribution](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml/badge.svg?event=push)](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Turskyi/travelling_pro)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/travelling_pro">
 
 # Travelling Pro
 
-An Android mobile application to help collect all countries that you have visited and see how many
-countries visited other members of the app.
+An Android mobile application to help collect all countries that you have
+visited and see how many countries visited other members of the app.
 
 ## PROJECT SPECIFICATION
 
@@ -13,7 +14,8 @@ countries visited other members of the app.
 
 • SDK: [Android](https://developer.android.com/studio/intro);
 
-• Interface: [XML](https://developer.android.com/guide/topics/ui/declaring-layout);
+• Interface:
+[XML](https://developer.android.com/guide/topics/ui/declaring-layout);
 
 • State management approach:
 [ViewModel](https://developer.android.com/reference/androidx/lifecycle/ViewModel);
@@ -22,20 +24,24 @@ countries visited other members of the app.
 
 • Database: [Firestore](https://firebase.google.com/docs/firestore);
 
-• Dependency injection: [Koin](https://insert-koin.io/docs/reference/introduction);
+• Dependency injection:
+[Koin](https://insert-koin.io/docs/reference/introduction);
 
-• Reactive programming: [Coroutines](https://developer.android.com/kotlin/coroutines);
+• Reactive programming:
+[Coroutines](https://developer.android.com/kotlin/coroutines);
 
 • Version control system: [Git](https://git-scm.com);
 
 • Git Hosting Service: [GitHub](https://github.com);
 
-• CI/CD: [GitHub Actions](https://docs.github.com/en/actions) is used to deliver new Android
-Package (APK) to [Firebase App Distribution](https://firebase.google.com/docs/app-distribution)
+• CI/CD: [GitHub Actions](https://docs.github.com/en/actions) is used to deliver
+new Android Package (APK) to
+[Firebase App Distribution](https://firebase.google.com/docs/app-distribution)
 after every push to the **dev** branch,
-[Visual Studio App Center](https://docs.microsoft.com/en-us/appcenter/) is used to
-[deliver](https://appcenter.ms/users/Turskyi/apps/Travelling-Pro/build/branches/master)  new
-release app bundle to **Google Play** after every push to **master** branch;
+[Visual Studio App Center](https://docs.microsoft.com/en-us/appcenter/) is used
+to
+[deliver](https://appcenter.ms/users/Turskyi/apps/Travelling-Pro/build/branches/master)
+new release app bundle to **Google Play** after every push to **master** branch;
 
 • App testing platforms:
 [Firebase App Distribution](https://appdistribution.firebase.dev/i/95a4a3bcea0281c7);
@@ -45,16 +51,21 @@ release app bundle to **Google Play** after every push to **master** branch;
 
 • Operating system: [Android](https://www.android.com/);
 
-• Embedded SDK: [Facebook Sharing](https://developers.facebook.com/docs/sharing/android),
+• Embedded SDK:
+[Facebook Sharing](https://developers.facebook.com/docs/sharing/android),
 [Facebook Login](https://developers.facebook.com/docs/facebook-login/overview);
 
-• Object storage service: [Cloud Storage for Firebase](https://firebase.google.com/docs/storage);
+• Object storage service:
+[Cloud Storage for Firebase](https://firebase.google.com/docs/storage);
 
-• Authentication: [FirebaseUI for Auth](https://firebase.google.com/docs/auth/android/firebaseui);
+• Authentication:
+[FirebaseUI for Auth](https://firebase.google.com/docs/auth/android/firebaseui);
 
-• Cloud services: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging);
+• Cloud services:
+[Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging);
 
-• Google Play services: [Location](https://developer.android.com/training/location);
+• Google Play services:
+[Location](https://developer.android.com/training/location);
 
 • UI components: [Lottie](https://lottiefiles.com/what-is-lottie),
 [PhotoView](https://github.com/Baseflow/PhotoView),
@@ -80,6 +91,7 @@ release app bundle to **Google Play** after every push to **master** branch;
 </br>
 
 • Screenshots:
+
 <!--suppress CheckImageSize -->
 <img src="screenshots/device-2020-06-05-085243.png" width="200"  alt="screenshot">
 <img src="screenshots/device-2020-06-05-085456.png" width="200" alt="screenshot">
@@ -92,9 +104,10 @@ release app bundle to **Google Play** after every push to **master** branch;
 <img src="screenshots/device-2020-06-05-094730.png" width="300" alt="screenshot">
 <img src="screenshots/device-2020-06-28-162902.png" width="400" alt="screenshot">
 
-• **Code Readability:** code is easily readable with no unnecessary blank lines, no unused variables
-or methods, and no commented-out code, all variables, methods, and resource IDs are descriptively
-named such that another developer reading the code can easily understand their function.
+• **Code Readability:** code is easily readable with no unnecessary blank lines,
+no unused variables or methods, and no commented-out code, all variables,
+methods, and resource IDs are descriptively named such that another developer
+reading the code can easily understand their function.
 
 ## Download
 
