@@ -18,7 +18,7 @@ workflows:
         - pattern: master
           include: true
           source: true
-    scripts:
+    script: |
       ./gradlew bundleRelease
     artifacts:
       - presentation/build/outputs/bundle/release/presentation-release.aab
