@@ -6,7 +6,7 @@ import retrofit2.http.GET
 
 interface CountriesApi {
     companion object {
-        const val ENDPOINT_NAME = "v2/all"
+        const val ENDPOINT_NAME = "v2/all?fields=name,flag"
     }
     @GET(ENDPOINT_NAME)
     fun getCategoriesFromApi(): Call<CountryListResponse>

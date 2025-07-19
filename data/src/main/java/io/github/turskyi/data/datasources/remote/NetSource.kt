@@ -14,26 +14,34 @@ class NetSource(private val countriesApi: CountriesApi) : KoinComponent {
 
     fun getCountryNetList(
         onComplete: (List<CountryResponse>) -> Unit,
-        onError: (Exception) -> Unit) {
-        countriesApi.getCategoriesFromApi().enqueue(object : Callback<CountryListResponse> {
-            override fun onFailure(call: Call<CountryListResponse>, t: Throwable) {
-                onError(NetworkErrorException(t))
-            }
-
-            override fun onResponse(
-                call: Call<CountryListResponse>,
-                response: Response<CountryListResponse>
-            ) {
-                if (response.isSuccessful) {
-                    if(response.body() != null){
-                        onComplete(response.body()!!)
-                    } else {
-                        onError(NotFoundException())
-                    }
-                } else {
-                    onError(response.code().throwException(response.message()))
+        onError: (Exception) -> Unit
+    ) {
+        countriesApi.getCategoriesFromApi().enqueue(
+            object : Callback<CountryListResponse> {
+                override fun onFailure(
+                    call: Call<CountryListResponse>,
+                    t: Throwable
+                ) {
+                    onError(NetworkErrorException(t))
                 }
-            }
-        })
+
+                override fun onResponse(
+                    call: Call<CountryListResponse>,
+                    response: Response<CountryListResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body() != null) {
+                            onComplete(response.body()!!)
+                        } else {
+                            onError(NotFoundException())
+                        }
+                    } else {
+                        onError(
+                            response.code().throwException(response.message())
+                        )
+                    }
+                }
+            },
+        )
     }
 }
