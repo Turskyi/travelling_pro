@@ -1,6 +1,7 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
 [![Build & upload to Firebase App Distribution](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml/badge.svg?event=push)](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Turskyi/travelling_pro)
+[![Codemagic build status](https://api.codemagic.io/apps/687294b957be760af7e08f04/release-workflow/status_badge.svg)](https://codemagic.io/app/687294b957be760af7e08f04/release-workflow/latest_build)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/travelling_pro">
 
 # Travelling Pro

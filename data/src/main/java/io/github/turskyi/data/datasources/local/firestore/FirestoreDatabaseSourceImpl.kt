@@ -19,7 +19,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
-import com.google.firebase.storage.ktx.storageMetadata
 import io.github.turskyi.data.R
 import io.github.turskyi.data.datasources.local.entities.CityEntity
 import io.github.turskyi.data.datasources.local.entities.CountryEntity
@@ -493,9 +492,9 @@ class FirestoreDatabaseSourceImpl(
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
         val bitmap: Bitmap = BitmapFactory.decodeFile(filePath)
-        val metadata: StorageMetadata = storageMetadata {
-            contentType = application.resources.getString(R.string.image_and_jpg_type)
-        }
+        val metadata: StorageMetadata = StorageMetadata.Builder()
+            .setContentType(application.resources.getString(R.string.image_and_jpg_type))
+            .build()
         val byteArrayOutputStream = ByteArrayOutputStream()
         // check if image more than 200 kb
         if (bitmap.byteCount > 200000) {
