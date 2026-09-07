@@ -42,7 +42,11 @@ fun TravellerEntity.mapEntityToModel(): TravellerModel {
 }
 
 fun CountryResponse.mapNetToDomain(): CountryModel {
-    return CountryModel(shortName = alphaThreeCode, name = name, flag = flag)
+    return CountryModel(
+        shortName = cca3,
+        name = name.common,
+        flag = "https://flagcdn.com/${cca2.lowercase()}.svg"
+    )
 }
 
 fun List<CityEntity>.mapEntitiesToModelList(): MutableList<CityModel> {

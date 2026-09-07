@@ -24,12 +24,16 @@ import io.github.turskyi.travellingpro.BuildConfig
 import io.github.turskyi.travellingpro.R
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 fun View.setDynamicVisibility(visibility: Boolean) = if (visibility) {
+    this.visibility = View.VISIBLE
     this.animate().alpha(1.0f).duration = 2000
 } else {
-    this.animate().alpha(0.0f).duration = 200
+    this.animate().alpha(0.0f).setDuration(200).withEndAction {
+        this.visibility = View.GONE
+    }
 }
 
 fun View.convertViewToBitmap(): Bitmap {

@@ -20,3 +20,4 @@ presentation/release
 .kotlin/errors
 domain/bin/
 /.artifacts/
+/keystore/

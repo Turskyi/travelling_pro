@@ -2,6 +2,8 @@ package io.github.turskyi.travellingpro.features.countries.view.ui
 
 import android.animation.ValueAnimator
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -43,9 +45,20 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun initView() {
         binding = ActivityAllCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // init animated background
+        binding.root.setBackgroundResource(R.drawable.gradient_list)
+        binding.root.post {
+            val layoutBackground: Drawable = binding.root.background
+            if (layoutBackground is AnimationDrawable) {
+                val animationDrawable: AnimationDrawable =
+                    binding.root.background as AnimationDrawable
+                animationDrawable.setEnterFadeDuration(2000)
+                animationDrawable.setExitFadeDuration(4000)
+                animationDrawable.start()
+            }
+        }
         binding.etSearch.isFocusableInTouchMode = true
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.black)
-        adapter.submitList(viewModel.pagedList)
         binding.rvAllCountries.adapter = adapter
         val layoutManager = LinearLayoutManager(this)
         binding.rvAllCountries.layoutManager = layoutManager
@@ -64,7 +77,7 @@ class AllCountriesActivity : AppCompatActivity() {
             adapter.submitList(viewModel.pagedList)
         }
 
-        binding.includeToolbar.toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         adapter.onCountryClickListener = ::addToVisited
@@ -98,6 +111,7 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun initObservers() {
         val emptyListObserver = EmptyListObserver(binding.rvAllCountries, binding.tvNoResults)
         adapter.registerAdapterDataObserver(emptyListObserver)
+        adapter.submitList(viewModel.pagedList)
         viewModel.notVisitedCountriesNumLiveData.observe(this) { notVisitedNum: Int ->
             updateTitle(notVisitedNum)
         }
@@ -129,7 +143,7 @@ class AllCountriesActivity : AppCompatActivity() {
     }
 
     private fun updateTitle(num: Int) {
-        binding.includeToolbar.tvToolbarTitle.text =
+        binding.tvToolbarTitle.text =
             resources.getQuantityString(R.plurals.numberOfCountriesRemain, num, num)
     }
 
@@ -138,10 +152,10 @@ class AllCountriesActivity : AppCompatActivity() {
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
         val width: Int =
-            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+            binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         hideKeyboard()
         binding.etSearch.setText("")
-        binding.includeToolbar.tvToolbarTitle.animate().alpha(1f).duration = 200
+        binding.tvToolbarTitle.animate().alpha(1f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_8),
             resources.getDimension(R.dimen.elevation_1),
@@ -164,8 +178,8 @@ class AllCountriesActivity : AppCompatActivity() {
         binding.rvAllCountries.animate().translationY(0f)
         binding.ibSearch.isSelected = true
         val width: Int =
-            binding.includeToolbar.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
-        binding.includeToolbar.tvToolbarTitle.animate().alpha(0f).duration = 200
+            binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        binding.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),
             resources.getDimension(R.dimen.elevation_8),
@@ -190,5 +204,6 @@ class AllCountriesActivity : AppCompatActivity() {
 
     fun exitOnBackPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 }

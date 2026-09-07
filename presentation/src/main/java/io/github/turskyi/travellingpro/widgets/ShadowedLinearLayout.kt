@@ -10,7 +10,6 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
 import android.widget.LinearLayout
 import io.github.turskyi.travellingpro.R
 
@@ -141,9 +140,9 @@ class ShadowedLinearLayout @JvmOverloads constructor(
         shapeDrawable.paint.color = backgroundColor
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, shapeDrawable.paint)
+            setLayerType(LAYER_TYPE_HARDWARE, shapeDrawable.paint)
         } else {
-            setLayerType(View.LAYER_TYPE_SOFTWARE, shapeDrawable.paint)
+            setLayerType(LAYER_TYPE_SOFTWARE, shapeDrawable.paint)
         }
 
         if (elevation > resources.getDimension(R.dimen.elevation_1) * 2) {
@@ -154,7 +153,6 @@ class ShadowedLinearLayout @JvmOverloads constructor(
                 shadowColor
             )
         }
-        y = (-(elevationValue * 2)).toFloat()
         shapeDrawable.shape = RoundRectShape(outerRadius, null, null)
         val drawable = LayerDrawable(arrayOf<Drawable>(shapeDrawable))
         drawable.setLayerInset(
