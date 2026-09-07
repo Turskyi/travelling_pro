@@ -22,3 +22,4 @@ domain/bin/
 /.artifacts/
 /keystore/
 keysotore
+/.kotlin/sessions/

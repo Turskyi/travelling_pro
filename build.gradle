@@ -74,13 +74,22 @@ subprojects {
 allprojects {
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { stream ->
+        localProperties.load(stream)
+    }
+}
+
 ext {
     getParam = { key ->
-        def value = System.getenv(key) ?: project.findProperty("env.$key")
-        if (value) {
-            println "$key = $value"
-        }
-        return value
+        def value = System.getenv(key)
+            ?: project.findProperty("env.$key")
+            ?: localProperties.getProperty(key)
+            ?: localProperties.getProperty("env.$key")
+            ?: ""
+        return value.toString().trim()
     }
     HOST_URL = getParam("HOST_URL")
 

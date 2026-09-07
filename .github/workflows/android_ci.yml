@@ -9,6 +9,16 @@ jobs:
   build:
     name: Build Travelling Pro Android mobile app
     runs-on: ubuntu-latest
+    env:
+      HOST_URL: https://raw.githubusercontent.com/
+      SIGNING_KEY_DEBUG_PATH: ${{ github.workspace }}/keystore/travelling_debug.keystore
+      SIGNING_KEY_DEBUG_PASSWORD: ${{ secrets.SIGNING_KEY_DEBUG_PASSWORD }}
+      SIGNING_KEY_DEBUG_KEY: ${{ secrets.SIGNING_KEY_DEBUG_KEY }}
+      SIGNING_KEY_DEBUG_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_DEBUG_KEY_PASSWORD }}
+      SIGNING_KEY_RELEASE_PATH: ${{ github.workspace }}/keystore/travelling_release.keystore
+      SIGNING_KEY_RELEASE_PASSWORD: ${{ secrets.SIGNING_KEY_RELEASE_PASSWORD }}
+      SIGNING_KEY_RELEASE_KEY: ${{ secrets.SIGNING_KEY_RELEASE_KEY }}
+      SIGNING_KEY_RELEASE_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_RELEASE_KEY_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v2.3.3
@@ -17,6 +27,15 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin' # Eclipse Temurin https://adoptium.net/
+      - name: Restore signing keystore files
+        shell: bash
+        env:
+          SIGNING_KEY_DEBUG_BASE64: ${{ secrets.SIGNING_KEY_DEBUG_BASE64 }}
+          SIGNING_KEY_RELEASE_BASE64: ${{ secrets.SIGNING_KEY_RELEASE_BASE64 }}
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/keystore"
+          printf '%s' "$SIGNING_KEY_DEBUG_BASE64" | base64 --decode > "$SIGNING_KEY_DEBUG_PATH"
+          printf '%s' "$SIGNING_KEY_RELEASE_BASE64" | base64 --decode > "$SIGNING_KEY_RELEASE_PATH"
       - name: Generate Release APK
         run: ./gradlew assembleRelease
       - name: Upload artifact to Firebase App Distribution
