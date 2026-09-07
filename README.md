@@ -2,6 +2,7 @@
 [![Build & upload to Firebase App Distribution](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml/badge.svg?event=push)](https://github.com/Turskyi/travelling_pro/actions/workflows/android_ci.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Turskyi/travelling_pro)
 [![Codemagic build status](https://api.codemagic.io/apps/687294b957be760af7e08f04/release-workflow/status_badge.svg)](https://codemagic.io/app/687294b957be760af7e08f04/release-workflow/latest_build)
+[![wakatime](https://wakatime.com/badge/user/f9df5074-b4ea-4c17-b001-fff428ab82aa/project/391a9807-ce03-400e-b236-fb498493db51.svg)](https://wakatime.com/badge/user/f9df5074-b4ea-4c17-b001-fff428ab82aa/project/391a9807-ce03-400e-b236-fb498493db51)
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Turskyi/travelling_pro">
 
 # Travelling Pro
