@@ -4,6 +4,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,8 +15,9 @@ import io.github.turskyi.travellingpro.features.travellers.view.adapter.Filtered
 import io.github.turskyi.travellingpro.features.travellers.view.adapter.TravellersPositionalDataSource
 import io.github.turskyi.travellingpro.utils.Event
 import io.github.turskyi.travellingpro.utils.MainThreadExecutor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 
 class TravellersActivityViewModel(private val interactor: TravellersInteractor) : ViewModel() {
 
@@ -23,9 +25,11 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
     val topTravellersPercentLiveData: MutableLiveData<Int>
         get() = _topTravellersPercentLiveData
 
-    private var _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
+    private val _visibilityLoader: MediatorLiveData<Int> = MediatorLiveData<Int>()
     val visibilityLoader: LiveData<Int>
         get() = _visibilityLoader
+
+    private var currentVisibilitySource: LiveData<Int>? = null
 
     private var _visibilityUser: MutableLiveData<Int> = MutableLiveData<Int>()
     val visibilityUser: LiveData<Int>
@@ -83,10 +87,10 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
                 .setPageSize(10)
                 .build()
             // DataSource
-            val dataSource = TravellersPositionalDataSource(interactor)
-            _visibilityLoader = dataSource.visibilityLoader
+            val dataSource = TravellersPositionalDataSource(interactor, viewModelScope)
+            updateVisibilitySource(dataSource.visibilityLoader)
             PagedList.Builder(dataSource, config)
-                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .setFetchExecutor(Dispatchers.IO.asExecutor())
                 .setNotifyExecutor(MainThreadExecutor())
                 .build()
         } else {
@@ -98,12 +102,22 @@ class TravellersActivityViewModel(private val interactor: TravellersInteractor) 
             val filteredDataSource =
                 FilteredTravellersPositionalDataSource(
                     userName = searchQuery,
-                    interactor = interactor
+                    interactor = interactor,
+                    viewModelScope = viewModelScope
                 )
+            updateVisibilitySource(filteredDataSource.visibilityLoader)
             PagedList.Builder(filteredDataSource, config)
-                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .setFetchExecutor(Dispatchers.IO.asExecutor())
                 .setNotifyExecutor(MainThreadExecutor())
                 .build()
+        }
+    }
+
+    private fun updateVisibilitySource(source: LiveData<Int>) {
+        currentVisibilitySource?.let { _visibilityLoader.removeSource(it) }
+        currentVisibilitySource = source
+        _visibilityLoader.addSource(source) { currentVisibility ->
+            _visibilityLoader.value = currentVisibility
         }
     }
 

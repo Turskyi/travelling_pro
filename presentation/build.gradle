@@ -89,7 +89,7 @@ dependencies {
     implementation project(":domain")
     implementation project(':data')
 
-    implementation(libs.kotlin.bom)
+    implementation(platform(libs.kotlin.bom))
 
     // design components
     implementation libs.material
@@ -110,6 +110,7 @@ dependencies {
         exclude module: "play-services-measurement-sdk"
     }
     // To show authentication page with pre-implemented authentication
+    //noinspection LoginCredentials
     implementation libs.firebase.ui.auth
 // performance tracing
     implementation libs.firebase.perf

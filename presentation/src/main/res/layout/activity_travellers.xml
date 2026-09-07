@@ -47,9 +47,13 @@
         android:id="@+id/tv_no_results"
         style="@style/NoResultsTextViewStyle" />
 
-    <com.airbnb.lottie.LottieAnimationView
+    <ProgressBar
         android:id="@+id/pb"
-        style="@style/ProgressBarStyle" />
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/float_btn_visibility"
