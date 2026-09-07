@@ -19,3 +19,4 @@ local.properties
 presentation/release
 .kotlin/errors
 domain/bin/
+/.artifacts/

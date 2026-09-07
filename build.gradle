@@ -3,15 +3,17 @@
 //file:noinspection GrUnresolvedAccess
 buildscript {
     ext {
+        // last version is here [https://play.google.com/console/u/0/developers/6867856033872987263/app/4972072127034375090/releases/overview]
+        version_code = 28
+        version_name = "2.2.8"
+
         // sdk versions
         compile_sdk_version = 36
         skd_preview = "Baklava"
         build_tools_version = "36.0.0"
         min_sdk_version = 23
         target_sdk_version = 36
-        // last version is here [https://play.google.com/console/u/0/developers/6867856033872987263/app/4972072127034375090/releases/overview]
-        version_code = 28
-        version_name = "2.2.8"
+
         applicationId = "io.github.turskyi.travellingpro"
     }
     dependencies {
@@ -60,9 +62,7 @@ subprojects {
                 implementation libs.firebase.storage.ktx
 
                 // authentication (to get current user etc.)
-                implementation(libs.firebase.auth.ktx) {
-                    exclude module: "browser"
-                }
+                implementation libs.firebase.auth.ktx
 
                 // avoids "Service not registered" exception
                 implementation libs.play.services.basement

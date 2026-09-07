@@ -30,7 +30,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.android.gms.tasks.Task
 import io.github.turskyi.domain.models.Authorization
 import io.github.turskyi.travellingpro.R
@@ -161,34 +163,24 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
 
     private fun registerAuthorization() {
         authorizationResultLauncher = registerForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
+            FirebaseAuthUIActivityResultContract(),
+        ) { result: FirebaseAuthUIAuthenticationResult ->
+            val response: IdpResponse? = result.idpResponse
             if (result.resultCode == RESULT_OK) {
                 viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_IN)
                 initPersonalization()
-                return@registerForActivityResult
             } else {
                 // Sign in failed
-                val internetSettingsIntent = Intent(
-                    ACTION_WIRELESS_SETTINGS,
-                )
+                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
                 if (result.resultCode == RESULT_CANCELED && !isOnline()) {
                     toastLong(R.string.msg_no_internet)
-                    internetResultLauncher.launch(
-                        input = internetSettingsIntent,
-                    )
-                    return@registerForActivityResult
+                    internetResultLauncher.launch(internetSettingsIntent)
                 } else {
-                    val response: IdpResponse? = IdpResponse.fromResultIntent(
-                        result.data,
-                    )
                     when {
                         response == null -> {
                             // For example when user pressed back button.
                             toastLong(R.string.msg_sign_in_cancelled)
-                            viewModel.onAuthorizationSignedId(
-                                Authorization.IS_SIGNED_OUT,
-                            )
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                             AuthUI.getInstance().signOut(this@HomeActivity)
                                 .addOnCompleteListener { task: Task<Void> ->
                                     if (task.isSuccessful) {
@@ -200,28 +192,18 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                                         )
                                     }
                                 }
-
-                            return@registerForActivityResult
                         }
 
                         response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
                             toastLong(msg = R.string.msg_bad_internet)
-                            internetResultLauncher.launch(
-                                input = internetSettingsIntent,
-                            )
-                            return@registerForActivityResult
+                            internetResultLauncher.launch(internetSettingsIntent)
                         }
 
                         response.error?.errorCode == ErrorCodes.INVALID_EMAIL_LINK_ERROR -> {
                             toastLong(msg = R.string.msg_bad_internet)
-                            internetResultLauncher.launch(
-                                input = internetSettingsIntent,
-                            )
-                            viewModel.onAuthorizationSignedId(
-                                Authorization.IS_SIGNED_OUT,
-                            )
+                            internetResultLauncher.launch(internetSettingsIntent)
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                             AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
                         }
 
                         else -> {
@@ -229,11 +211,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                                 msg = response.error?.localizedMessage
                                     ?: response.error.toString()
                             )
-                            viewModel.onAuthorizationSignedId(
-                                Authorization.IS_SIGNED_OUT,
-                            )
+                            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                             AuthUI.getInstance().signOut(this)
-                            return@registerForActivityResult
                         }
                     }
                 }
@@ -241,18 +220,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         }
     }
 
-    private fun launchSignInFlow() {
-        val providers = arrayListOf(
-            AuthUI.IdpConfig.GoogleBuilder().build()
-        )
-
-        val signInIntent = AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setAvailableProviders(providers)
-            .build()
-
-        authorizationResultLauncher.launch(signInIntent)
-    }
+    private fun launchSignInFlow() = authorizationResultLauncher.launch(getAuthorizationIntent())
 
     private fun registerInternetConnectionLauncher() {
         internetResultLauncher = registerForActivityResult(
@@ -489,7 +457,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
     }
 
     private fun initPersonalization() {
-        authorizationResultLauncher.unregister()
         toast(R.string.msg_home_signed_in)
         // Successfully signed in
         binding.includeAppBar.toolbarLayout.title =
