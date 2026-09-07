@@ -922,7 +922,7 @@ class FirestoreDatabaseSourceImpl(
         if (user != null) {
             val userRef: DocumentReference = usersRef.document(user.uid)
             userRef.get()
-                .addOnSuccessListener { document: DocumentSnapshot ->
+                .addOnSuccessListener(Dispatchers.IO.asExecutor()) { document: DocumentSnapshot ->
                     val isAdmin = document.getBoolean(KEY_IS_ADMIN) ?: false
 
                     val visibleQuery: Query = usersRef
@@ -945,7 +945,7 @@ class FirestoreDatabaseSourceImpl(
                         taskWithVisibleTravellers
                     }
                     taskWithTravellers
-                        .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
+                        .addOnSuccessListener(Dispatchers.IO.asExecutor()) { queryDocumentSnapshots: QuerySnapshot ->
                             val travellers: MutableList<TravellerEntity> = mutableListOf()
                             for (i in from until queryDocumentSnapshots.size()) {
                                 val snapshot: DocumentSnapshot =
@@ -965,11 +965,11 @@ class FirestoreDatabaseSourceImpl(
                                 traveller.counter
                             }
                             onSuccess(travellers)
-                        }.addOnFailureListener { exception: java.lang.Exception ->
+                        }.addOnFailureListener(Dispatchers.IO.asExecutor()) { exception: java.lang.Exception ->
                             onError.invoke(exception)
                         }
                 }
-                .addOnFailureListener { exception: java.lang.Exception ->
+                .addOnFailureListener(Dispatchers.IO.asExecutor()) { exception: java.lang.Exception ->
                     onError.invoke(exception)
                 }
         } else {
@@ -991,7 +991,7 @@ class FirestoreDatabaseSourceImpl(
             // getting part of the list for pagination
             .limit(requestedLoadSize)
             .get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
+            .addOnSuccessListener(Dispatchers.IO.asExecutor()) { queryDocumentSnapshots ->
                 val travellers: MutableList<TravellerEntity> = mutableListOf()
                 for (i in requestedStartPosition until queryDocumentSnapshots.size()) {
                     val snapshot: DocumentSnapshot = queryDocumentSnapshots.documents[i]
@@ -1010,7 +1010,7 @@ class FirestoreDatabaseSourceImpl(
                         onSuccess(travellers)
                     }
                 }
-            }.addOnFailureListener { exception -> onError.invoke(exception) }
+            }.addOnFailureListener(Dispatchers.IO.asExecutor()) { exception -> onError.invoke(exception) }
     }
 
     override suspend fun setTopTravellersPercent(
@@ -1025,17 +1025,17 @@ class FirestoreDatabaseSourceImpl(
             ).collection(COLLECTION_VISITED_COUNTRIES)
 
             visitedCountriesRef.get()
-                .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
+                .addOnSuccessListener(Dispatchers.IO.asExecutor()) { queryDocumentSnapshots: QuerySnapshot ->
                     val countOfVisitedCountries: Int = queryDocumentSnapshots.size()
                     if (countOfVisitedCountries == 0) {
                         onSuccess(100)
                     } else {
                         // getting total number of all users
-                        usersRef.get().addOnSuccessListener { snapshots: QuerySnapshot ->
+                        usersRef.get().addOnSuccessListener(Dispatchers.IO.asExecutor()) { snapshots: QuerySnapshot ->
                             val userCount: Int = snapshots.size()
                             //   getting number of users with bigger counter
                             usersRef.whereGreaterThan(KEY_COUNTER, countOfVisitedCountries).get()
-                                .addOnSuccessListener { documents: QuerySnapshot ->
+                                .addOnSuccessListener(Dispatchers.IO.asExecutor()) { documents: QuerySnapshot ->
                                     if (userCount == 0) {
                                         onSuccess(100)
                                     } else {
@@ -1044,14 +1044,14 @@ class FirestoreDatabaseSourceImpl(
                                          * than current user */
                                         onSuccess(countOfTopTravellers * 100 / userCount)
                                     }
-                                }.addOnFailureListener { exception: java.lang.Exception ->
+                                }.addOnFailureListener(Dispatchers.IO.asExecutor()) { exception: java.lang.Exception ->
                                     onError.invoke(exception)
                                 }
-                        }.addOnFailureListener { exception: java.lang.Exception ->
+                        }.addOnFailureListener(Dispatchers.IO.asExecutor()) { exception: java.lang.Exception ->
                             onError.invoke(exception)
                         }
                     }
-                }.addOnFailureListener { exception: java.lang.Exception ->
+                }.addOnFailureListener(Dispatchers.IO.asExecutor()) { exception: java.lang.Exception ->
                     onError.invoke(exception)
                 }
         } else {

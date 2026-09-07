@@ -21,3 +21,5 @@ presentation/release
 domain/bin/
 /.artifacts/
 /keystore/
+keysotore
+/.kotlin/sessions/

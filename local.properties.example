@@ -1,0 +1,19 @@
+# Copy this file to local.properties and fill in your local values. This file is intentionally not tracked by Git.
+
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.enableJetifier=true
+kotlin.code.style=official
+
+# Non-sensitive build config
+env.HOST_URL=https://raw.githubusercontent.com/
+
+# For local secrets, add the following lines to local.properties (which is gitignored):
+# SIGNING_KEY_DEBUG_PATH=/absolute/path/to/travelling_debug.keystore
+# SIGNING_KEY_DEBUG_PASSWORD=replace-with-debug-keystore-password
+# SIGNING_KEY_DEBUG_KEY=replace-with-debug-key-alias
+# SIGNING_KEY_DEBUG_KEY_PASSWORD=replace-with-debug-key-password
+# SIGNING_KEY_RELEASE_PATH=/absolute/path/to/travelling_release.keystore
+# SIGNING_KEY_RELEASE_PASSWORD=replace-with-release-keystore-password
+# SIGNING_KEY_RELEASE_KEY=replace-with-release-key-alias
+# SIGNING_KEY_RELEASE_KEY_PASSWORD=replace-with-release-key-password

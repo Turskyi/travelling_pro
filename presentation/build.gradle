@@ -28,19 +28,32 @@ android {
         // to ensure that the translations of Firebase library are relevant to the application
         resourceConfigurations += ['en']
     }
+    def releaseSigningReady = rootProject.hasProperty('SIGNING_KEY_RELEASE_PATH') && rootProject.SIGNING_KEY_RELEASE_PATH?.trim() &&
+            rootProject.hasProperty('SIGNING_KEY_RELEASE_PASSWORD') && rootProject.SIGNING_KEY_RELEASE_PASSWORD?.trim() &&
+            rootProject.hasProperty('SIGNING_KEY_RELEASE_KEY') && rootProject.SIGNING_KEY_RELEASE_KEY?.trim() &&
+            rootProject.hasProperty('SIGNING_KEY_RELEASE_KEY_PASSWORD') && rootProject.SIGNING_KEY_RELEASE_KEY_PASSWORD?.trim()
+    def debugSigningReady = rootProject.hasProperty('SIGNING_KEY_DEBUG_PATH') && rootProject.SIGNING_KEY_DEBUG_PATH?.trim() &&
+            rootProject.hasProperty('SIGNING_KEY_DEBUG_PASSWORD') && rootProject.SIGNING_KEY_DEBUG_PASSWORD?.trim() &&
+            rootProject.hasProperty('SIGNING_KEY_DEBUG_KEY') && rootProject.SIGNING_KEY_DEBUG_KEY?.trim() &&
+            rootProject.hasProperty('SIGNING_KEY_DEBUG_KEY_PASSWORD') && rootProject.SIGNING_KEY_DEBUG_KEY_PASSWORD?.trim()
+
     //noinspection GroovyAssignabilityCheck
     signingConfigs {
-        production {
-            storeFile file(rootProject.SIGNING_KEY_RELEASE_PATH)
-            storePassword rootProject.SIGNING_KEY_RELEASE_PASSWORD
-            keyAlias rootProject.SIGNING_KEY_RELEASE_KEY
-            keyPassword rootProject.SIGNING_KEY_RELEASE_KEY_PASSWORD
+        if (releaseSigningReady) {
+            production {
+                storeFile file(rootProject.SIGNING_KEY_RELEASE_PATH)
+                storePassword rootProject.SIGNING_KEY_RELEASE_PASSWORD
+                keyAlias rootProject.SIGNING_KEY_RELEASE_KEY
+                keyPassword rootProject.SIGNING_KEY_RELEASE_KEY_PASSWORD
+            }
         }
-        dev {
-            storeFile file(rootProject.SIGNING_KEY_DEBUG_PATH)
-            storePassword rootProject.SIGNING_KEY_DEBUG_PASSWORD
-            keyAlias rootProject.SIGNING_KEY_DEBUG_KEY
-            keyPassword rootProject.SIGNING_KEY_DEBUG_KEY_PASSWORD
+        if (debugSigningReady) {
+            dev {
+                storeFile file(rootProject.SIGNING_KEY_DEBUG_PATH)
+                storePassword rootProject.SIGNING_KEY_DEBUG_PASSWORD
+                keyAlias rootProject.SIGNING_KEY_DEBUG_KEY
+                keyPassword rootProject.SIGNING_KEY_DEBUG_KEY_PASSWORD
+            }
         }
     }
 
@@ -50,13 +63,17 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-            signingConfig signingConfigs.production
+            if (releaseSigningReady) {
+                signingConfig signingConfigs.production
+            }
             // used in manifest provider authorities
             resValue "string", "content_provider",
                     "com.facebook.app.FacebookContentProvider2312394202364807"
         }
         debug {
-            signingConfig signingConfigs.dev
+            if (debugSigningReady) {
+                signingConfig signingConfigs.dev
+            }
             // used in manifest provider authorities
             resValue "string", "content_provider",
                     "com.facebook.app.FacebookContentProvider2312394202364807"
@@ -89,7 +106,7 @@ dependencies {
     implementation project(":domain")
     implementation project(':data')
 
-    implementation(libs.kotlin.bom)
+    implementation(platform(libs.kotlin.bom))
 
     // design components
     implementation libs.material
@@ -110,6 +127,7 @@ dependencies {
         exclude module: "play-services-measurement-sdk"
     }
     // To show authentication page with pre-implemented authentication
+    //noinspection LoginCredentials
     implementation libs.firebase.ui.auth
 // performance tracing
     implementation libs.firebase.perf
