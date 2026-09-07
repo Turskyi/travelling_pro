@@ -1,12 +1,14 @@
 package io.github.turskyi.travellingpro.features.countries.view.adapter
 
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PositionalDataSource
 import io.github.turskyi.domain.interactors.CountriesInteractor
 import io.github.turskyi.travellingpro.entities.Country
 import io.github.turskyi.travellingpro.utils.extensions.mapModelListToCountryList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Timer
 import kotlin.concurrent.schedule
@@ -24,7 +26,8 @@ internal class CountriesPositionalDataSource(
         params: LoadInitialParams,
         callback: LoadInitialCallback<Country>
     ) {
-        viewModelScope.launch {
+        _visibilityLoader.postValue(VISIBLE)
+        viewModelScope.launch(Dispatchers.IO) {
             interactor.setCountries(
                 params.requestedLoadSize,
                 params.requestedStartPosition,
@@ -49,7 +52,7 @@ internal class CountriesPositionalDataSource(
         params: LoadRangeParams,
         callback: LoadRangeCallback<Country>
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             interactor.setCountries(
                 params.startPosition + params.loadSize,
                 params.startPosition,

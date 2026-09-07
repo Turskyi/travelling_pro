@@ -2,21 +2,31 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
-    style="@style/CoordinatorLayoutStyle"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animationCache="true"
+    android:background="@android:color/black"
     tool:context=".features.countries.view.ui.AllCountriesActivity"
     tool:keep="@layout/activity_all_countries">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_16">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            style="@style/CoordinatorLayoutStyle"
-            app:layout_scrollFlags="scroll|snap|enterAlways">
+            style="@style/CollapsingToolbarLayoutStyle">
 
-            <include
-                android:id="@+id/include_toolbar"
-                layout="@layout/layout_toolbar" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/ToolbarStyle"
+                android:layout_height="@dimen/height_toolbar"
+                android:fitsSystemWindows="true">
+
+                <TextView
+                    android:id="@+id/tvToolbarTitle"
+                    style="@style/ToolbarTitleStyle" />
+            </androidx.appcompat.widget.Toolbar>
 
             <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
                 android:id="@+id/sllSearch"
@@ -39,15 +49,23 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_all_countries"
-        style="@style/RecyclerViewStyle" />
+        style="@style/RecyclerViewStyle"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <TextView
         android:id="@+id/tv_no_results"
-        style="@style/NoResultsTextViewStyle" />
+        style="@style/NoResultsTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-    <com.airbnb.lottie.LottieAnimationView
+    <ProgressBar
         android:id="@+id/pb"
-        style="@style/ProgressBarStyle" />
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/float_btn_info"
@@ -58,4 +76,3 @@
         app:srcCompat="@drawable/btn_info_ripple"
         tool:visibility="visible" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

@@ -3,6 +3,7 @@ package io.github.turskyi.travellingpro.features.countries.viewmodel
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,8 +17,8 @@ import io.github.turskyi.travellingpro.utils.MainThreadExecutor
 import io.github.turskyi.travellingpro.utils.extensions.mapToModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 
 class AllCountriesActivityViewModel(private val interactor: CountriesInteractor) : ViewModel() {
 
@@ -25,9 +26,11 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
     val notVisitedCountriesNumLiveData: MutableLiveData<Int>
         get() = _notVisitedCountriesNumLiveData
 
-    private var _visibilityLoader: MutableLiveData<Int> = MutableLiveData<Int>()
+    private val _visibilityLoader: MediatorLiveData<Int> = MediatorLiveData<Int>()
     val visibilityLoader: LiveData<Int>
         get() = _visibilityLoader
+
+    private var currentVisibilitySource: LiveData<Int>? = null
 
     var pagedList: PagedList<Country>
 
@@ -58,9 +61,9 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
             .build()
         // DataSource
         val dataSource = CountriesPositionalDataSource(interactor, viewModelScope)
-        _visibilityLoader = dataSource.visibilityLoader
+        updateVisibilitySource(dataSource.visibilityLoader)
         PagedList.Builder(dataSource, config)
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .setFetchExecutor(Dispatchers.IO.asExecutor())
             .setNotifyExecutor(MainThreadExecutor())
             .build()
     } else {
@@ -75,10 +78,19 @@ class AllCountriesActivityViewModel(private val interactor: CountriesInteractor)
                 interactor = interactor,
                 viewModelScope = viewModelScope,
             )
+        updateVisibilitySource(filteredDataSource.visibilityLoader)
         PagedList.Builder(filteredDataSource, config)
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .setFetchExecutor(Dispatchers.IO.asExecutor())
             .setNotifyExecutor(MainThreadExecutor())
             .build()
+    }
+
+    private fun updateVisibilitySource(source: LiveData<Int>) {
+        currentVisibilitySource?.let { _visibilityLoader.removeSource(it) }
+        currentVisibilitySource = source
+        _visibilityLoader.addSource(source) { currentVisibility ->
+            _visibilityLoader.value = currentVisibility
+        }
     }
 
     private fun setNotVisitedCountriesNum() = viewModelScope.launch {
