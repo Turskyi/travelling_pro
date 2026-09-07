@@ -8,7 +8,7 @@ buildscript {
         version_name = "2.2.8"
 
         // sdk versions
-        compile_sdk_version = 36
+        compile_sdk_version = 37
         skd_preview = "Baklava"
         build_tools_version = "36.0.0"
         min_sdk_version = 23
