@@ -33,7 +33,7 @@ import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.IdpResponse
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import io.github.turskyi.domain.models.Authorization
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.ActivityHomeBinding
@@ -83,7 +83,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         registerActivitiesForResult()
-        checkPermissionAndInitAuthentication(this@HomeActivity)
+        if (savedInstanceState == null) {
+            checkPermissionAndInitAuthentication(this@HomeActivity)
+        }
         initView()
         initObservers()
         initListeners()
@@ -182,16 +184,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                             toastLong(R.string.msg_sign_in_cancelled)
                             viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                             AuthUI.getInstance().signOut(this@HomeActivity)
-                                .addOnCompleteListener { task: Task<Void> ->
-                                    if (task.isSuccessful) {
-                                        launchSignInFlow()
-                                    } else {
-                                        toastLong(
-                                            msg = "Sign-out failed: " +
-                                                    "${task.exception?.localizedMessage}",
-                                        )
-                                    }
-                                }
                         }
 
                         response.error?.errorCode == ErrorCodes.NO_NETWORK -> {
@@ -219,8 +211,6 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             }
         }
     }
-
-    private fun launchSignInFlow() = authorizationResultLauncher.launch(getAuthorizationIntent())
 
     private fun registerInternetConnectionLauncher() {
         internetResultLauncher = registerForActivityResult(
@@ -431,7 +421,9 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             // access to [preferencesFlow] must be in background thread
             lifecycleScope.launch(Dispatchers.IO) {
 //"first()" The terminal operator that returns the first element emitted by the flow and then cancels flow's collection.
-                if (viewModel.preferencesFlow.first().authorization == Authorization.IS_SIGNED_IN) {
+                if (viewModel.preferencesFlow.first().authorization == Authorization.IS_SIGNED_IN
+                    && FirebaseAuth.getInstance().currentUser != null
+                ) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         initPersonalization()
                     }
