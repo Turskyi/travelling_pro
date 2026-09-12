@@ -32,7 +32,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import java.io.ByteArrayOutputStream
 
@@ -414,18 +413,38 @@ class FirestoreDatabaseSourceImpl(
                     .document(shortName)
             countryRef.update(KEY_IS_VISITED, false)
                 .addOnSuccessListener {
-                    /*
-                     * The [runBlocking] function blocks the current thread
-                     * until the code it contains has finished running,
-                     * it allows us to launch many coroutines in one thread
-                     */
-                    runBlocking {
-                        applicationScope.launch(Dispatchers.IO) {
-                            decrementTravellerVisitedCounter(user, onSuccess, onError)
+                    var completed = 0
+                    var failed = false
+
+                    fun onSubTaskFinished() {
+                        completed += 1
+                        if (completed == 2 && !failed) {
+                            onSuccess.invoke()
                         }
-                        deleteCitiesByCountry(user, parentId, onSuccess, onError)
                     }
-                }.addOnFailureListener { exception -> onError.invoke(exception) }
+
+                    fun onSubTaskFailure(exception: Exception) {
+                        if (!failed) {
+                            failed = true
+                            onError.invoke(exception)
+                        }
+                    }
+
+                    applicationScope.launch(Dispatchers.IO) {
+                        decrementTravellerVisitedCounter(
+                            user,
+                            onSuccess = { onSubTaskFinished() },
+                            onError = { onSubTaskFailure(it) },
+                        )
+                    }
+                    deleteCitiesByCountry(
+                        user,
+                        parentId,
+                        onSuccess = { onSubTaskFinished() },
+                        onError = { onSubTaskFailure(it) },
+                    )
+                }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())

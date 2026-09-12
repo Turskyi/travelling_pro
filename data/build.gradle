@@ -58,24 +58,24 @@ dependencies {
     implementation project(':domain')
 
     // Koin for Android
-    api("io.insert-koin:koin-android:$koin_android_version")
+    api(libs.koin.android.v410)
     // Koin core features
     api("io.insert-koin:koin-core:$koin_core_version")
 
     // network
     api "com.squareup.okhttp3:okhttp:$okhttp_version"
-    api "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
-    api "com.squareup.retrofit2:retrofit:$retrofit_version"
-    api "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    api "com.google.code.gson:gson:$gson_version"
-    api "com.auth0:java-jwt:$jwt_version"
+    api libs.logging.interceptor
+    api libs.retrofit
+    api libs.converter.gson
+    api libs.gson
+    api libs.java.jwt
 
     // Preferences DataStore (SharedPreferences like APIs)
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation(libs.datastore.preferences)
     implementation libs.core.ktx
 
     // test
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    testImplementation libs.junit
+    androidTestImplementation libs.junit.v121
+    androidTestImplementation libs.espresso.core.v361
 }

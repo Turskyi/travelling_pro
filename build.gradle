@@ -4,8 +4,8 @@
 buildscript {
     ext {
         // last version is here [https://play.google.com/console/u/0/developers/6867856033872987263/app/4972072127034375090/releases/overview]
-        version_code = 30
-        version_name = "2.3.0"
+        version_code = 31
+        version_name = "2.3.1"
 
         // sdk versions
         compile_sdk_version = 37
