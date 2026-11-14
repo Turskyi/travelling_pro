@@ -1,6 +1,6 @@
 [versions]
 activityKtx = "1.13.0"
-agp = "9.4.0"
+agp = "9.5.1"
 android = "18.3.0"
 androidxJunit = "1.2.1"
 appcompat = "1.8.0"
