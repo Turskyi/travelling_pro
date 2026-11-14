@@ -9,13 +9,13 @@ Rule: Never commit any changes.
 
 This file documents the required safety policy for automation interacting with this repo.
 
+### Naming Convention
+
+- Kotlin source file names must match the name of the primary class declared in the file.
+
 ### File Maintenance & Guidelines Limit
 
 - The `AGENTS.md` file must never exceed 200 lines, and this rule must always be
   placed at the very end of the file (and must not be placed below line 200). If
   a new rule needs to be added, concise existing content or remove less critical
   rules to remain strictly under the 200 line limit.
-
-### Naming Convention
-
-- Kotlin source file names must match the name of the primary class declared in the file.

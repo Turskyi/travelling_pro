@@ -586,8 +586,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             .setLogo(R.drawable.pic_logo)
             .setTheme(R.style.AuthTheme)
             .setTosAndPrivacyPolicyUrls(
-//                TODO: replace with Terms of service
-                getString(R.string.privacy_web_page),
+                getString(R.string.terms_web_page),
                 getString(R.string.privacy_web_page)
             )
             .build()
