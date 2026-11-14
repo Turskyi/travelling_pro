@@ -12,12 +12,16 @@ repositories {
 }
 
 compileKotlin {
+    //noinspection GrDeprecatedAPIUsage
     kotlinOptions {
+        //noinspection GrDeprecatedAPIUsage
         jvmTarget = "11"
     }
 }
 compileTestKotlin {
+    //noinspection GrDeprecatedAPIUsage
     kotlinOptions {
+        //noinspection GrDeprecatedAPIUsage
         jvmTarget = "11"
     }
 }

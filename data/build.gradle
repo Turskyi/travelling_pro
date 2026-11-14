@@ -36,6 +36,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
+        //noinspection GrDeprecatedAPIUsage
         jvmTarget = '17'
     }
     namespace 'io.github.turskyi.data'
