@@ -123,6 +123,24 @@ To temporarily disable billing or unlink your project from Google Cloud Billing 
 
 ![Disable Billing Instructions](documentation/google-cloud-billing-disable.png)
 
+### Firebase Storage Security Rules
+
+The live security rules on the [Firebase Console Rules Editor](https://console.firebase.google.com/project/travelling-the-countries/storage/travelling-the-countries.appspot.com/rules) enforce authentication and a strict 2 MB file size limit to prevent runaway storage costs:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null && request.resource.size < 2 * 1024 * 1024;
+    }
+  }
+}
+```
+
+> **Note for Agents**: Keep this snippet synchronized with the live Firebase Console rules if any storage modifications are made.
+> **Tip**: The **"Authenticated"** toggle on the left-side Rules Playground simulator in the Firebase console can be ignored or left in either state; it only affects local browser testing simulations and does not alter live rule enforcement on physical devices.
+
 ## Download
 
 <a href="https://play.google.com/store/apps/details?id=io.github.turskyi.travellingpro" target="_blank">
