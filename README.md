@@ -111,6 +111,18 @@ no unused variables or methods, and no commented-out code, all variables,
 methods, and resource IDs are descriptively named such that another developer
 reading the code can easily understand their function.
 
+## Cost Control & Billing Management
+
+To temporarily disable billing or unlink your project from Google Cloud Billing (preventing any accidental charges during testing/development):
+
+1. Go to the [Google Cloud Billing Account Management Console](https://console.cloud.google.com/billing/01E8CC-D8671F-7BDD64/manage?project=travelling-the-countries).
+2. Scroll down to **Projects linked to this billing account**.
+3. Locate your project (`travelling-the-countries`).
+4. Click the three-dot menu (**`[⋮]`**) under the **Actions** column next to your project.
+5. Click **Disable billing**.
+
+![Disable Billing Instructions](documentation/google-cloud-billing-disable.png)
+
 ## Download
 
 <a href="https://play.google.com/store/apps/details?id=io.github.turskyi.travellingpro" target="_blank">

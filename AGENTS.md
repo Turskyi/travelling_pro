@@ -13,6 +13,11 @@ This file documents the required safety policy for automation interacting with t
 
 - Kotlin source file names must match the name of the primary class declared in the file.
 
+### Cost & Financial Safety
+
+- **Zero/Low Cost Constraint**: Agents must prioritize keeping cloud infrastructure (Firebase, Firestore, Storage) completely free within free-tier limits.
+- **Strict $1.00 Liability Cap**: Accidental mistakes or bugs must never exceed a maximum cost cap of $1.00. Agents must ensure network and storage operations are robust and free of infinite loops.
+
 ### File Maintenance & Guidelines Limit
 
 - The `AGENTS.md` file must never exceed 200 lines, and this rule must always be
