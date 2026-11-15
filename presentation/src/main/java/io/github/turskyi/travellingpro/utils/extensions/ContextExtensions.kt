@@ -7,7 +7,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
-import android.net.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -118,40 +121,20 @@ fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG
 @Suppress("BooleanMethodIsAlwaysInverted")
 fun Context.isOnline(): Boolean {
     if (this.getSystemService(Context.CONNECTIVITY_SERVICE) is ConnectivityManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val connectivityManager: ConnectivityManager =
-                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager: ConnectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
 //            TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
+        @SuppressLint("MissingPermission")
+        val network: Network? = connectivityManager.activeNetwork
+        return if (network != null) {
+            //TODO: Handle warning "Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
             @SuppressLint("MissingPermission")
-            val network: Network? = connectivityManager.activeNetwork
-            return if (network != null) {
-                //TODO: Handle warning "Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
-                @SuppressLint("MissingPermission")
-                val networkCapabilities: NetworkCapabilities? =
-                    connectivityManager.getNetworkCapabilities(network)
-                return if (networkCapabilities != null) {
-                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                            || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                } else false
-            } else false
-        } else {
-            // Initial Value
-            var isConnected = false
-
-            val connectivityManager: ConnectivityManager =
-                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-            @Suppress("DEPRECATION")
-            //TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
-            @SuppressLint("MissingPermission")
-            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-            @Suppress("DEPRECATION")
-            if (activeNetwork != null && activeNetwork.isConnected) {
-                isConnected = true
-            }
-            return isConnected
-        }
+            val networkCapabilities: NetworkCapabilities? =
+                connectivityManager.getNetworkCapabilities(network)
+            return networkCapabilities != null && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                    || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+        } else false
     } else {
         return false
     }
