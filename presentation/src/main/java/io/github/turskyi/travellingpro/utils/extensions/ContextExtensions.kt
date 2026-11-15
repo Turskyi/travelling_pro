@@ -1,6 +1,5 @@
 package io.github.turskyi.travellingpro.utils.extensions
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.DialogInterface
@@ -77,13 +76,20 @@ fun Context.convertPictureToSpannableString(imgRes: Int): SpannableString {
     return spannableString
 }
 
-fun <T> Context.openActivityWithObject(destination: Class<T>, argId: String, extra: Parcelable) {
+fun <T> Context.openActivityWithObject(
+    destination: Class<T>,
+    argId: String,
+    extra: Parcelable
+) {
     val intent = Intent(this, destination)
     intent.putExtra(argId, extra)
     startActivity(intent)
 }
 
-fun <T> Context.openActivityWithArgs(destination: Class<T>, extras: Bundle.() -> Unit = {}) {
+fun <T> Context.openActivityWithArgs(
+    destination: Class<T>,
+    extras: Bundle.() -> Unit = {}
+) {
     val intent = Intent(this, destination)
     intent.putExtras(Bundle().apply(extras))
     startActivity(intent)
@@ -106,13 +112,15 @@ fun Context.toast(@StringRes msgResId: Int) {
     Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
 }
 
-fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+fun Context.toast(msg: String) =
+    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
 fun Context.toastLong(@StringRes msgResId: Int) {
     Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
 }
 
-fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+fun Context.toastLong(msg: String) =
+    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
 /**
  * @Description
@@ -124,15 +132,14 @@ fun Context.isOnline(): Boolean {
         val connectivityManager: ConnectivityManager =
             this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-//            TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
-        @SuppressLint("MissingPermission")
         val network: Network? = connectivityManager.activeNetwork
         return if (network != null) {
-            //TODO: Handle warning "Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
-            @SuppressLint("MissingPermission")
+
             val networkCapabilities: NetworkCapabilities? =
                 connectivityManager.getNetworkCapabilities(network)
-            networkCapabilities != null && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            networkCapabilities != null && (networkCapabilities.hasTransport(
+                NetworkCapabilities.TRANSPORT_CELLULAR
+            )
                     || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
         } else false
     } else {
