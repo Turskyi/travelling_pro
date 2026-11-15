@@ -60,6 +60,7 @@
     <string name="dialog_btn_ok">OK</string>
     <string name="dialog_btn_ok_ready">OK ?</string>
     <string name="dialog_btn_not_ok">not OK</string>
+    <string name="btn_sign_out">Sign Out</string>
     <!-- END of default strings -->
 
     <!-- START home screen -->

@@ -144,7 +144,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                     viewModel.isPermissionGranted = true
                     initAuthentication()
                 } else {
-                    requestPermission(this)
+                    toastLong(R.string.msg_gps_permission_denied)
+                    binding.pb.visibility = View.GONE
+                    binding.includeAppBar.toolbarLayout.title = getString(
+                        R.string.home_onboarding_title_authorization,
+                    )
+                    binding.btnSignOut.visibility = View.VISIBLE
+                    viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                    AuthUI.getInstance().signOut(this)
                 }
             }
         }
@@ -168,11 +175,15 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             FirebaseAuthUIActivityResultContract(),
         ) { result: FirebaseAuthUIAuthenticationResult ->
             val response: IdpResponse? = result.idpResponse
-            if (result.resultCode == RESULT_OK) {
+            if (result.resultCode == RESULT_OK || FirebaseAuth.getInstance().currentUser != null) {
+                binding.pb.visibility = View.GONE
+                binding.btnSignOut.visibility = View.GONE
                 viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_IN)
                 initPersonalization()
             } else {
-                // Sign in failed
+                // Sign in failed or cancelled
+                binding.pb.visibility = View.GONE
+                binding.btnSignOut.visibility = View.VISIBLE
                 val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
                 if (result.resultCode == RESULT_CANCELED && !isOnline()) {
                     toastLong(R.string.msg_no_internet)
@@ -217,20 +228,24 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             ActivityResultContracts.StartActivityForResult()
         ) { internetResult: ActivityResult ->
             // User pressed back button on his phone's internet settings page
-            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
-                internetResultLauncher.unregister()
-                initPersonalization()
-                return@registerForActivityResult
-            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
-                toastLong(R.string.msg_no_internet)
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
-                internetResultLauncher.launch(internetSettingsIntent)
-                return@registerForActivityResult
-            } else {
-                // this case is never happened before
-                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
-                AuthUI.getInstance().signOut(this)
-                return@registerForActivityResult
+            when (internetResult.resultCode) {
+                RESULT_CANCELED if isOnline() -> {
+                    internetResultLauncher.unregister()
+                    initPersonalization()
+                    return@registerForActivityResult
+                }
+                RESULT_CANCELED if !isOnline() -> {
+                    toastLong(R.string.msg_no_internet)
+                    val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                    internetResultLauncher.launch(internetSettingsIntent)
+                    return@registerForActivityResult
+                }
+                else -> {
+                    // this case is never happened before
+                    viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                    AuthUI.getInstance().signOut(this)
+                    return@registerForActivityResult
+                }
             }
         }
     }
@@ -350,6 +365,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 )
             }
         }
+        binding.btnSignOut.setOnClickListener {
+            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+            AuthUI.getInstance().signOut(this)
+            initAuthentication()
+        }
     }
 
     private fun initObservers() {
@@ -376,6 +396,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             val errorMessage: String? = event.getMessageIfNotHandled()
             if (errorMessage != null) {
                 toastLong(errorMessage)
+                binding.pb.visibility = View.GONE
+                binding.btnSignOut.visibility = View.VISIBLE
                 viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                 AuthUI.getInstance().signOut(this)
             }
@@ -499,8 +521,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         // makes all list items collapsed
         for (countryNode: VisitedCountryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
-            viewModel.cityCount =
-                viewModel.cityCount + countryNode.childNode.size
+            viewModel.cityCount += countryNode.childNode.size
         }
         listAdapter.setList(visitedCountryNodes)
         initTitle()
@@ -565,6 +586,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
 
     private fun initAuthentication() {
         if (isOnline()) {
+            binding.pb.visibility = View.VISIBLE
+            binding.btnSignOut.visibility = View.GONE
             authorizationResultLauncher.launch(input = getAuthorizationIntent())
         } else {
             toastLong(R.string.msg_no_internet)
