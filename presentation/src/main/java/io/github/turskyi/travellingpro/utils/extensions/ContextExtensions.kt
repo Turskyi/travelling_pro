@@ -39,7 +39,7 @@ fun Context.isFacebookInstalled(): Boolean {
             )
         }
         true
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
         false
     }
 }
@@ -132,7 +132,7 @@ fun Context.isOnline(): Boolean {
             @SuppressLint("MissingPermission")
             val networkCapabilities: NetworkCapabilities? =
                 connectivityManager.getNetworkCapabilities(network)
-            return networkCapabilities != null && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            networkCapabilities != null && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
                     || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
         } else false
     } else {
