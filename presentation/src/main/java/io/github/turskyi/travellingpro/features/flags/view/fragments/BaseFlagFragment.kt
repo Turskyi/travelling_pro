@@ -8,14 +8,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.OnClickListener
+import android.view.View.OnTouchListener
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.webkit.WebViewClient
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideApp
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
@@ -127,6 +134,31 @@ open class BaseFlagFragment : Fragment() {
                     .error(R.drawable.ic_broken_image)
                     .priority(Priority.IMMEDIATE)
             )
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    binding.ivEnlargedFlag.post {
+                        if (isAdded) {
+                            showTheFlag(countries, position)
+                        }
+                    }
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+            })
             .into(binding.ivEnlargedFlag)
     }
 
