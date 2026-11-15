@@ -11,20 +11,21 @@ import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.LinearLayout
+import androidx.core.content.withStyledAttributes
 import io.github.turskyi.travellingpro.R
 
 /**
- * layout with colored shadow
+ * layout with coloured shadow
  * */
 class ShadowedLinearLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
-    private var shadowColor: Int
-    private var containerBackgroundColor: Int
-    private var containerCornerRadius: Float
-    private var shadowRadius: Float
-    private var containerElevation: Float
-    private var shadowGravity: String?
+    private var shadowColor: Int = Color.BLACK
+    private var containerBackgroundColor: Int = Color.WHITE
+    private var containerCornerRadius: Float = 0f
+    private var shadowRadius: Float = 12f
+    private var containerElevation: Float = 12f
+    private var shadowGravity: String? = null
     private var shadowMarginTop: Float = 0f
     private var shadowMarginBottom: Float = 0f
     private var shadowMarginStart: Float = 0f
@@ -73,25 +74,65 @@ class ShadowedLinearLayout @JvmOverloads constructor(
     }
 
     init {
-        /* populate values from xml attributes */
-        val array = context.obtainStyledAttributes(attrs, R.styleable.ShadowedLinearLayout)
-        containerBackgroundColor =
-            array.getColor(R.styleable.ShadowedLinearLayout_containerBackgroundColor, Color.WHITE)
-        containerCornerRadius =
-            array.getDimension(R.styleable.ShadowedLinearLayout_containerCornerRadius, 0f)
-        shadowRadius = array.getDimension(R.styleable.ShadowedLinearLayout_shadowRadius, 12f)
-        shadowColor = array.getColor(R.styleable.ShadowedLinearLayout_shadowColor, Color.BLACK)
-        containerElevation =
-            array.getDimension(R.styleable.ShadowedLinearLayout_containerElevation, 12f)
-        shadowGravity = array.getString(R.styleable.ShadowedLinearLayout_shadowGravity)
-        shadowMarginStart =
-            array.getDimension(R.styleable.ShadowedLinearLayout_shadowMarginStart, 0f)
-        shadowMarginTop = array.getDimension(R.styleable.ShadowedLinearLayout_shadowMarginTop, 0f)
-        shadowMarginEnd = array.getDimension(R.styleable.ShadowedLinearLayout_shadowMarginEnd, 0f)
-        shadowMarginBottom =
-            array.getDimension(R.styleable.ShadowedLinearLayout_shadowMarginBottom, 0f)
-        scaleViewOnElevationChange =
-            array.getBoolean(R.styleable.ShadowedLinearLayout_scaleViewOnElevationChange, true)
+        /* populate values from XML attributes */
+        context.withStyledAttributes(
+            attrs,
+            R.styleable.ShadowedLinearLayout,
+        ) {
+            containerBackgroundColor =
+                getColor(
+                    R.styleable.ShadowedLinearLayout_containerBackgroundColor,
+                    containerBackgroundColor
+                )
+            containerCornerRadius =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_containerCornerRadius,
+                    containerCornerRadius
+                )
+            shadowRadius =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_shadowRadius,
+                    shadowRadius
+                )
+            shadowColor = getColor(
+                R.styleable.ShadowedLinearLayout_shadowColor,
+                shadowColor
+            )
+            containerElevation =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_containerElevation,
+                    containerElevation
+                )
+            shadowGravity =
+                getString(
+                    R.styleable.ShadowedLinearLayout_shadowGravity,
+                )
+            shadowMarginStart =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_shadowMarginStart,
+                    shadowMarginStart
+                )
+            shadowMarginTop =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_shadowMarginTop,
+                    shadowMarginTop
+                )
+            shadowMarginEnd =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_shadowMarginEnd,
+                    shadowMarginEnd
+                )
+            shadowMarginBottom =
+                getDimension(
+                    R.styleable.ShadowedLinearLayout_shadowMarginBottom,
+                    shadowMarginBottom
+                )
+            scaleViewOnElevationChange =
+                getBoolean(
+                    R.styleable.ShadowedLinearLayout_scaleViewOnElevationChange,
+                    scaleViewOnElevationChange
+                )
+        }
 
         background =
             generateBackgroundWithShadow(
@@ -101,15 +142,13 @@ class ShadowedLinearLayout @JvmOverloads constructor(
                 containerElevation,
                 shadowGravity
             )
-
-        array.recycle()
     }
 
     /**
      * @return drawable
-     * @param backgroundColor drawable background color
+     * @param backgroundColor drawable background colour
      * drawable contains shadow with
-     * @param shadowColor  shadow color
+     * @param shadowColor  shadow colour
      * @param shadowRadius  radius of shadow.
      * @param gravity shadow will be visible from view side
      * @param elevation describes shadow size*/
@@ -133,8 +172,10 @@ class ShadowedLinearLayout @JvmOverloads constructor(
 
         val shapeDrawablePadding = Rect()
 
-        shapeDrawablePadding.right = (makeHorizontalOffset(elevation) + shadowMarginEnd).toInt()
-        shapeDrawablePadding.left = (makeHorizontalOffset(elevation) + shadowMarginStart).toInt()
+        shapeDrawablePadding.right =
+            (makeHorizontalOffset(elevation) + shadowMarginEnd).toInt()
+        shapeDrawablePadding.left =
+            (makeHorizontalOffset(elevation) + shadowMarginStart).toInt()
 
         val shadowOffset: Float = when (shadowGravity) {
             Gravity.CENTER -> 0f
@@ -142,8 +183,10 @@ class ShadowedLinearLayout @JvmOverloads constructor(
             Gravity.BOTTOM -> elevationValue / 1.5f
             else -> elevationValue / 1.5f
         }
-        shapeDrawablePadding.top = (elevationValue * 2 + shadowMarginTop).toInt()
-        shapeDrawablePadding.bottom = (elevationValue * 2 + shadowMarginBottom).toInt()
+        shapeDrawablePadding.top =
+            (elevationValue * 2 + shadowMarginTop).toInt()
+        shapeDrawablePadding.bottom =
+            (elevationValue * 2 + shadowMarginBottom).toInt()
         val shapeDrawable = ShapeDrawable()
 
         shapeDrawable.setPadding(shapeDrawablePadding)
@@ -163,7 +206,11 @@ class ShadowedLinearLayout @JvmOverloads constructor(
                 shadowColor
             )
         }
-        shapeDrawable.shape = RoundRectShape(outerRadius, null, null)
+        shapeDrawable.shape = RoundRectShape(
+            outerRadius,
+            null,
+            null,
+        )
         val drawable = LayerDrawable(arrayOf<Drawable>(shapeDrawable))
         drawable.setLayerInset(
             0,
