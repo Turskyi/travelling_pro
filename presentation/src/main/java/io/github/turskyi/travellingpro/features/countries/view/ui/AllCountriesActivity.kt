@@ -34,6 +34,7 @@ class AllCountriesActivity : AppCompatActivity() {
     private val adapter: AllCountriesAdapter by inject()
 
     private lateinit var binding: ActivityAllCountriesBinding
+    private var toolbarNavigationIcon: Drawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,7 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun initView() {
         binding = ActivityAllCountriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        toolbarNavigationIcon = binding.toolbar.navigationIcon
         // init animated background
         binding.root.setBackgroundResource(R.drawable.gradient_list)
         binding.root.post {
@@ -152,8 +154,7 @@ class AllCountriesActivity : AppCompatActivity() {
         binding.rvAllCountries.animate()
             .translationY((-1 * resources.getDimensionPixelSize(R.dimen.offset_20)).toFloat())
         binding.ibSearch.isSelected = false
-        val width: Int =
-            binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width = binding.etSearch.width
         hideKeyboard()
         binding.etSearch.setText("")
         binding.tvToolbarTitle.animate().alpha(1f).duration = 200
@@ -173,6 +174,7 @@ class AllCountriesActivity : AppCompatActivity() {
             }
             doOnEnd {
                 if (!binding.ibSearch.isSelected) {
+                    binding.toolbar.navigationIcon = toolbarNavigationIcon
                     binding.sllSearch.setContainerBackgroundColor(
                         ContextCompat.getColor(this@AllCountriesActivity, android.R.color.transparent)
                     )
@@ -185,8 +187,13 @@ class AllCountriesActivity : AppCompatActivity() {
     private fun expandSearch() {
         binding.rvAllCountries.animate().translationY(0f)
         binding.ibSearch.isSelected = true
-        val width: Int =
-            binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
+        val horizontalMargin = resources.getDimensionPixelSize(R.dimen.offset_16)
+        val width = (
+            binding.toolbar.width - (horizontalMargin * 2) -
+                binding.sllSearch.paddingLeft - binding.sllSearch.paddingRight -
+                binding.ibSearch.width
+            ).coerceAtLeast(0)
+        binding.toolbar.navigationIcon = null
         binding.tvToolbarTitle.animate().alpha(0f).duration = 200
         binding.sllSearch.setContainerBackgroundColor(
             ContextCompat.getColor(this, R.color.searchExpandedBackground)
@@ -197,7 +204,7 @@ class AllCountriesActivity : AppCompatActivity() {
             100
         )
         ValueAnimator.ofInt(
-            0,
+            binding.etSearch.width,
             width
         ).apply {
             addUpdateListener {
