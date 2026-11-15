@@ -149,11 +149,12 @@
     </style>
 
     <style name="ShadowLayout">
-        <item name="containerBackgroundColor">@android:color/black</item>
+        <item name="containerBackgroundColor">@android:color/transparent</item>
+        <item name="containerCornerRadius">@dimen/radius_dialogue_corners</item>
         <item name="shadowGravity">bottom</item>
-        <item name="shadowRadius">@dimen/offset_8</item>
+        <item name="shadowRadius">@dimen/offset_4</item>
         <item name="containerElevation">@dimen/elevation_1</item>
-        <item name="shadowColor">@android:color/white</item>
+        <item name="shadowColor">@color/searchExpandedShadow</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end</item>
@@ -257,6 +258,8 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorHint">@color/searchHintColor</item>
         <item name="android:labelFor">@+id/ib_search</item>
         <item name="android:maxLength">100</item>
         <item name="android:paddingTop">@dimen/offset_4</item>

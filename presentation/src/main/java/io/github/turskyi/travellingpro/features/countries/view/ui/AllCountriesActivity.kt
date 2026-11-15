@@ -170,6 +170,13 @@ class AllCountriesActivity : AppCompatActivity() {
                 binding.sllSearch.requestLayout()
                 binding.sllSearch.clearFocus()
             }
+            doOnEnd {
+                if (!binding.ibSearch.isSelected) {
+                    binding.sllSearch.setContainerBackgroundColor(
+                        ContextCompat.getColor(this@AllCountriesActivity, android.R.color.transparent)
+                    )
+                }
+            }
             duration = 400
         }.start()
     }
@@ -180,6 +187,9 @@ class AllCountriesActivity : AppCompatActivity() {
         val width: Int =
             binding.toolbar.width - resources.getDimensionPixelSize(R.dimen.offset_16)
         binding.tvToolbarTitle.animate().alpha(0f).duration = 200
+        binding.sllSearch.setContainerBackgroundColor(
+            ContextCompat.getColor(this, R.color.searchExpandedBackground)
+        )
         binding.sllSearch.elevate(
             resources.getDimension(R.dimen.elevation_1),
             resources.getDimension(R.dimen.elevation_8),

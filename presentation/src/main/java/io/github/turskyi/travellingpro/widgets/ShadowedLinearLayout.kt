@@ -21,6 +21,7 @@ class ShadowedLinearLayout @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private var shadowColor: Int
     private var containerBackgroundColor: Int
+    private var containerCornerRadius: Float
     private var shadowRadius: Float
     private var containerElevation: Float
     private var shadowGravity: String?
@@ -60,11 +61,24 @@ class ShadowedLinearLayout @JvmOverloads constructor(
         }
     }
 
+    fun setContainerBackgroundColor(color: Int) {
+        containerBackgroundColor = color
+        background = generateBackgroundWithShadow(
+            containerBackgroundColor,
+            shadowRadius,
+            shadowColor,
+            containerElevation,
+            shadowGravity
+        )
+    }
+
     init {
         /* populate values from xml attributes */
         val array = context.obtainStyledAttributes(attrs, R.styleable.ShadowedLinearLayout)
         containerBackgroundColor =
             array.getColor(R.styleable.ShadowedLinearLayout_containerBackgroundColor, Color.WHITE)
+        containerCornerRadius =
+            array.getDimension(R.styleable.ShadowedLinearLayout_containerCornerRadius, 0f)
         shadowRadius = array.getDimension(R.styleable.ShadowedLinearLayout_shadowRadius, 12f)
         shadowColor = array.getColor(R.styleable.ShadowedLinearLayout_shadowColor, Color.BLACK)
         containerElevation =
@@ -115,11 +129,7 @@ class ShadowedLinearLayout @JvmOverloads constructor(
 
         val elevationValue = elevation.toInt()
 
-        val outerRadius = floatArrayOf(
-            0f, 0f, 0f,
-            0f, 0f, 0f, 0f,
-            0f
-        )
+        val outerRadius = FloatArray(8) { containerCornerRadius }
 
         val shapeDrawablePadding = Rect()
 
@@ -140,9 +150,9 @@ class ShadowedLinearLayout @JvmOverloads constructor(
         shapeDrawable.paint.color = backgroundColor
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-            setLayerType(LAYER_TYPE_HARDWARE, shapeDrawable.paint)
+            setLayerType(LAYER_TYPE_HARDWARE, null)
         } else {
-            setLayerType(LAYER_TYPE_SOFTWARE, shapeDrawable.paint)
+            setLayerType(LAYER_TYPE_SOFTWARE, null)
         }
 
         if (elevation > resources.getDimension(R.dimen.elevation_1) * 2) {

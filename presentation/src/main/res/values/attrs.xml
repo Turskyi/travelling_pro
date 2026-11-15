@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="ShadowedLinearLayout">
         <attr name="containerBackgroundColor" format="color" />
+        <attr name="containerCornerRadius" format="dimension" />
         <attr name="shadowRadius" format="dimension" />
         <attr name="shadowColor" format="color" />
         <attr name="containerElevation" format="dimension" />

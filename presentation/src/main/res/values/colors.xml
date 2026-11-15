@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimaryDark">#011638</color>
+    <color name="searchExpandedBackground">#E6241638</color>
+    <color name="searchExpandedShadow">#4D011638</color>
+    <color name="searchHintColor">#B3FFFFFF</color>
     <color name="colorBrightBlue">#020DE1</color>
     <color name="colorAccent">#d50000</color>
     <color name="colorBgDarkDialogue">#37474F</color>
