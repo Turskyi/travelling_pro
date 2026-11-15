@@ -27,6 +27,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin' # Eclipse Temurin https://adoptium.net/
+
+      - name: Run Regression Unit Tests
+        run: ./gradlew test
+
       - name: Restore signing keystore files
         shell: bash
         env:
