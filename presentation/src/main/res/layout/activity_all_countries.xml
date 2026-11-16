@@ -25,7 +25,10 @@
 
                 <TextView
                     android:id="@+id/tvToolbarTitle"
-                    style="@style/ToolbarTitleStyle" />
+                    style="@style/ToolbarTitleStyle"
+                    android:layout_marginEnd="@dimen/offset_64"
+                    android:ellipsize="end"
+                    android:maxLines="2" />
             </androidx.appcompat.widget.Toolbar>
 
             <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
