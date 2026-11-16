@@ -43,11 +43,12 @@ subprojects {
             dependencies {
                 implementation libs.kotlinx.coroutines.android
 
-                // Tried to upgrade to 3.3.6 and all versions between - does not compile.
                 implementation libs.paging.runtime
 
                 /* Bill of Materials for the Firebase platform.
-                 * When using the BoM, no need to specify versions in Firebase library dependencies */
+                 * When using the BoM, no need to specify versions in Firebase
+                 * library dependencies
+                 * */
                 implementation platform(libs.firebase.bom)
 
                 // Declaring the dependencies for the Crashlytics library
@@ -85,10 +86,10 @@ if (localPropertiesFile.exists()) {
 ext {
     getParam = { key ->
         def value = System.getenv(key)
-            ?: project.findProperty("env.$key")
-            ?: localProperties.getProperty(key)
-            ?: localProperties.getProperty("env.$key")
-            ?: ""
+                ?: project.findProperty("env.$key")
+                ?: localProperties.getProperty(key)
+                ?: localProperties.getProperty("env.$key")
+                ?: ""
         return value.toString().trim()
     }
     HOST_URL = getParam("HOST_URL")
@@ -101,7 +102,9 @@ ext {
     SIGNING_KEY_RELEASE_PATH = getParam("SIGNING_KEY_RELEASE_PATH")
     SIGNING_KEY_RELEASE_PASSWORD = getParam("SIGNING_KEY_RELEASE_PASSWORD")
     SIGNING_KEY_RELEASE_KEY = getParam("SIGNING_KEY_RELEASE_KEY")
-    SIGNING_KEY_RELEASE_KEY_PASSWORD = getParam("SIGNING_KEY_RELEASE_KEY_PASSWORD")
+    SIGNING_KEY_RELEASE_KEY_PASSWORD = getParam(
+            "SIGNING_KEY_RELEASE_KEY_PASSWORD",
+    )
 }
 
 tasks.register('clean') {

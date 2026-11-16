@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- default strings -->
+    <string name="app_name">Travelling Pro</string>
+    <string name="content_description.flag">прапор</string>
+    <string name="content_description.item_arrow">стрілка</string>
+    <string name="content_description.icon_search" tools:keep="@string/content_description_icon_search">значок пошуку</string>
+    <string name="content_description.button">кнопка</string>
+    <string name="tap_back_button_in_order_to_exit">Натисніть ще раз для виходу.</string>
+    <string name="content_description.image">зображення</string>
+    <string name="dialog_btn_ok">ОК</string>
+    <string name="dialog_btn_ok_ready">ОК ?</string>
+    <string name="dialog_btn_not_ok">не ОК</string>
+    <string name="btn_sign_out">Вийти</string>
+    <!-- end of default strings -->
+
+    <!-- home screen -->
+    <string name="home_onboarding_title_loading">…завантаження країн</string>
+    <string name="home_onboarding_title_authorization">…авторизація</string>
+    <string name="delete_it">Видалити %1$s ?</string>
+    <string name="deleted">%1$s видалено</string>
+    <string name="yes">ТАК</string>
+    <string name="dialogue_hint_add_a_city">Додати місто</string>
+    <string name="dialogue_btn_gps">GPS</string>
+    <string name="btn_save">Зберегти</string>
+    <string name="dialogue_turn_on_gps">УВІМКНУТИ GPS</string>
+    <string name="dialog.no_internet">УВІМКНУТИ ІНТЕРНЕТ</string>
+    <string name="home_dialog_btn_cancel">Скасувати</string>
+    <string name="txt_info_billing">На жаль, цей додаток не може синхронізувати ваші дані із сервером у безкоштовному режимі.\n\nВаші дані автоматично зберігаються на сервері в цій Pro версії.\n\nІ ще одне: якщо ви перейшли з безкоштовної версії, вам доведеться додати всі відвідані країни в новий додаток вручну, але це цілком того варте, оскільки ви більше ніколи їх не втратите.</string>
+    <string name="share_title">Поділіться, скільки країн ви відвідали</string>
+    <string name="txt_info_home">• Натисніть на \"+\", щоб додати країну.\n• Натисніть на країну, щоб додати місто та місяць.\n• Натисніть на кругову діаграму, щоб змінити її вигляд.\n• Якщо затиснути кругову діаграму, ви зможете поділитися нею у Facebook або на іншій платформі.\n• Натисніть на прапор, щоб переглянути його на весь екран і замінити на фото.\n• Натисніть на місто, щоб побачити його географічне розташування.</string>
+    <string name="home_city_date">Дата</string>
+    <string name="home_city_did_not_save">нічого не збережено</string>
+
+    <plurals name="numberOfCountriesVisited">
+        <item quantity="one">Я відвідав %d країну</item>
+        <item quantity="few">Я відвідав %d країни</item>
+        <item quantity="many">Я відвідав %d країн</item>
+        <item quantity="other">Я відвідав %d країн</item>
+    </plurals>
+
+    <plurals name="numberOfCitiesVisited">
+        <item quantity="one">Я відвідав %d місто</item>
+        <item quantity="few">Я відвідав %d міста</item>
+        <item quantity="many">Я відвідав %d міст</item>
+        <item quantity="other">Я відвідав %d міст</item>
+    </plurals>
+
+    <plurals name="numberOfCountriesOfCitiesVisited">
+        <item quantity="one">в %d країні</item>
+        <item quantity="few">у %d країнах</item>
+        <item quantity="many">у %d країнах</item>
+        <item quantity="other">у %d країнах</item>
+    </plurals>
+    <!-- end of strings for home screen -->
+
+    <!-- screen with all countries -->
+    <string name="hint.search_country" tools:ignore="UnusedResources">країна</string>
+    <string name="hint.search_traveller">ім\'я</string>
+    <string name="no_results">немає результатів</string>
+    <string name="txt_info_all_countries">• Якщо натиснути на країну, ви зможете побачити її географічне розташування</string>
+    <string name="txt_info_all_travellers">• Якщо ви натиснете на мандрівника, ви зможете побачити його відвідані країни.\n• Бажаєте також стати видимим для інших?</string>
+
+    <plurals name="numberOfCountriesRemain">
+        <item quantity="one">Залишилося відвідати %d країну</item>
+        <item quantity="few">Залишилося відвідати %d країни</item>
+        <item quantity="many">Залишилося відвідати %d країн</item>
+        <item quantity="other">Залишилося відвідати %d країн</item>
+    </plurals>
+    <!-- end of strings for screen with all countries -->
+
+    <!-- flags screen -->
+    <string name="txt_info_flags">• Якщо натиснути на прапор, ви можете замінити його на фото.\n• Натисніть на фото, щоб змінити його назад на прапор і навпаки.\n• Проведіть пальцем ліворуч або праворуч, щоб побачити прапори або фотографії відвіданих країн.</string>
+    <string name="txt_info_user_flags">• Натисніть на фото, щоб змінити його назад на прапор і навпаки.\n• Проведіть пальцем ліворуч або праворуч, щоб побачити прапори або фотографії, які відвідав %1$s.</string>
+    <string name="flag_chooser_title_complete_using">Виконати дію за допомогою</string>
+    <!-- end of strings for the screen of flags -->
+
+    <!-- travellers screen -->
+    <string name="title_activity_travellers">%d%% мандрівників відвідали більше країн, ніж ви</string>
+    <string name="title_most">Ви відвідали більше країн, ніж будь-хто в цьому додатку</string>
+
+    <!-- messages -->
+    <string name="msg.no_facebook_app">У вас не встановлено додаток Facebook</string>
+    <string name="msg.no_app_installed">Немає доступного додатку, щоб поділитися діаграмою</string>
+    <string name="msg.gps_permission_denied">У доступі до GPS відмовлено</string>
+    <string name="msg.did_not_choose">нічого не вибрано</string>
+    <string name="msg.sign_in_cancelled">вхід скасовано</string>
+    <string name="msg.no_internet">немає підключення до інтернету</string>
+    <string name="msg.bad_internet">погане підключення до інтернету</string>
+    <string name="msg.user_not_found">Користувача не знайдено</string>
+    <string name="msg.not_found">не знайдено</string>
+    <string name="msg.home_country_did_not_added">нічого не додано</string>
+    <string name="msg.exception_flag_listener">%1$s повинен реалізувати OnFlagFragmentListener</string>
+    <string name="msg.home_signed_in">Увійшов</string>
+    <string name="msg.sign_out_failed">Не вдалося вийти. Будь ласка, спробуйте ще раз.</string>
+    <string name="error_message_try_tomorrow">Тоді спробуйте завтра ;)</string>
+    <!-- end of strings for toasts messages -->
+
+    <string name="default_notification_channel_id">Сповіщення від додатку Travelling.</string>
+    <!-- alert dialog content -->
+    <string name="alert_error_title" tools:keep="@string/alert_error_title">Це просто помилка.</string>
+    <string name="alert_error_message" tools:keep="@string/alert_error_message">Бажаєте написати розробнику?</string>
+    <string name="error_message_intro" tools:keep="@string/error_message_intro">Сталося щось жахливе</string>
+    <string name="no" tools:keep="@string/no">Не зовсім</string>
+    <string name="dialog_hold_on">Зачекайте хвилинку, намагаємося визначити ваше місцезнаходження.</string>
+
+    <!-- Visible Traveller Page -->
+    <string name="name_and_counter">%1$s %2$s</string>
+    <plurals name="travellerCounter">
+        <item quantity="one">відвідав %d країну</item>
+        <item quantity="few">відвідав %d країни</item>
+        <item quantity="many">відвідав %d країн</item>
+        <item quantity="other">відвідав %d країн</item>
+    </plurals>
+
+    <plurals name="travellerCitiesVisited">
+        <item quantity="one">відвідав %d місто</item>
+        <item quantity="few">відвідав %d міста</item>
+        <item quantity="many">відвідав %d міст</item>
+        <item quantity="other">відвідав %d міст</item>
+    </plurals>
+
+    <!-- widget strings -->
+    <string name="widget_visited_countries_name">Відвідані країни</string>
+    <string name="widget_visited_countries_title">Відвідано країн</string>
+    <string name="btn_pin_widget">Закріпити віджет</string>
+
+    <!-- language selector -->
+    <string name="action_language">Мова</string>
+    <string name="language_dialog_title">Виберіть мову</string>
+    <string name="language_system_default">Системна за замовчуванням</string>
+    <string name="language_en">English</string>
+    <string name="language_uk">Українська</string>
+</resources>

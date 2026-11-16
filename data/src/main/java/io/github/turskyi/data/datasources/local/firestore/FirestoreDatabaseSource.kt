@@ -93,6 +93,7 @@ interface FirestoreDatabaseSource {
 
     suspend fun setCountriesByName(
         nameQuery: String,
+        matchingNames: List<String>,
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     )

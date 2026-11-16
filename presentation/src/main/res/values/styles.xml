@@ -242,7 +242,7 @@
         <item name="layout_collapseMode">pin</item>
         <item name="titleTextColor">@android:color/white</item>
         <item name="navigationIcon">?attr/homeAsUpIndicator</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
     </style>
 
     <style name="ImageButtonStyle">

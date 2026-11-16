@@ -902,6 +902,7 @@ class FirestoreDatabaseSourceImpl(
 
     override suspend fun setCountriesByName(
         nameQuery: String,
+        matchingNames: List<String>,
         onSuccess: (List<CountryEntity>) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -916,7 +917,13 @@ class FirestoreDatabaseSourceImpl(
                         val country: CountryEntity = documentSnapshot.toObject(
                             CountryEntity::class.java,
                         )
-                        if (country.name.startsWith(prefix = nameQuery, ignoreCase = true)) {
+                        val matches = country.name.startsWith(prefix = nameQuery, ignoreCase = true) ||
+                            country.name.contains(nameQuery, ignoreCase = true) ||
+                            matchingNames.any {
+                                country.name.startsWith(prefix = it, ignoreCase = true) ||
+                                country.name.contains(it, ignoreCase = true)
+                            }
+                        if (matches) {
                             countries.add(country)
                         }
                     }

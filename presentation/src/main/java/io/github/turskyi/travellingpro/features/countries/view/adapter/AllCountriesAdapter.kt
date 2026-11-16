@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.turskyi.travellingpro.features.countries.view.adapter
 
 import android.graphics.Color
@@ -14,6 +16,7 @@ import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -21,10 +24,12 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.entities.Country
+import io.github.turskyi.travellingpro.utils.getDisplayName
 
-class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.CountryViewHolder>(
-    COUNTRIES_DIFF_CALLBACK
-) {
+class AllCountriesAdapter :
+    PagedListAdapter<Country, AllCountriesAdapter.CountryViewHolder>(
+        COUNTRIES_DIFF_CALLBACK
+    ) {
 
     /**
      * Allows the RecyclerView to determine which items have changed when the [List] of [Country]
@@ -41,16 +46,21 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
                 override fun areContentsTheSame(
                     oldItem: Country,
                     newItem: Country
-                ): Boolean = oldItem.name == newItem.name && oldItem.isVisited == newItem.isVisited
+                ): Boolean =
+                    oldItem.name == newItem.name && oldItem.isVisited == newItem.isVisited
             }
     }
 
     var onCountryClickListener: ((country: Country) -> Unit)? = null
     var onCountryLongClickListener: ((country: Country) -> Unit)? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): CountryViewHolder {
         val view = LayoutInflater
-            .from(parent.context).inflate(R.layout.item_list_country, parent, false)
+            .from(parent.context)
+            .inflate(R.layout.item_list_country, parent, false)
         return CountryViewHolder(view)
     }
 
@@ -65,13 +75,16 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
         country: Country,
         holder: CountryViewHolder
     ) {
-        val uri: Uri = Uri.parse(country.flag)
+        val uri: Uri = country.flag.toUri()
 
         GlideToVectorYou
             .init()
             .with(holder.itemView.context)
             .withListener(object : GlideToVectorYouListener {
-                override fun onLoadFailed() = showPicturesInWebView(holder, country)
+                override fun onLoadFailed() = showPicturesInWebView(
+                    holder, country,
+                )
+
                 override fun onResourceReady() {
                     holder.ivFlag.visibility = VISIBLE
                     holder.wvFlag.visibility = GONE
@@ -98,11 +111,13 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
         }
     }
 
-    inner class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class CountryViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
         private val tvCountry: TextView = itemView.findViewById(R.id.tv_country)
         val ivFlag: ImageView = itemView.findViewById(R.id.iv_flag)
         val wvFlag: WebView = itemView.findViewById(R.id.wv_flag)
-        private val llCountry: LinearLayout = itemView.findViewById(R.id.ll_country)
+        private val llCountry: LinearLayout =
+            itemView.findViewById(R.id.ll_country)
 
         init {
             itemView.setOnClickListener {
@@ -115,7 +130,7 @@ class AllCountriesAdapter : PagedListAdapter<Country, AllCountriesAdapter.Countr
         }
 
         fun bind(country: Country) {
-            tvCountry.text = country.name
+            tvCountry.text = country.getDisplayName(tvCountry.context)
             setSelectableItemBackground(this)
             if (country.isVisited) {
                 tvCountry.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG

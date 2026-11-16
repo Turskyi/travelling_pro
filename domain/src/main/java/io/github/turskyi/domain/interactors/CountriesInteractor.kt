@@ -17,9 +17,10 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
 
     suspend fun searchCountries(
         name: String,
+        matchingNames: List<String> = emptyList(),
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit)
-    ): Unit = countryRepository.setCountriesByName(name, onSuccess, onError)
+    ): Unit = countryRepository.setCountriesByName(name, matchingNames, onSuccess, onError)
 
     suspend fun updateSelfie(
         shortName: String,
@@ -36,7 +37,7 @@ class CountriesInteractor(private val applicationScope: CoroutineScope) : KoinCo
         onError: (Exception) -> Unit
     ) = countryRepository.setCountriesByRange(limit, offset, onSuccess, onError)
 
-    suspend fun downloadCountries(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+    fun downloadCountries(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
         travellerRepository.saveTraveller(
             {
                 applicationScope.launch(Dispatchers.IO) {

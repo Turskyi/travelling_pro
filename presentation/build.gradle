@@ -26,7 +26,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // to ensure that the translations of Firebase library are relevant to the application
-        resourceConfigurations += ['en']
+        resourceConfigurations += ['en', 'uk']
     }
     def releaseSigningReady = rootProject.hasProperty('SIGNING_KEY_RELEASE_PATH') && rootProject.SIGNING_KEY_RELEASE_PATH?.trim() &&
             rootProject.hasProperty('SIGNING_KEY_RELEASE_PASSWORD') && rootProject.SIGNING_KEY_RELEASE_PASSWORD?.trim() &&

@@ -6,7 +6,12 @@ import io.github.turskyi.data.datasources.local.entities.VisitedCountryEntity
 import io.github.turskyi.data.datasources.local.firestore.FirestoreDatabaseSource
 import io.github.turskyi.data.datasources.remote.NetSource
 import io.github.turskyi.data.datasources.remote.entities.CountryResponse
-import io.github.turskyi.data.util.extensions.*
+import io.github.turskyi.data.util.extensions.mapEntitiesToModelList
+import io.github.turskyi.data.util.extensions.mapEntityListToModelList
+import io.github.turskyi.data.util.extensions.mapModelListToEntityList
+import io.github.turskyi.data.util.extensions.mapModelToEntity
+import io.github.turskyi.data.util.extensions.mapNetListToModelList
+import io.github.turskyi.data.util.extensions.mapVisitedCountriesToVisitedModelList
 import io.github.turskyi.domain.models.entities.CityModel
 import io.github.turskyi.domain.models.entities.CountryModel
 import io.github.turskyi.domain.models.entities.VisitedCountryModel
@@ -278,11 +283,13 @@ class CountryRepositoryImpl(private val applicationScope: CoroutineScope) : Coun
 
     override suspend fun setCountriesByName(
         name: String,
+        matchingNames: List<String>,
         onSuccess: (List<CountryModel>) -> Unit,
         onError: ((Exception) -> Unit)
     ) {
         databaseSource.setCountriesByName(
             nameQuery = name,
+            matchingNames = matchingNames,
             onSuccess = { list: List<CountryEntity> -> onSuccess(list.mapEntityListToModelList()) },
             onError = { onError.invoke(it) },
         )

@@ -34,7 +34,7 @@
     <string name="default_notification_channel_id" translatable="false">Notifications from Travelling application.</string>
 
     <!--    for Facebook SDK -->
-    <string name="facebook_client_token">57499b8c06caa963b5a0be59e88db381</string>
+    <string name="facebook_client_token" translatable="false">57499b8c06caa963b5a0be59e88db381</string>
     <!-- for facebook sharing -->
     <string name="facebook_app_id" translatable="false">2312394202364807</string>
     <string name="facebook_package" translatable="false">com.facebook.katana</string>
@@ -178,4 +178,18 @@
         <item quantity="other">has been to %d cities</item>
     </plurals>
     <!-- END: text resources for Visible Traveller Page -->
+
+    <string name="txt_info_billing">Unfortunately, this app cannot synchronize your data with the server in free mode.\n\nYour data is automatically saved on the server in this Pro version.\n\nAnd one more thing: if you switched from the free version, you will have to add all visited countries to the new app manually, but it is totally worth it because you will never lose them again.</string>
+
+    <!-- widget strings -->
+    <string name="widget_visited_countries_name">Visited Countries</string>
+    <string name="widget_visited_countries_title">Countries Visited</string>
+    <string name="btn_pin_widget">Pin Widget</string>
+
+    <!-- language selector -->
+    <string name="action_language">Language</string>
+    <string name="language_dialog_title">Select Language</string>
+    <string name="language_system_default">System Default</string>
+    <string name="language_en">English</string>
+    <string name="language_uk">Ukrainian</string>
 </resources>

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.turskyi.travellingpro.features.countries.view.adapter
 
 import android.view.View.GONE
@@ -27,8 +29,10 @@ internal class FilteredCountriesPositionalDataSource(
     ) {
         _visibilityLoader.postValue(VISIBLE)
         viewModelScope.launch(Dispatchers.IO) {
+            val matchingNames = io.github.turskyi.travellingpro.utils.CountryLocalizationUtils.findMatchingEnglishNames(countryName)
             interactor.searchCountries(
                 countryName,
+                matchingNames,
                 { allCountries ->
                     callback.onResult(
                         allCountries.mapModelListToCountryList(),
@@ -50,8 +54,10 @@ internal class FilteredCountriesPositionalDataSource(
         callback: LoadRangeCallback<Country>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
+            val matchingNames = io.github.turskyi.travellingpro.utils.CountryLocalizationUtils.findMatchingEnglishNames(countryName)
             interactor.searchCountries(
                 countryName,
+                matchingNames,
                 {
                     // on next call result returns nothing since only one page of countries required
                     callback.onResult(emptyList())

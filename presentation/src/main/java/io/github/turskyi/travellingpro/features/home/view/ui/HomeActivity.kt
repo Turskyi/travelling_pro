@@ -21,10 +21,13 @@ import android.window.OnBackInvokedDispatcher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
+import androidx.core.os.LocaleListCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,6 +65,7 @@ import io.github.turskyi.travellingpro.utils.extensions.showSnackBar
 import io.github.turskyi.travellingpro.utils.extensions.showSnackWithAction
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
+import io.github.turskyi.travellingpro.widgets.VisitedCountriesWidgetProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -83,12 +87,20 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         registerActivitiesForResult()
-        if (savedInstanceState == null) {
-            checkPermissionAndInitAuthentication(this@HomeActivity)
-        }
         initView()
         initObservers()
         initListeners()
+
+        if (savedInstanceState == null) {
+            checkPermissionAndInitAuthentication(this@HomeActivity)
+        } else {
+            if (FirebaseAuth.getInstance().currentUser != null) {
+                viewModel.isPermissionGranted = true
+                initPersonalization()
+            } else {
+                checkPermissionAndInitAuthentication(this@HomeActivity)
+            }
+        }
     }
 
     override fun onResume() {
@@ -125,8 +137,43 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 true
             }
 
+            R.id.action_language -> {
+                showLanguageDialog()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showLanguageDialog() {
+        val languages = arrayOf(
+            getString(R.string.language_system_default),
+            getString(R.string.language_en),
+            getString(R.string.language_uk),
+        )
+        val currentLocales: LocaleListCompat = AppCompatDelegate.getApplicationLocales()
+        val currentLanguageIndex = when {
+            currentLocales.isEmpty -> 0
+            currentLocales[0]?.language == "en" -> 1
+            currentLocales[0]?.language == "uk" -> 2
+            else -> 0
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.language_dialog_title)
+            .setSingleChoiceItems(languages, currentLanguageIndex) { dialog, which ->
+                val targetLocales = when (which) {
+                    1 -> LocaleListCompat.forLanguageTags("en")
+                    2 -> LocaleListCompat.forLanguageTags("uk")
+                    else -> LocaleListCompat.getEmptyLocaleList()
+                }
+                AppCompatDelegate.setApplicationLocales(targetLocales)
+                VisitedCountriesWidgetProvider.updateWidget(this)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.home_dialog_btn_cancel, null)
+            .show()
     }
 
     override fun onRequestPermissionsResult(
@@ -376,6 +423,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries: List<VisitedCountryNode> ->
             initTitle()
             updateAdapterAndTitle(visitedCountries)
+            VisitedCountriesWidgetProvider.updateWidget(this)
         }
         viewModel.visitedCountries.observe(this) { visitedCountries: List<VisitedCountry> ->
             binding.includeAppBar.circlePieChart.apply {
