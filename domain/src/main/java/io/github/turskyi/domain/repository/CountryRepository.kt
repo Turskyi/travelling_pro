@@ -71,6 +71,7 @@ interface CountryRepository {
 
     suspend fun setCountriesByName(
         name: String,
+        matchingNames: List<String> = emptyList(),
         onSuccess: (List<CountryModel>) -> Unit,
         onError: (Exception) -> Unit
     )

@@ -15,11 +15,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "621347185100-51gl8311rggc9j1a9mhgd1s3s3i4iqiu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.turskyi.travellingpro",
+            "certificate_hash": "dfe6ab9739b7261ff988099f5eceeb9205719a5c"
+          }
+        },
+        {
           "client_id": "621347185100-96jan14ifodtr3nim2sn56g74sbbior7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "io.github.turskyi.travellingpro",
             "certificate_hash": "3036d938c1dc9492cd887a781ce1b0a3bc3e7655"
+          }
+        },
+        {
+          "client_id": "621347185100-oaqq6rualu0c7j6u2tkf2i3jbqogmtho.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.turskyi.travellingpro",
+            "certificate_hash": "65fbcc37a85553d9fdda710d5d552827497e8f33"
+          }
+        },
+        {
+          "client_id": "621347185100-t3h3cjkh3jap15ec28rrvfn487tl74qk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.turskyi.travellingpro",
+            "certificate_hash": "1735097076b68118fde2e214bad5b8ec86dbd3be"
           }
         },
         {
@@ -38,6 +62,13 @@
             {
               "client_id": "621347185100-j5cugqg9nvc0s7f1dk6f1l2ksooor097.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "621347185100-6msnjfhb238slv2pebd9f0kk2klr448a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.github.turskyi.Travelling-Pro"
+              }
             }
           ]
         }
@@ -51,6 +82,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "621347185100-kukq2p3p106v8rvvqn3gnu0qdnbtegck.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.turskyi.travelling",
+            "certificate_hash": "a096e5735f20ede8214ba7e8ef793085d9bc8dab"
+          }
+        },
         {
           "client_id": "621347185100-o31fb0uco8kro7rsrelgbbu7m77f9ii1.apps.googleusercontent.com",
           "client_type": 1,
@@ -83,6 +122,13 @@
             {
               "client_id": "621347185100-j5cugqg9nvc0s7f1dk6f1l2ksooor097.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "621347185100-6msnjfhb238slv2pebd9f0kk2klr448a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.github.turskyi.Travelling-Pro"
+              }
             }
           ]
         }

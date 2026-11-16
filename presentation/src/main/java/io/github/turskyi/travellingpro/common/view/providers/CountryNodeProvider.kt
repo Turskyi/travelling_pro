@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import com.chad.library.adapter.base.entity.node.BaseNode
 import com.chad.library.adapter.base.provider.BaseNodeProvider
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
@@ -17,6 +18,7 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.utils.getDisplayName
 
 class CountryNodeProvider : BaseNodeProvider() {
     override val itemViewType: Int
@@ -39,7 +41,7 @@ class CountryNodeProvider : BaseNodeProvider() {
             true
         }
         showPicturesInSVG(item, helper)
-        helper.setText(R.id.tv_country, visitedCountryNode.title)
+        helper.setText(R.id.tv_country, visitedCountryNode.getDisplayName(context))
         setSelectableBorderLessFor(helper.getView<ImageView>(R.id.iv_flag))
         helper.getView<ImageView>(R.id.iv_flag).setOnClickListener {
             onImageClickListener?.invoke(visitedCountryNode)
@@ -90,7 +92,7 @@ class CountryNodeProvider : BaseNodeProvider() {
         visitedCountryNode: VisitedCountryNode,
         holder: BaseViewHolder
     ) {
-        val uri: Uri = Uri.parse(visitedCountryNode.flag)
+        val uri: Uri = visitedCountryNode.flag.toUri()
         GlideToVectorYou
             .init()
             .with(holder.itemView.context)

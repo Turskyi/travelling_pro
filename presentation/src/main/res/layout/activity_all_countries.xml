@@ -12,7 +12,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_16">
+        android:layout_marginTop="@dimen/offset_16"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             style="@style/CollapsingToolbarLayoutStyle">
@@ -20,17 +21,21 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 style="@style/ToolbarStyle"
-                android:layout_height="@dimen/height_toolbar"
-                android:fitsSystemWindows="true">
+                android:layout_height="@dimen/height_toolbar">
 
                 <TextView
                     android:id="@+id/tvToolbarTitle"
-                    style="@style/ToolbarTitleStyle" />
+                    style="@style/ToolbarTitleStyle"
+                    android:layout_marginEnd="@dimen/offset_64"
+                    android:ellipsize="end"
+                    android:maxLines="2" />
             </androidx.appcompat.widget.Toolbar>
 
             <io.github.turskyi.travellingpro.widgets.ShadowedLinearLayout
                 android:id="@+id/sllSearch"
-                style="@style/ShadowLayout">
+                style="@style/ShadowLayout"
+                android:layout_marginStart="@dimen/offset_16"
+                android:layout_marginEnd="@dimen/offset_16">
 
                 <ImageButton
                     android:id="@+id/ib_search"

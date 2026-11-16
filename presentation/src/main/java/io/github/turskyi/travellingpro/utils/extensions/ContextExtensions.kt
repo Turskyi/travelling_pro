@@ -1,13 +1,15 @@
 package io.github.turskyi.travellingpro.utils.extensions
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
-import android.net.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -36,7 +38,7 @@ fun Context.isFacebookInstalled(): Boolean {
             )
         }
         true
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
         false
     }
 }
@@ -74,13 +76,20 @@ fun Context.convertPictureToSpannableString(imgRes: Int): SpannableString {
     return spannableString
 }
 
-fun <T> Context.openActivityWithObject(destination: Class<T>, argId: String, extra: Parcelable) {
+fun <T> Context.openActivityWithObject(
+    destination: Class<T>,
+    argId: String,
+    extra: Parcelable
+) {
     val intent = Intent(this, destination)
     intent.putExtra(argId, extra)
     startActivity(intent)
 }
 
-fun <T> Context.openActivityWithArgs(destination: Class<T>, extras: Bundle.() -> Unit = {}) {
+fun <T> Context.openActivityWithArgs(
+    destination: Class<T>,
+    extras: Bundle.() -> Unit = {}
+) {
     val intent = Intent(this, destination)
     intent.putExtras(Bundle().apply(extras))
     startActivity(intent)
@@ -103,13 +112,15 @@ fun Context.toast(@StringRes msgResId: Int) {
     Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
 }
 
-fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+fun Context.toast(msg: String) =
+    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
 fun Context.toastLong(@StringRes msgResId: Int) {
     Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
 }
 
-fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+fun Context.toastLong(msg: String) =
+    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
 /**
  * @Description
@@ -118,40 +129,19 @@ fun Context.toastLong(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG
 @Suppress("BooleanMethodIsAlwaysInverted")
 fun Context.isOnline(): Boolean {
     if (this.getSystemService(Context.CONNECTIVITY_SERVICE) is ConnectivityManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val connectivityManager: ConnectivityManager =
-                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager: ConnectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-//            TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
-            @SuppressLint("MissingPermission")
-            val network: Network? = connectivityManager.activeNetwork
-            return if (network != null) {
-                //TODO: Handle warning "Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
-                @SuppressLint("MissingPermission")
-                val networkCapabilities: NetworkCapabilities? =
-                    connectivityManager.getNetworkCapabilities(network)
-                return if (networkCapabilities != null) {
-                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                            || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                } else false
-            } else false
-        } else {
-            // Initial Value
-            var isConnected = false
+        val network: Network? = connectivityManager.activeNetwork
+        return if (network != null) {
 
-            val connectivityManager: ConnectivityManager =
-                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-            @Suppress("DEPRECATION")
-            //TODO: Handle warning "Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
-            @SuppressLint("MissingPermission")
-            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-            @Suppress("DEPRECATION")
-            if (activeNetwork != null && activeNetwork.isConnected) {
-                isConnected = true
-            }
-            return isConnected
-        }
+            val networkCapabilities: NetworkCapabilities? =
+                connectivityManager.getNetworkCapabilities(network)
+            networkCapabilities != null && (networkCapabilities.hasTransport(
+                NetworkCapabilities.TRANSPORT_CELLULAR
+            )
+                    || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+        } else false
     } else {
         return false
     }

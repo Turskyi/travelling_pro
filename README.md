@@ -111,6 +111,36 @@ no unused variables or methods, and no commented-out code, all variables,
 methods, and resource IDs are descriptively named such that another developer
 reading the code can easily understand their function.
 
+## Cost Control & Billing Management
+
+To temporarily disable billing or unlink your project from Google Cloud Billing (preventing any accidental charges during testing/development):
+
+1. Go to the [Google Cloud Billing Account Management Console](https://console.cloud.google.com/billing/01E8CC-D8671F-7BDD64/manage?project=travelling-the-countries).
+2. Scroll down to **Projects linked to this billing account**.
+3. Locate your project (`travelling-the-countries`).
+4. Click the three-dot menu (**`[⋮]`**) under the **Actions** column next to your project.
+5. Click **Disable billing**.
+
+![Disable Billing Instructions](documentation/google-cloud-billing-disable.png)
+
+### Firebase Storage Security Rules
+
+The live security rules on the [Firebase Console Rules Editor](https://console.firebase.google.com/project/travelling-the-countries/storage/travelling-the-countries.appspot.com/rules) enforce authentication and a strict 2 MB file size limit to prevent runaway storage costs:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null && request.resource.size < 2 * 1024 * 1024;
+    }
+  }
+}
+```
+
+> **Note for Agents**: Keep this snippet synchronized with the live Firebase Console rules if any storage modifications are made.
+> **Tip**: The **"Authenticated"** toggle on the left-side Rules Playground simulator in the Firebase console can be ignored or left in either state; it only affects local browser testing simulations and does not alter live rule enforcement on physical devices.
+
 ## Download
 
 <a href="https://play.google.com/store/apps/details?id=io.github.turskyi.travellingpro" target="_blank">

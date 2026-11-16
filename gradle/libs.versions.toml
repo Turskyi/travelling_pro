@@ -1,6 +1,6 @@
 [versions]
 activityKtx = "1.13.0"
-agp = "9.4.0"
+agp = "9.5.1"
 android = "18.3.0"
 androidxJunit = "1.2.1"
 appcompat = "1.8.0"
@@ -9,7 +9,6 @@ cardview = "1.0.0"
 coreKtx = "1.19.0"
 datastorePreferences = "1.1.7"
 espressoCore = "3.7.0"
-espressoCoreVersion = "3.6.1"
 firebaseBom = "34.18.0"
 firebaseUiAuth = "9.1.1"
 fragmentKtx = "1.9.0"
@@ -66,14 +65,18 @@ compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit2" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+#noinspection SimilarGradleDependency
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-espresso-core-v361 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
+#noinspection SimilarGradleDependency
+espresso-core-v361 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+#noinspection SimilarGradleDependency
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 facebook-android-sdk = { group = "com.facebook.android", name = "facebook-android-sdk", version.ref = "android" }
 facebook-applinks = { group = "com.facebook.android", name = "facebook-applinks", version.ref = "android" }
 facebook-login = { group = "com.facebook.android", name = "facebook-login", version.ref = "android" }
 facebook-share = { group = "com.facebook.android", name = "facebook-share", version.ref = "android" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+#noinspection LoginCredentials
 firebase-ui-auth = { group = "com.firebaseui", name = "firebase-ui-auth", version.ref = "firebaseUiAuth" }
 fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
@@ -83,8 +86,11 @@ java-jwt = { module = "com.auth0:java-jwt", version.ref = "javaJwt" }
 junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "jupiter" }
+#noinspection SimilarGradleDependency
 junit-v121 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
+#noinspection SimilarGradleDependency
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "insertKoin" }
+#noinspection SimilarGradleDependency
 koin-android-v410 = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "insertKoin" }
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlinVersion" }

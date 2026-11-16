@@ -21,10 +21,13 @@ import android.window.OnBackInvokedDispatcher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.BuildCompat
+import androidx.core.os.LocaleListCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,6 +65,7 @@ import io.github.turskyi.travellingpro.utils.extensions.showSnackBar
 import io.github.turskyi.travellingpro.utils.extensions.showSnackWithAction
 import io.github.turskyi.travellingpro.utils.extensions.toast
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
+import io.github.turskyi.travellingpro.widgets.VisitedCountriesWidgetProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -83,12 +87,20 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         registerActivitiesForResult()
-        if (savedInstanceState == null) {
-            checkPermissionAndInitAuthentication(this@HomeActivity)
-        }
         initView()
         initObservers()
         initListeners()
+
+        if (savedInstanceState == null) {
+            checkPermissionAndInitAuthentication(this@HomeActivity)
+        } else {
+            if (FirebaseAuth.getInstance().currentUser != null) {
+                viewModel.isPermissionGranted = true
+                initPersonalization()
+            } else {
+                checkPermissionAndInitAuthentication(this@HomeActivity)
+            }
+        }
     }
 
     override fun onResume() {
@@ -125,8 +137,43 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 true
             }
 
+            R.id.action_language -> {
+                showLanguageDialog()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showLanguageDialog() {
+        val languages = arrayOf(
+            getString(R.string.language_system_default),
+            getString(R.string.language_en),
+            getString(R.string.language_uk),
+        )
+        val currentLocales: LocaleListCompat = AppCompatDelegate.getApplicationLocales()
+        val currentLanguageIndex = when {
+            currentLocales.isEmpty -> 0
+            currentLocales[0]?.language == "en" -> 1
+            currentLocales[0]?.language == "uk" -> 2
+            else -> 0
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.language_dialog_title)
+            .setSingleChoiceItems(languages, currentLanguageIndex) { dialog, which ->
+                val targetLocales = when (which) {
+                    1 -> LocaleListCompat.forLanguageTags("en")
+                    2 -> LocaleListCompat.forLanguageTags("uk")
+                    else -> LocaleListCompat.getEmptyLocaleList()
+                }
+                AppCompatDelegate.setApplicationLocales(targetLocales)
+                VisitedCountriesWidgetProvider.updateWidget(this)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.home_dialog_btn_cancel, null)
+            .show()
     }
 
     override fun onRequestPermissionsResult(
@@ -144,7 +191,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                     viewModel.isPermissionGranted = true
                     initAuthentication()
                 } else {
-                    requestPermission(this)
+                    toastLong(R.string.msg_gps_permission_denied)
+                    binding.pb.visibility = View.GONE
+                    binding.includeAppBar.toolbarLayout.title = getString(
+                        R.string.home_onboarding_title_authorization,
+                    )
+                    binding.btnSignOut.visibility = View.VISIBLE
+                    viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                    AuthUI.getInstance().signOut(this)
                 }
             }
         }
@@ -168,11 +222,15 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             FirebaseAuthUIActivityResultContract(),
         ) { result: FirebaseAuthUIAuthenticationResult ->
             val response: IdpResponse? = result.idpResponse
-            if (result.resultCode == RESULT_OK) {
+            if (result.resultCode == RESULT_OK || FirebaseAuth.getInstance().currentUser != null) {
+                binding.pb.visibility = View.GONE
+                binding.btnSignOut.visibility = View.GONE
                 viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_IN)
                 initPersonalization()
             } else {
-                // Sign in failed
+                // Sign in failed or cancelled
+                binding.pb.visibility = View.GONE
+                binding.btnSignOut.visibility = View.VISIBLE
                 val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
                 if (result.resultCode == RESULT_CANCELED && !isOnline()) {
                     toastLong(R.string.msg_no_internet)
@@ -217,20 +275,24 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             ActivityResultContracts.StartActivityForResult()
         ) { internetResult: ActivityResult ->
             // User pressed back button on his phone's internet settings page
-            if (internetResult.resultCode == RESULT_CANCELED && isOnline()) {
-                internetResultLauncher.unregister()
-                initPersonalization()
-                return@registerForActivityResult
-            } else if (internetResult.resultCode == RESULT_CANCELED && !isOnline()) {
-                toastLong(R.string.msg_no_internet)
-                val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
-                internetResultLauncher.launch(internetSettingsIntent)
-                return@registerForActivityResult
-            } else {
-                // this case is never happened before
-                viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
-                AuthUI.getInstance().signOut(this)
-                return@registerForActivityResult
+            when (internetResult.resultCode) {
+                RESULT_CANCELED if isOnline() -> {
+                    internetResultLauncher.unregister()
+                    initPersonalization()
+                    return@registerForActivityResult
+                }
+                RESULT_CANCELED if !isOnline() -> {
+                    toastLong(R.string.msg_no_internet)
+                    val internetSettingsIntent = Intent(ACTION_WIRELESS_SETTINGS)
+                    internetResultLauncher.launch(internetSettingsIntent)
+                    return@registerForActivityResult
+                }
+                else -> {
+                    // this case is never happened before
+                    viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+                    AuthUI.getInstance().signOut(this)
+                    return@registerForActivityResult
+                }
             }
         }
     }
@@ -350,12 +412,18 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 )
             }
         }
+        binding.btnSignOut.setOnClickListener {
+            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+            AuthUI.getInstance().signOut(this)
+            initAuthentication()
+        }
     }
 
     private fun initObservers() {
         viewModel.visitedCountriesWithCitiesNode.observe(this) { visitedCountries: List<VisitedCountryNode> ->
             initTitle()
             updateAdapterAndTitle(visitedCountries)
+            VisitedCountriesWidgetProvider.updateWidget(this)
         }
         viewModel.visitedCountries.observe(this) { visitedCountries: List<VisitedCountry> ->
             binding.includeAppBar.circlePieChart.apply {
@@ -376,6 +444,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             val errorMessage: String? = event.getMessageIfNotHandled()
             if (errorMessage != null) {
                 toastLong(errorMessage)
+                binding.pb.visibility = View.GONE
+                binding.btnSignOut.visibility = View.VISIBLE
                 viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
                 AuthUI.getInstance().signOut(this)
             }
@@ -499,8 +569,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         // makes all list items collapsed
         for (countryNode: VisitedCountryNode in visitedCountryNodes) {
             countryNode.isExpanded = false
-            viewModel.cityCount =
-                viewModel.cityCount + countryNode.childNode.size
+            viewModel.cityCount += countryNode.childNode.size
         }
         listAdapter.setList(visitedCountryNodes)
         initTitle()
@@ -565,6 +634,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
 
     private fun initAuthentication() {
         if (isOnline()) {
+            binding.pb.visibility = View.VISIBLE
+            binding.btnSignOut.visibility = View.GONE
             authorizationResultLauncher.launch(input = getAuthorizationIntent())
         } else {
             toastLong(R.string.msg_no_internet)
@@ -586,8 +657,7 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             .setLogo(R.drawable.pic_logo)
             .setTheme(R.style.AuthTheme)
             .setTosAndPrivacyPolicyUrls(
-//                TODO: replace with Terms of service
-                getString(R.string.privacy_web_page),
+                getString(R.string.terms_web_page),
                 getString(R.string.privacy_web_page)
             )
             .build()
