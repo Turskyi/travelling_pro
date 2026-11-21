@@ -2,7 +2,6 @@ package io.github.turskyi.travellingpro.widgets
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
@@ -17,7 +16,12 @@ import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivityView
 import io.github.turskyi.travellingpro.utils.IntFormatter
-import io.github.turskyi.travellingpro.utils.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.convertPictureToSpannableString
+import io.github.turskyi.travellingpro.utils.extensions.getAppCompatActivity
+import io.github.turskyi.travellingpro.utils.extensions.getFragmentActivity
+import io.github.turskyi.travellingpro.utils.extensions.showReportDialog
+import io.github.turskyi.travellingpro.utils.extensions.spToPix
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 
 /**
  * This custom view is a convenient way to encapsulate all logic related to pie chart to a separate
@@ -96,12 +100,10 @@ class CirclePieChart @JvmOverloads constructor(
                 false -> {
                     isDrawHoleEnabled = true
                     homeActivityViewListener!!.showTitleWithOnlyCountries()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        centerText = context.convertPictureToSpannableString(
-                            R.drawable.pic_pie_chart_center,
-                        )
-                        isCenterPieChartEnabled = true
-                    }
+                    centerText = context.convertPictureToSpannableString(
+                        R.drawable.pic_pie_chart_center,
+                    )
+                    isCenterPieChartEnabled = true
                 }
                 true -> {
                     centerText = ""
@@ -162,21 +164,12 @@ class CirclePieChart @JvmOverloads constructor(
         // rotate the pie chart to 45 degrees
         rotationAngle = -10f
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // set radius of an open eye
-            holeRadius = 78F
-        } else {
-            holeRadius = 20F
-            setTransparentCircleColor(Color.BLACK)
-            transparentCircleRadius = 24F
-            setHoleColor(Color.BLACK)
-        }
-        if (travellerActivityViewListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // set radius of an open eye
+        holeRadius = 78F
+        if (travellerActivityViewListener != null) {
             isDrawHoleEnabled = true
+            setHoleColor(Color.TRANSPARENT)
             travellerActivityViewListener!!.showTitleWithOnlyCountries()
-            centerText = context.convertPictureToSpannableString(
-                R.drawable.pic_pie_chart_center,
-            )
             isCenterPieChartEnabled = true
         }
     }
