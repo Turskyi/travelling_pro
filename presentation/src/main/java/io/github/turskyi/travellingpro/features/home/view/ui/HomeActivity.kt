@@ -142,6 +142,11 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
                 true
             }
 
+            R.id.action_sign_out -> {
+                signOut()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -413,10 +418,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
             }
         }
         binding.btnSignOut.setOnClickListener {
-            viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
-            AuthUI.getInstance().signOut(this)
-            initAuthentication()
+            signOut()
         }
+    }
+
+    private fun signOut() {
+        viewModel.onAuthorizationSignedId(Authorization.IS_SIGNED_OUT)
+        AuthUI.getInstance().signOut(this)
+        initAuthentication()
     }
 
     private fun initObservers() {
@@ -648,7 +657,8 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener,
         // Choosing authentication providers
         val providers: ArrayList<AuthUI.IdpConfig> = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.FacebookBuilder().build()
+            AuthUI.IdpConfig.FacebookBuilder().build(),
+            AuthUI.IdpConfig.AnonymousBuilder().build(),
         )
         return AuthUI.getInstance()
             .createSignInIntentBuilder()
