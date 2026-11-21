@@ -24,8 +24,8 @@ import io.github.turskyi.travellingpro.utils.extensions.spToPix
 import io.github.turskyi.travellingpro.utils.extensions.toastLong
 
 /**
- * This custom view is a convenient way to encapsulate all logic related to pie chart to a separate
- * class
+ * This custom view is a convenient way to encapsulate all logic related to
+ * pie chart to a separate class
  */
 class CirclePieChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -44,9 +44,11 @@ class CirclePieChart @JvmOverloads constructor(
                 is HomeActivityView -> {
                     homeActivityViewListener = context
                 }
+
                 is TravellerActivityView -> {
                     travellerActivityViewListener = context
                 }
+
                 else -> {
                     context.showReportDialog()
                 }
@@ -54,7 +56,8 @@ class CirclePieChart @JvmOverloads constructor(
         } catch (castException: ClassCastException) {
             // in this case the activity does not implement the listener.
             toastLong(
-                castException.localizedMessage ?: castException.stackTraceToString()
+                castException.localizedMessage
+                    ?: castException.stackTraceToString()
             )
         }
     }
@@ -79,9 +82,12 @@ class CirclePieChart @JvmOverloads constructor(
 
     override fun onChartLongPressed(me: MotionEvent?) {
         // hide info icon
-        context.getAppCompatActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        context.getAppCompatActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(
+            false
+        )
         // hide sync icon
-        val toolbar: androidx.appcompat.widget.Toolbar = rootView.findViewById(R.id.toolbar)
+        val toolbar: androidx.appcompat.widget.Toolbar =
+            rootView.findViewById(R.id.toolbar)
         toolbar.menu.clear()
         //---------------------
         val bottomSheet = ShareListBottomSheetFragment()
@@ -105,6 +111,7 @@ class CirclePieChart @JvmOverloads constructor(
                     )
                     isCenterPieChartEnabled = true
                 }
+
                 true -> {
                     centerText = ""
                     isDrawHoleEnabled = false
@@ -118,6 +125,7 @@ class CirclePieChart @JvmOverloads constructor(
                     isDrawHoleEnabled = true
                     travellerActivityViewListener!!.showTitleWithOnlyCountries()
                 }
+
                 true -> {
                     centerText = ""
                     isDrawHoleEnabled = false
@@ -174,13 +182,23 @@ class CirclePieChart @JvmOverloads constructor(
         }
     }
 
-    fun createPieChartWith(visitedCountries: List<VisitedCountry>, notVisitedCount: Float) {
+    fun createPieChartWith(
+        visitedCountries: List<VisitedCountry>,
+        notVisitedCount: Float
+    ) {
         val entries: MutableList<PieEntry> = mutableListOf()
         entries.add(PieEntry(visitedCountries.size.toFloat()))
         entries.add(PieEntry(notVisitedCount))
         val pieChartColors: MutableList<Int> = mutableListOf()
-        pieChartColors.add(ContextCompat.getColor(context, R.color.colorAccent))
-        pieChartColors.add(ContextCompat.getColor(context, R.color.colorBrightBlue))
+        pieChartColors.add(
+            ContextCompat.getColor(context, R.color.colorAccent),
+        )
+        pieChartColors.add(
+            ContextCompat.getColor(
+                context,
+                R.color.colorBrightBlue
+            )
+        )
 
         val dataSet = PieDataSet(entries, null)
         dataSet.colors = pieChartColors
