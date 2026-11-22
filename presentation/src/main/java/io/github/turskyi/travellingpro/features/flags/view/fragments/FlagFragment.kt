@@ -9,7 +9,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.OnLongClickListener
+import android.view.View.VISIBLE
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -135,6 +137,7 @@ class FlagFragment : BaseFlagFragment() {
         binding.wvFlag.isLongClickable = true
         binding.ivEnlargedFlag.setOnLongClickListener(addSelfieLongClickListener())
         binding.wvFlag.setOnLongClickListener(addSelfieLongClickListener())
+        binding.tvFlagFallback.setOnLongClickListener(addSelfieLongClickListener())
     }
 
     private fun initObservers() {

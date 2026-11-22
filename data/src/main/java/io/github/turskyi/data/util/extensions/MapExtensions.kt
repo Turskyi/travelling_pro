@@ -65,6 +65,37 @@ fun CountryEntity.mapCountryToVisitedCountry(): VisitedCountryEntity {
     return VisitedCountryEntity(id = id, shortName = shortName, name = name, flag = flag)
 }
 
+fun Map<String, Any?>.mapFirestoreToVisitedCountryEntity(): VisitedCountryEntity {
+    fun stringValue(key: String, legacyKey: String? = null): String =
+        (this[key] as? String) ?: legacyKey?.let { this[it] as? String }.orEmpty()
+
+    return VisitedCountryEntity(
+        id = (this["id"] as? Number)?.toInt() ?: 0,
+        shortName = stringValue("shortName", "countryCode"),
+        name = stringValue("name", "title"),
+        flag = stringValue("flag"),
+        selfie = stringValue("selfie"),
+        selfieName = stringValue("selfieName"),
+    )
+}
+
+fun Map<String, Any?>.mapFirestoreToCityEntity(documentId: String): CityEntity {
+    val cityId = when (val value = this["id"]) {
+        is String -> value
+        is Number -> value.toString()
+        null -> documentId
+        else -> throw IllegalArgumentException("City id must be a string or number")
+    }
+    val cityName = this["name"] as? String
+        ?: throw IllegalArgumentException("City name is missing or invalid")
+    val parentId = (this["parentId"] as? Number)?.toInt()
+        ?: throw IllegalArgumentException("City parentId is missing or invalid")
+    val month = this["month"] as? String
+        ?: throw IllegalArgumentException("City month is missing or invalid")
+
+    return CityEntity(id = cityId, name = cityName, parentId = parentId, month = month)
+}
+
 fun VisitedCountryEntity.mapVisitedCountryEntityToVisitedCountry(): VisitedCountryModel {
     return VisitedCountryModel(
         id = id,
@@ -81,4 +112,3 @@ fun List<VisitedCountryEntity>.mapVisitedCountriesToVisitedModelList(): MutableL
         countryEntity.mapVisitedCountryEntityToVisitedCountry()
     }
 }
-

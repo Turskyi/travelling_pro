@@ -11,6 +11,7 @@
 
         <FrameLayout style="@style/FrameLayoutStyle">
 
+            <!-- The expanded toolbar title intentionally overlaps the pie chart. -->
             <io.github.turskyi.travellingpro.widgets.CirclePieChart
                 android:id="@+id/circle_pie_chart"
                 android:layout_marginTop="30dp"
