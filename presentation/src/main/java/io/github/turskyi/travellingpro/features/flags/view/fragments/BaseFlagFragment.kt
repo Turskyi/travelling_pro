@@ -3,6 +3,7 @@ package io.github.turskyi.travellingpro.features.flags.view.fragments
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -24,6 +25,7 @@ import com.bumptech.glide.request.target.Target
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideApp
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
+import com.google.firebase.storage.FirebaseStorage
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
 import io.github.turskyi.travellingpro.entities.VisitedCountry
@@ -124,17 +126,43 @@ open class BaseFlagFragment : Fragment() {
     }
 
     fun showSelfie(countries: List<VisitedCountry>, position: Int) {
+        val selfie = countries[position].selfie
+        if (selfie.isBlank()) {
+            showTheFlag(countries, position)
+            return
+        }
         binding.apply {
             ivEnlargedFlag.visibility = VISIBLE
             wvFlag.visibility = GONE
             tvFlagFallback.visibility = GONE
         }
+        if (selfie.isHttpUrl()) {
+            loadSelfie(selfie, countries, position)
+            return
+        }
+        FirebaseStorage.getInstance().reference
+            .child(selfie.trimStart('/'))
+            .downloadUrl
+            .addOnSuccessListener { downloadUrl ->
+                if (isAdded && _binding != null) {
+                    loadSelfie(downloadUrl.toString(), countries, position)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Failed to resolve selfie from Firebase Storage", exception)
+                if (isAdded && _binding != null) {
+                    showTheFlag(countries, position)
+                }
+            }
+    }
+
+    private fun loadSelfie(selfieUrl: String, countries: List<VisitedCountry>, position: Int) {
         val thumbnailBuilder: RequestBuilder<Drawable> =
             GlideApp.with(binding.ivEnlargedFlag.context)
                 .asDrawable()
                 .sizeMultiplier(ResourcesCompat.getFloat(resources, R.dimen.thumbnail))
         GlideApp.with(this@BaseFlagFragment)
-            .load(countries[position].selfie)
+            .load(selfieUrl)
             .thumbnail(thumbnailBuilder)
             .apply(
                 RequestOptions()
@@ -207,5 +235,9 @@ open class BaseFlagFragment : Fragment() {
         binding.ivEnlargedFlag.visibility = GONE
         binding.tvFlagFallback.visibility = GONE
         binding.wvFlag.loadFlagFallback(flag)
+    }
+
+    private companion object {
+        const val TAG = "BaseFlagFragment"
     }
 }
