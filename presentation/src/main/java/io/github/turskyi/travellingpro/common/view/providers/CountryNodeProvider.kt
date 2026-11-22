@@ -1,13 +1,11 @@
 package io.github.turskyi.travellingpro.common.view.providers
 
-import android.graphics.Color
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
@@ -18,6 +16,9 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.entities.VisitedCountryNode
+import io.github.turskyi.travellingpro.utils.extensions.isHttpUrl
+import io.github.turskyi.travellingpro.utils.extensions.loadFlagFallback
+import io.github.turskyi.travellingpro.utils.extensions.showFlagText
 import io.github.turskyi.travellingpro.utils.getDisplayName
 
 class CountryNodeProvider : BaseNodeProvider() {
@@ -92,6 +93,18 @@ class CountryNodeProvider : BaseNodeProvider() {
         visitedCountryNode: VisitedCountryNode,
         holder: BaseViewHolder
     ) {
+        if (!visitedCountryNode.flag.isHttpUrl()) {
+            holder.itemView.findViewById<ImageView>(R.id.iv_flag).visibility = GONE
+            holder.itemView.findViewById<WebView>(R.id.wv_flag).visibility = GONE
+            holder.itemView.findViewById<TextView>(R.id.tv_flag_fallback).apply {
+                showFlagText(visitedCountryNode.flag)
+                setOnClickListener { onImageClickListener?.invoke(visitedCountryNode) }
+            }
+            return
+        }
+        holder.itemView.findViewById<TextView>(R.id.tv_flag_fallback).visibility = GONE
+        holder.itemView.findViewById<ImageView>(R.id.iv_flag).visibility = VISIBLE
+        holder.itemView.findViewById<WebView>(R.id.wv_flag).visibility = GONE
         val uri: Uri = visitedCountryNode.flag.toUri()
         GlideToVectorYou
             .init()
@@ -115,18 +128,9 @@ class CountryNodeProvider : BaseNodeProvider() {
         visitedCountryNode: VisitedCountryNode
     ) {
         holder.itemView.findViewById<ImageView>(R.id.iv_flag).visibility = GONE
-        val wvFlag = holder.itemView.findViewById<WebView>(R.id.wv_flag)
-        wvFlag.apply {
-            webViewClient = WebViewClient()
-            visibility = VISIBLE
-            setBackgroundColor(Color.TRANSPARENT)
-            loadData(
-                "<html><head><style type='text/css'>" +
-                        "body{margin:auto auto;text-align:center;} img{width:80%25;}" +
-                        " </style></head><body><img src='${visitedCountryNode.flag}'/>" +
-                        "</body></html>", "text/html", "UTF-8"
-            )
-        }
+        holder.itemView.findViewById<TextView>(R.id.tv_flag_fallback).visibility = GONE
+        holder.itemView.findViewById<WebView>(R.id.wv_flag)
+            .loadFlagFallback(visitedCountryNode.flag)
     }
 
     override fun onClick(

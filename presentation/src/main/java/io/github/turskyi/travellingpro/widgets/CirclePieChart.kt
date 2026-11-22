@@ -2,7 +2,6 @@ package io.github.turskyi.travellingpro.widgets
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
@@ -17,11 +16,16 @@ import io.github.turskyi.travellingpro.features.home.view.HomeActivityView
 import io.github.turskyi.travellingpro.features.home.view.ui.ShareListBottomSheetFragment
 import io.github.turskyi.travellingpro.features.traveller.view.TravellerActivityView
 import io.github.turskyi.travellingpro.utils.IntFormatter
-import io.github.turskyi.travellingpro.utils.extensions.*
+import io.github.turskyi.travellingpro.utils.extensions.convertPictureToSpannableString
+import io.github.turskyi.travellingpro.utils.extensions.getAppCompatActivity
+import io.github.turskyi.travellingpro.utils.extensions.getFragmentActivity
+import io.github.turskyi.travellingpro.utils.extensions.showReportDialog
+import io.github.turskyi.travellingpro.utils.extensions.spToPix
+import io.github.turskyi.travellingpro.utils.extensions.toastLong
 
 /**
- * This custom view is a convenient way to encapsulate all logic related to pie chart to a separate
- * class
+ * This custom view is a convenient way to encapsulate all logic related to
+ * pie chart to a separate class
  */
 class CirclePieChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -40,9 +44,11 @@ class CirclePieChart @JvmOverloads constructor(
                 is HomeActivityView -> {
                     homeActivityViewListener = context
                 }
+
                 is TravellerActivityView -> {
                     travellerActivityViewListener = context
                 }
+
                 else -> {
                     context.showReportDialog()
                 }
@@ -50,7 +56,8 @@ class CirclePieChart @JvmOverloads constructor(
         } catch (castException: ClassCastException) {
             // in this case the activity does not implement the listener.
             toastLong(
-                castException.localizedMessage ?: castException.stackTraceToString()
+                castException.localizedMessage
+                    ?: castException.stackTraceToString()
             )
         }
     }
@@ -75,9 +82,12 @@ class CirclePieChart @JvmOverloads constructor(
 
     override fun onChartLongPressed(me: MotionEvent?) {
         // hide info icon
-        context.getAppCompatActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        context.getAppCompatActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(
+            false
+        )
         // hide sync icon
-        val toolbar: androidx.appcompat.widget.Toolbar = rootView.findViewById(R.id.toolbar)
+        val toolbar: androidx.appcompat.widget.Toolbar =
+            rootView.findViewById(R.id.toolbar)
         toolbar.menu.clear()
         //---------------------
         val bottomSheet = ShareListBottomSheetFragment()
@@ -96,13 +106,12 @@ class CirclePieChart @JvmOverloads constructor(
                 false -> {
                     isDrawHoleEnabled = true
                     homeActivityViewListener!!.showTitleWithOnlyCountries()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        centerText = context.convertPictureToSpannableString(
-                            R.drawable.pic_pie_chart_center,
-                        )
-                        isCenterPieChartEnabled = true
-                    }
+                    centerText = context.convertPictureToSpannableString(
+                        R.drawable.pic_pie_chart_center,
+                    )
+                    isCenterPieChartEnabled = true
                 }
+
                 true -> {
                     centerText = ""
                     isDrawHoleEnabled = false
@@ -116,6 +125,7 @@ class CirclePieChart @JvmOverloads constructor(
                     isDrawHoleEnabled = true
                     travellerActivityViewListener!!.showTitleWithOnlyCountries()
                 }
+
                 true -> {
                     centerText = ""
                     isDrawHoleEnabled = false
@@ -162,32 +172,33 @@ class CirclePieChart @JvmOverloads constructor(
         // rotate the pie chart to 45 degrees
         rotationAngle = -10f
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // set radius of an open eye
-            holeRadius = 78F
-        } else {
-            holeRadius = 20F
-            setTransparentCircleColor(Color.BLACK)
-            transparentCircleRadius = 24F
-            setHoleColor(Color.BLACK)
-        }
-        if (travellerActivityViewListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // set radius of an open eye
+        holeRadius = 78F
+        if (travellerActivityViewListener != null) {
             isDrawHoleEnabled = true
+            setHoleColor(Color.TRANSPARENT)
             travellerActivityViewListener!!.showTitleWithOnlyCountries()
-            centerText = context.convertPictureToSpannableString(
-                R.drawable.pic_pie_chart_center,
-            )
             isCenterPieChartEnabled = true
         }
     }
 
-    fun createPieChartWith(visitedCountries: List<VisitedCountry>, notVisitedCount: Float) {
+    fun createPieChartWith(
+        visitedCountries: List<VisitedCountry>,
+        notVisitedCount: Float
+    ) {
         val entries: MutableList<PieEntry> = mutableListOf()
         entries.add(PieEntry(visitedCountries.size.toFloat()))
         entries.add(PieEntry(notVisitedCount))
         val pieChartColors: MutableList<Int> = mutableListOf()
-        pieChartColors.add(ContextCompat.getColor(context, R.color.colorAccent))
-        pieChartColors.add(ContextCompat.getColor(context, R.color.colorBrightBlue))
+        pieChartColors.add(
+            ContextCompat.getColor(context, R.color.colorAccent),
+        )
+        pieChartColors.add(
+            ContextCompat.getColor(
+                context,
+                R.color.colorBrightBlue
+            )
+        )
 
         val dataSet = PieDataSet(entries, null)
         dataSet.colors = pieChartColors

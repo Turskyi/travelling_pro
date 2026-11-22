@@ -22,6 +22,10 @@ This file documents the required safety policy for automation interacting with t
 
 - **Physical Devices Only**: The app is built exclusively for production release on physical Android devices targeting the Google Play Store. Agents must never design, test, or consider emulator/simulator behavior or emulator-specific workarounds.
 
+### Intentional UI Behavior
+
+- The expanded toolbar title intentionally overlaps the pie chart. Do not flag or change this behavior unless the user explicitly requests it.
+
 ### File Maintenance & Guidelines Limit
 
 - The `AGENTS.md` file must never exceed 200 lines, and this rule must always be

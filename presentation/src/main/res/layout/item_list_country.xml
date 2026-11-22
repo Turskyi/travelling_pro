@@ -13,6 +13,18 @@
         tool:src="@android:drawable/ic_menu_gallery"
         android:contentDescription="@string/content_description.flag" />
 
+    <TextView
+        android:id="@+id/tv_flag_fallback"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/content_description.flag"
+        android:gravity="center"
+        android:includeFontPadding="true"
+        android:padding="@dimen/offset_4"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
 <!--    WebView is used in case of error while downloading image source from the internet. -->
     <io.github.turskyi.travellingpro.widgets.ClickableWebView
         android:id="@+id/wv_flag"

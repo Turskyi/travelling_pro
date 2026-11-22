@@ -2,7 +2,6 @@
 
 package io.github.turskyi.travellingpro.features.countries.view.adapter
 
-import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
 import android.util.TypedValue
@@ -12,7 +11,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -24,6 +22,9 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.entities.Country
+import io.github.turskyi.travellingpro.utils.extensions.isHttpUrl
+import io.github.turskyi.travellingpro.utils.extensions.loadFlagFallback
+import io.github.turskyi.travellingpro.utils.extensions.showFlagText
 import io.github.turskyi.travellingpro.utils.getDisplayName
 
 class AllCountriesAdapter :
@@ -75,6 +76,16 @@ class AllCountriesAdapter :
         country: Country,
         holder: CountryViewHolder
     ) {
+        if (!country.flag.isHttpUrl()) {
+            holder.ivFlag.visibility = GONE
+            holder.wvFlag.visibility = GONE
+            holder.itemView.findViewById<TextView>(R.id.tv_flag_fallback)
+                .showFlagText(country.flag)
+            return
+        }
+        holder.itemView.findViewById<TextView>(R.id.tv_flag_fallback).visibility = GONE
+        holder.ivFlag.visibility = VISIBLE
+        holder.wvFlag.visibility = GONE
         val uri: Uri = country.flag.toUri()
 
         GlideToVectorYou
@@ -99,16 +110,8 @@ class AllCountriesAdapter :
         country: Country
     ) {
         holder.ivFlag.visibility = GONE
-        holder.wvFlag.run {
-            webViewClient = WebViewClient()
-            visibility = VISIBLE
-            setBackgroundColor(Color.TRANSPARENT)
-            loadData(
-                resources.getString(R.string.html_mini_flag, country.flag),
-                resources.getString(R.string.mime_type_txt_html),
-                resources.getString(R.string.encoding_utf_8),
-            )
-        }
+        holder.itemView.findViewById<TextView>(R.id.tv_flag_fallback).visibility = GONE
+        holder.wvFlag.loadFlagFallback(country.flag)
     }
 
     inner class CountryViewHolder(itemView: View) :
@@ -152,4 +155,3 @@ class AllCountriesAdapter :
         }
     }
 }
-

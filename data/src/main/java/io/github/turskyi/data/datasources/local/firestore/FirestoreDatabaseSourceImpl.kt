@@ -28,6 +28,8 @@ import io.github.turskyi.data.util.exceptions.BadRequestException
 import io.github.turskyi.data.util.exceptions.NetworkErrorException
 import io.github.turskyi.data.util.exceptions.NotFoundException
 import io.github.turskyi.data.util.extensions.mapCountryToVisitedCountry
+import io.github.turskyi.data.util.extensions.mapFirestoreToCityEntity
+import io.github.turskyi.data.util.extensions.mapFirestoreToVisitedCountryEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
@@ -617,7 +619,7 @@ class FirestoreDatabaseSourceImpl(
                 .addOnSuccessListener { documents: QuerySnapshot ->
                     for (document: QueryDocumentSnapshot in documents) {
                         val country: VisitedCountryEntity =
-                            document.toObject(VisitedCountryEntity::class.java)
+                            document.data.mapFirestoreToVisitedCountryEntity()
                         if (country.id == city.parentId) {
                             val cityRef: DocumentReference = userDocRef
                                 .collection(COLLECTION_CITIES)
@@ -680,7 +682,7 @@ class FirestoreDatabaseSourceImpl(
                         val countries: MutableList<VisitedCountryEntity> = mutableListOf()
                         for (documentSnapshot in queryDocumentSnapshots) {
                             val country: VisitedCountryEntity =
-                                documentSnapshot.toObject(VisitedCountryEntity::class.java)
+                                documentSnapshot.data.mapFirestoreToVisitedCountryEntity()
                             countries.add(country)
                             if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                                 onSuccess(countries.sortedBy { listItem -> listItem.name })
@@ -711,9 +713,8 @@ class FirestoreDatabaseSourceImpl(
                 } else {
                     val countries: MutableList<VisitedCountryEntity> = mutableListOf()
                     for (documentSnapshot in queryDocumentSnapshots) {
-                        val country: VisitedCountryEntity = documentSnapshot.toObject(
-                            VisitedCountryEntity::class.java,
-                        )
+                        val country: VisitedCountryEntity =
+                            documentSnapshot.data.mapFirestoreToVisitedCountryEntity()
                         countries.add(country)
                         if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
                             onSuccess(
@@ -741,15 +742,15 @@ class FirestoreDatabaseSourceImpl(
                     if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
-                        val cities: MutableList<CityEntity> = mutableListOf()
-                        for (documentSnapshot: QueryDocumentSnapshot in queryDocumentSnapshots) {
-                            val cityEntity: CityEntity = documentSnapshot.toObject(
-                                CityEntity::class.java,
-                            )
-                            cities.add(cityEntity)
-                            if (documentSnapshot.id == queryDocumentSnapshots.last().id) {
-                                onSuccess(cities.sortedBy { city: CityEntity -> city.name })
+                        try {
+                            val cities = queryDocumentSnapshots.documents.map { documentSnapshot ->
+                                requireNotNull(documentSnapshot.data) {
+                                    "City document ${documentSnapshot.id} has no data"
+                                }.mapFirestoreToCityEntity(documentSnapshot.id)
                             }
+                            onSuccess(cities.sortedBy { city: CityEntity -> city.name })
+                        } catch (exception: Exception) {
+                            onError.invoke(exception)
                         }
                     }
                 }
@@ -772,18 +773,20 @@ class FirestoreDatabaseSourceImpl(
             .whereEqualTo(KEY_PARENT_ID, countryId)
         citiesRef.get()
             .addOnSuccessListener { queryDocumentSnapshots: QuerySnapshot ->
-                if (queryDocumentSnapshots.isEmpty) {
-                    onSuccess(emptyList())
-                } else {
-                    val cities: MutableList<CityEntity> = mutableListOf()
-                    for (documentSnapshot in queryDocumentSnapshots) {
-                        val cityEntity: CityEntity = documentSnapshot.toObject(
-                            CityEntity::class.java,
-                        )
-                        cities.add(cityEntity)
+                    if (queryDocumentSnapshots.isEmpty) {
+                        onSuccess(emptyList())
+                    } else {
+                        try {
+                            val cities = queryDocumentSnapshots.documents.map { documentSnapshot ->
+                                requireNotNull(documentSnapshot.data) {
+                                    "City document ${documentSnapshot.id} has no data"
+                                }.mapFirestoreToCityEntity(documentSnapshot.id)
+                            }
+                            onSuccess(cities.sortedBy { city: CityEntity -> city.name })
+                        } catch (exception: Exception) {
+                            onError.invoke(exception)
+                        }
                     }
-                    onSuccess(cities.sortedBy { city: CityEntity -> city.name })
-                }
             }
             .addOnFailureListener { exception: java.lang.Exception ->
                 onError.invoke(exception)
@@ -804,14 +807,16 @@ class FirestoreDatabaseSourceImpl(
                     if (queryDocumentSnapshots.isEmpty) {
                         onSuccess(emptyList())
                     } else {
-                        val cities: MutableList<CityEntity> = mutableListOf()
-                        for (documentSnapshot in queryDocumentSnapshots) {
-                            val cityEntity: CityEntity = documentSnapshot.toObject(
-                                CityEntity::class.java,
-                            )
-                            cities.add(cityEntity)
+                        try {
+                            val cities = queryDocumentSnapshots.documents.map { documentSnapshot ->
+                                requireNotNull(documentSnapshot.data) {
+                                    "City document ${documentSnapshot.id} has no data"
+                                }.mapFirestoreToCityEntity(documentSnapshot.id)
+                            }
+                            onSuccess(cities.sortedBy { city: CityEntity -> city.name })
+                        } catch (exception: Exception) {
+                            onError.invoke(exception)
                         }
-                        onSuccess(cities.sortedBy { city: CityEntity -> city.name })
                     }
                 }
                 .addOnFailureListener { exception: java.lang.Exception ->

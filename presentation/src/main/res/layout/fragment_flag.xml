@@ -11,6 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <TextView
+        android:id="@+id/tv_flag_fallback"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/content_description.flag"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="96sp"
+        android:visibility="gone" />
+
     <io.github.turskyi.travellingpro.widgets.ListenableWebView
         android:id="@+id/wv_flag"
         style="@style/ImageViewStyle"
