@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -14,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
@@ -43,6 +45,7 @@ class FirestoreDatabaseSourceImpl(
 ) : KoinComponent,
     FirestoreDatabaseSource {
     companion object {
+        private const val TAG = "FirestoreDatabaseSource"
         // constants for firestore
         private const val REF_SELFIES = "selfies"
         private const val COLLECTION_USERS = "users"
@@ -388,13 +391,42 @@ class FirestoreDatabaseSourceImpl(
     ) {
         val user = currentUser
         if (user != null) {
-            // deleting from list of visited countries
-            usersRef.document(user.uid)
+            val visitedCollection = usersRef.document(user.uid)
                 .collection(COLLECTION_VISITED_COUNTRIES)
-                .document(shortName)
-                .delete()
-                .addOnSuccessListener { markAsNotVisited(shortName, parentId, onSuccess, onError) }
-                .addOnFailureListener { exception -> onError.invoke(exception) }
+            val directDocRef = visitedCollection.document(shortName)
+            directDocRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    directDocRef.delete()
+                        .addOnSuccessListener { markAsNotVisited(shortName, parentId, onSuccess, onError) }
+                        .addOnFailureListener { exception -> onError.invoke(exception) }
+                } else {
+                    visitedCollection.get().addOnSuccessListener { querySnapshot ->
+                        val normalizedTarget = shortName.trim().lowercase().replace(Regex("[^a-z0-9]"), "")
+                        val matchingDoc = querySnapshot.documents.find { doc ->
+                            val docId = doc.id.trim().lowercase().replace(Regex("[^a-z0-9]"), "")
+                            val docShortName = doc.getString("shortName")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+                            val docCountryCode = doc.getString("countryCode")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+                            val docName = doc.getString("name")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+                            val docTitle = doc.getString("title")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+
+                            normalizedTarget == docId ||
+                                    normalizedTarget == docShortName ||
+                                    normalizedTarget == docCountryCode ||
+                                    normalizedTarget == docName ||
+                                    normalizedTarget == docTitle
+                        }
+                        if (matchingDoc != null) {
+                            matchingDoc.reference.delete()
+                                .addOnSuccessListener { markAsNotVisited(shortName, parentId, onSuccess, onError) }
+                                .addOnFailureListener { exception -> onError.invoke(exception) }
+                        } else {
+                            markAsNotVisited(shortName, parentId, onSuccess, onError)
+                        }
+                    }.addOnFailureListener {
+                        markAsNotVisited(shortName, parentId, onSuccess, onError)
+                    }
+                }
+            }.addOnFailureListener { exception -> onError.invoke(exception) }
         } else {
             mFirebaseAuth.signOut()
             onError.invoke(NotFoundException())
@@ -520,7 +552,11 @@ class FirestoreDatabaseSourceImpl(
     ) {
         val selfieName = "${System.currentTimeMillis()}"
         val selfieRef: StorageReference = selfiesStorageRef.child(selfieName)
-        val bitmap: Bitmap = BitmapFactory.decodeFile(filePath)
+        val bitmap: Bitmap? = BitmapFactory.decodeFile(filePath)
+        if (bitmap == null) {
+            onError.invoke(IllegalArgumentException("Failed to decode image from $filePath"))
+            return
+        }
         val metadata: StorageMetadata = StorageMetadata.Builder()
             .setContentType(application.resources.getString(R.string.image_and_jpg_type))
             .build()
@@ -537,8 +573,8 @@ class FirestoreDatabaseSourceImpl(
              * there is a TaskSnapshot which contains the details of uploaded file */
         val uploadTask: UploadTask = selfieRef.putBytes(byteArray, metadata)
         uploadTask.continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
-            if (!task.isSuccessful && task.exception != null) {
-                onError.invoke(task.exception!!)
+            if (!task.isSuccessful) {
+                task.exception?.let { throw it }
             }
             selfieRef.downloadUrl
         }.addOnCompleteListener { task: Task<Uri> ->
@@ -549,27 +585,23 @@ class FirestoreDatabaseSourceImpl(
                 val uploadedSelfieUrl: String = downloadUri.toString()
                 val user = currentUser
                 if (user != null) {
-                    // Saving the URL to the database
-                    val countryRef: DocumentReference = usersRef
+                    val visitedCollection: CollectionReference = usersRef
                         .document(user.uid)
                         .collection(COLLECTION_VISITED_COUNTRIES)
-                        .document(shortName)
 
                     // before saving a new image deleting previous image
                     deleteImage(
                         selfieName = previousSelfieName,
                         onSuccess = {
-                            // if deleting is successful, saving new url and new image name to model
-                            countryRef.update(
-                                mapOf(
-                                    KEY_SELFIE to uploadedSelfieUrl,
-                                    KEY_SELFIE_NAME to selfieName
-                                )
+                            saveSelfieToFirestore(
+                                visitedCollection = visitedCollection,
+                                shortName = shortName,
+                                uploadedSelfieUrl = uploadedSelfieUrl,
+                                selfieName = selfieName,
+                                onSuccess = onSuccess,
+                                onError = onError,
                             )
-                                .addOnSuccessListener { onSuccess.invoke() }
-                                .addOnFailureListener { exception -> onError.invoke(exception) }
                         },
-                        onError = { exception -> onError.invoke(exception) },
                     )
                 } else {
                     mFirebaseAuth.signOut()
@@ -587,21 +619,85 @@ class FirestoreDatabaseSourceImpl(
         }
     }
 
-    private fun deleteImage(
+    private fun saveSelfieToFirestore(
+        visitedCollection: CollectionReference,
+        shortName: String,
+        uploadedSelfieUrl: String,
         selfieName: String,
         onSuccess: () -> Unit,
-        onError: (Exception) -> Unit
+        onError: (Exception) -> Unit,
     ) {
-        try {
-            if (selfieName != "") {
-                selfiesStorageRef.child(selfieName).delete()
+        val selfieData = mapOf(
+            KEY_SELFIE to uploadedSelfieUrl,
+            KEY_SELFIE_NAME to selfieName,
+        )
+
+        val directDocRef = visitedCollection.document(shortName)
+        directDocRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                directDocRef.set(selfieData, SetOptions.merge())
                     .addOnSuccessListener { onSuccess.invoke() }
                     .addOnFailureListener { exception -> onError.invoke(exception) }
+            } else {
+                visitedCollection.get().addOnSuccessListener { querySnapshot ->
+                    val normalizedTarget = shortName.trim().lowercase().replace(Regex("[^a-z0-9]"), "")
+                    val matchingDoc = querySnapshot.documents.find { doc ->
+                        val docId = doc.id.trim().lowercase().replace(Regex("[^a-z0-9]"), "")
+                        val docShortName = doc.getString("shortName")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+                        val docCountryCode = doc.getString("countryCode")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+                        val docName = doc.getString("name")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+                        val docTitle = doc.getString("title")?.trim()?.lowercase()?.replace(Regex("[^a-z0-9]"), "").orEmpty()
+
+                        normalizedTarget == docId ||
+                                normalizedTarget == docShortName ||
+                                normalizedTarget == docCountryCode ||
+                                normalizedTarget == docName ||
+                                normalizedTarget == docTitle
+                    }
+
+                    val targetDocRef = matchingDoc?.reference ?: directDocRef
+                    targetDocRef.set(selfieData, SetOptions.merge())
+                        .addOnSuccessListener { onSuccess.invoke() }
+                        .addOnFailureListener { exception -> onError.invoke(exception) }
+                }.addOnFailureListener {
+                    directDocRef.set(selfieData, SetOptions.merge())
+                        .addOnSuccessListener { onSuccess.invoke() }
+                        .addOnFailureListener { exception -> onError.invoke(exception) }
+                }
+            }
+        }.addOnFailureListener {
+            directDocRef.set(selfieData, SetOptions.merge())
+                .addOnSuccessListener { onSuccess.invoke() }
+                .addOnFailureListener { exception -> onError.invoke(exception) }
+        }
+    }
+
+    private fun deleteImage(
+        selfieName: String,
+        onSuccess: () -> Unit
+    ) {
+        try {
+            val name = selfieName.trim()
+            if (name.isNotEmpty()) {
+                val ref = if (name.startsWith("selfies/")) {
+                    firebaseStorage.reference.child(name)
+                } else {
+                    selfiesStorageRef.child(name)
+                }
+                ref.delete()
+                    .addOnSuccessListener { onSuccess.invoke() }
+                    .addOnFailureListener { exception ->
+                        Log.w(TAG, "Failed to delete previous selfie image: $name", exception)
+                        // Deleting previous image is a non-fatal cleanup step.
+                        // Proceed with saving the new image to Firestore.
+                        onSuccess.invoke()
+                    }
             } else {
                 onSuccess.invoke()
             }
         } catch (exception: Exception) {
-            onError.invoke(exception)
+            Log.w(TAG, "Exception while deleting previous selfie image: $selfieName", exception)
+            onSuccess.invoke()
         }
     }
 
