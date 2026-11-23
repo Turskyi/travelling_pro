@@ -26,6 +26,7 @@ import com.github.twocoffeesoneteam.glidetovectoryou.GlideApp
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import io.github.turskyi.travellingpro.R
 import io.github.turskyi.travellingpro.databinding.FragmentFlagBinding
 import io.github.turskyi.travellingpro.entities.VisitedCountry
@@ -126,8 +127,10 @@ open class BaseFlagFragment : Fragment() {
     }
 
     fun showSelfie(countries: List<VisitedCountry>, position: Int) {
-        val selfie = countries[position].selfie
-        if (selfie.isBlank()) {
+        val country = countries[position]
+        val selfie = country.selfie
+        val selfieName = country.selfieName
+        if (selfie.isBlank() && selfieName.isBlank()) {
             showTheFlag(countries, position)
             return
         }
@@ -137,26 +140,70 @@ open class BaseFlagFragment : Fragment() {
             tvFlagFallback.visibility = GONE
         }
         if (selfie.isHttpUrl()) {
-            loadSelfie(selfie, countries, position)
-            return
+            loadSelfie(selfie) {
+                fetchSelfieFromFirebaseStorage(country, countries, position)
+            }
+        } else {
+            fetchSelfieFromFirebaseStorage(country, countries, position)
         }
-        FirebaseStorage.getInstance().reference
-            .child(selfie.trimStart('/'))
-            .downloadUrl
-            .addOnSuccessListener { downloadUrl ->
-                if (isAdded && _binding != null) {
-                    loadSelfie(downloadUrl.toString(), countries, position)
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Failed to resolve selfie from Firebase Storage", exception)
-                if (isAdded && _binding != null) {
-                    showTheFlag(countries, position)
-                }
-            }
     }
 
-    private fun loadSelfie(selfieUrl: String, countries: List<VisitedCountry>, position: Int) {
+    private fun fetchSelfieFromFirebaseStorage(
+        country: VisitedCountry,
+        countries: List<VisitedCountry>,
+        position: Int
+    ) {
+        val storageRef: StorageReference? = getStorageReference(country)
+        if (storageRef != null) {
+            storageRef.downloadUrl
+                .addOnSuccessListener { downloadUrl ->
+                    if (isAdded && _binding != null) {
+                        country.selfie = downloadUrl.toString()
+                        loadSelfie(downloadUrl.toString()) {
+                            showTheFlag(countries, position)
+                        }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Failed to resolve selfie from Firebase Storage", exception)
+                    if (isAdded && _binding != null) {
+                        showTheFlag(countries, position)
+                    }
+                }
+        } else {
+            showTheFlag(countries, position)
+        }
+    }
+
+    private fun getStorageReference(country: VisitedCountry): StorageReference? {
+        val selfieName = country.selfieName.trim()
+        val selfie = country.selfie.trim()
+
+        if (selfieName.isNotEmpty()) {
+            val path = if (selfieName.startsWith("selfies/")) selfieName else "selfies/$selfieName"
+            return FirebaseStorage.getInstance().reference.child(path)
+        }
+
+        if (selfie.isNotEmpty()) {
+            if (selfie.isHttpUrl()) {
+                try {
+                    return FirebaseStorage.getInstance().getReferenceFromUrl(selfie)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Could not get StorageReference from URL: $selfie", e)
+                }
+            } else {
+                val path = if (selfie.startsWith("selfies/")) selfie else "selfies/${selfie.trimStart('/')}"
+                return FirebaseStorage.getInstance().reference.child(path)
+            }
+        }
+
+        return null
+    }
+
+    private fun loadSelfie(
+        selfieUrl: String,
+        onFailed: () -> Unit
+    ) {
         val thumbnailBuilder: RequestBuilder<Drawable> =
             GlideApp.with(binding.ivEnlargedFlag.context)
                 .asDrawable()
@@ -178,8 +225,8 @@ open class BaseFlagFragment : Fragment() {
                     isFirstResource: Boolean
                 ): Boolean {
                     binding.ivEnlargedFlag.post {
-                        if (isAdded) {
-                            showTheFlag(countries, position)
+                        if (isAdded && _binding != null) {
+                            onFailed()
                         }
                     }
                     return false

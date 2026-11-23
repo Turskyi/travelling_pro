@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.OnLongClickListener
 import android.view.View.VISIBLE
@@ -69,49 +67,53 @@ class FlagFragment : BaseFlagFragment() {
     }
 
     private fun createInputStreamAndChangeImage(selectedImageUri: Uri, position: Int) {
-        val orderBy: String =
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                MediaStore.Images.Media.DATE_TAKEN
-            } else {
-                MediaStore.Images.Media._ID
+        var imageName: String? = null
+        try {
+            val projectionColumns: Array<String> = arrayOf(OpenableColumns.DISPLAY_NAME)
+            requireContext().contentResolver.query(
+                selectedImageUri,
+                projectionColumns,
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex: Int = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex != -1) {
+                        imageName = cursor.getString(nameIndex)
+                    }
+                }
             }
-        val projectionColumns: Array<String> =
-            arrayOf(MediaStore.Images.Media.DISPLAY_NAME)
-        // Constructs a selection clause with a replaceable parameter
-        val selectionClause = "var = ?"
-        // Defines a mutable list to contain the selection arguments
-        val selectionArgs: MutableList<String> = mutableListOf()
-        requireContext().contentResolver.query(
-            selectedImageUri,  // The content URI of the image table
-            projectionColumns, // The columns to return for each row
-            selectionClause, // Selection criteria
-            selectionArgs.toTypedArray(), // Selection criteria
-            "$orderBy DESC", // The sort order for the returned rows
-        )?.use { cursor: Cursor ->
-            val inputStream: InputStream? =
-                requireContext().contentResolver.openInputStream(selectedImageUri)
-            if (inputStream != null && cursor.moveToFirst()) {
-                updateFlagImage(cursor, inputStream, position)
-            }
+        } catch (e: Exception) {
+            Log.w("FlagFragment", "Failed to query image name from URI", e)
+        }
+        val name: String = imageName ?: "selfie_${System.currentTimeMillis()}.jpg"
+        val inputStream: InputStream? = try {
+            requireContext().contentResolver.openInputStream(selectedImageUri)
+        } catch (e: Exception) {
+            Log.w("FlagFragment", "Failed to open input stream for URI", e)
+            null
+        }
+        if (inputStream != null) {
+            updateFlagImage(name, inputStream, position)
         }
         binding.ivEnlargedFlag.visibility = VISIBLE
         binding.wvFlag.visibility = GONE
     }
 
-    private fun updateFlagImage(cursor: Cursor, inputStream: InputStream, position: Int) {
-        val nameIndex: Int = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-        val name: String = cursor.getString(nameIndex)
-        // create same file with same name
+    private fun updateFlagImage(name: String, inputStream: InputStream, position: Int) {
         val file = File(requireContext().cacheDir, name)
         val fileOutputStream: FileOutputStream = file.outputStream()
         fileOutputStream.use { inputStream.copyTo(it) }
         val visitedCountriesObserverForLocalPhotos: Observer<List<VisitedCountry>> =
             Observer { visitedCountries: List<VisitedCountry> ->
-                viewModel.updateSelfie(
-                    shortName = visitedCountries[position].shortName,
-                    filePath = file.absolutePath,
-                    selfieName = visitedCountries[position].selfieName,
-                )
+                if (position in visitedCountries.indices) {
+                    viewModel.updateSelfie(
+                        shortName = visitedCountries[position].shortName,
+                        filePath = file.absolutePath,
+                        selfieName = visitedCountries[position].selfieName,
+                    )
+                }
             }
         viewModel.visitedCountries.observeOnce(
             viewLifecycleOwner,
@@ -159,7 +161,7 @@ class FlagFragment : BaseFlagFragment() {
                 if (mChangeFlagListener != null) {
                     mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
                 }
-                if (countries[position].selfie.isEmpty()) {
+                if (countries[position].selfie.isEmpty() && countries[position].selfieName.isEmpty()) {
                     showTheFlag(countries, position)
                 } else {
                     showSelfie(countries, position)

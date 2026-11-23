@@ -50,7 +50,7 @@ class FriendFlagsFragment : BaseFlagFragment() {
                 val position: Int = this.requireArguments().getInt(EXTRA_POSITION)
                 if (mChangeFlagListener != null) {
                     mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
-                    if (countries[position].selfie.isEmpty()) {
+                    if (countries[position].selfie.isEmpty() && countries[position].selfieName.isEmpty()) {
                         showTheFlag(countries, position)
                     } else {
                         showSelfie(countries, position)
