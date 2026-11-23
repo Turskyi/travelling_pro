@@ -159,7 +159,7 @@ class FlagFragment : BaseFlagFragment() {
                 if (mChangeFlagListener != null) {
                     mChangeFlagListener!!.onChangeToolbarTitle(countries[position].title)
                 }
-                if (countries[position].selfie.isEmpty()) {
+                if (countries[position].selfie.isEmpty() && countries[position].selfieName.isEmpty()) {
                     showTheFlag(countries, position)
                 } else {
                     showSelfie(countries, position)
